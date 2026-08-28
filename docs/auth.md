@@ -6,7 +6,8 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 
 ## Description
 
-- Public login is `/login`: split layout, email magic link (Sign in / Create account). Download/Share on the landing builder still use a modal.
+- Public login is `/login`: split layout, email magic link (Sign in / Create account). The right panel is `public/auth/login-hero.png`. Download/Share on the landing builder still use a modal.
+- Sign out is in the app sidebar, mobile More sheet, Settings, and the dashboard error boundary. It `POST`s `/api/auth/signout` so `@supabase/ssr` can clear httpOnly cookies, then sends the browser to `/login`.
 - `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Hosted Auth sends the Magic Link template over Resend SMTP (`supabase/templates/magic_link.html`). The optional Send Email hook is an alternative, not a second path.
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
 - `GET /auth/callback` exchanges the PKCE `code` and redirects using `puyer-auth-return`.
@@ -63,7 +64,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 - `prisma/schema.prisma`, `lib/db/prisma.ts`
 - `utils/supabase/*`, `lib/auth/*`, `lib/authorization/*`, `lib/identity/*`, `lib/errors`, `lib/observability`, `lib/audit`
-- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`
+- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`, `app/api/auth/signout/route.ts`
 - `lib/email/auth-templates.ts`, `lib/email/layout.ts`, `lib/email/send-email-hook.ts`, `lib/auth/login-path.ts`, `supabase/templates/*`
 - `components/auth/*`
 - `app/(dashboard)/*`, `components/dashboard/*`
@@ -71,7 +72,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.9 — 2026-08-28
+1.0.10 — 2026-08-28
 
 ## Changelog
 
@@ -91,4 +92,6 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 [2026-08-28] – Added: Resend Send Email hook (`SEND_EMAIL_HOOK_SECRET`) and branded Auth templates.
 [2026-08-28] – Changed: Auth HTML templates are full Resend-ready documents (600px tables, MSO, inline CSS) for Magic Link and sibling templates.
 [2026-08-28] – Added: Split `/login` page (Sign in / Create account + vector hero). Gated routes redirect there.
+[2026-08-28] – Changed: `/login` hero is `public/auth/login-hero.png` (invoice + card illustration).
+[2026-08-28] – Fixed: Settings no longer 500s when Connect/workspace lookup fails. Sign out is in the app shell via `POST /api/auth/signout`.
 ```

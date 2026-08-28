@@ -1,12 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
-import { createBrowserSupabaseClient } from "@/lib/auth/browser";
+import { LOGIN_PATH } from "@/lib/auth/login-path";
 import { t } from "@/lib/i18n";
 
 export function SignOutButton({ className }: { className?: string }) {
-  const router = useRouter();
   const copy = t("dashboard");
 
   return (
@@ -17,10 +14,12 @@ export function SignOutButton({ className }: { className?: string }) {
       }
       onClick={() => {
         void (async () => {
-          const supabase = createBrowserSupabaseClient();
-          await supabase?.auth.signOut();
-          router.push("/");
-          router.refresh();
+          try {
+            await fetch("/api/auth/signout", { method: "POST" });
+          } catch {
+            // Still leave the app shell even if the network call fails.
+          }
+          window.location.assign(LOGIN_PATH);
         })();
       }}
     >

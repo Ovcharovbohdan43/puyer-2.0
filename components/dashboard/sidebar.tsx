@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { SignOutButton } from "@/components/dashboard/sign-out-button";
 import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { t } from "@/lib/i18n";
 import { isNavActive, planCopyKey, SETTINGS_NAV, SIDEBAR_NAV } from "@/lib/dashboard/nav";
@@ -70,6 +71,7 @@ export function Sidebar({ displayName, plan }: SidebarProps) {
         >
           {copy.newInvoice}
         </Link>
+        <SignOutButton className="px-2 text-left text-[12px] font-semibold tracking-[0.6px] text-[#BEC6E0] hover:text-[#F8F9FF]" />
       </div>
     </aside>
   );

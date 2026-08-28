@@ -5,6 +5,7 @@ import type { StripeConnectionStatus } from "@prisma/client";
 import { writeAuditLog } from "@/lib/audit";
 import { prisma } from "@/lib/db/prisma";
 import { StripeConnectionError } from "@/lib/errors";
+import { logger } from "@/lib/observability/logger";
 import { appBaseUrl, getStripe } from "@/lib/stripe/client";
 import {
   buildAccountOnboardingLinkParams,
@@ -92,6 +93,24 @@ export async function createOnboardingLink(organizationId: string) {
     throw new StripeConnectionError();
   }
   return link.url;
+}
+
+export async function loadConnectionForSettings(organizationId: string): Promise<{
+  status: StripeConnectionStatus;
+  chargesEnabled: boolean;
+}> {
+  try {
+    const connection = await prisma.stripeConnection.findUnique({
+      where: { organizationId },
+    });
+    return {
+      status: connection?.status ?? "NOT_CONNECTED",
+      chargesEnabled: connection?.chargesEnabled ?? false,
+    };
+  } catch {
+    logger.warn("settings_stripe_lookup_failed");
+    return { status: "NOT_CONNECTED", chargesEnabled: false };
+  }
 }
 
 export async function refreshConnectionStatus(organizationId: string) {

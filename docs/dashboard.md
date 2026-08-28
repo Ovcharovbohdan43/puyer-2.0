@@ -51,6 +51,7 @@ npm run lint
 - Open `/invoices`, click a row, confirm drawer + `?invoice=` UUID, close, URL clears
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
 - Signed-out `/invoices` and `/clients` redirect to `/login`
+- Sign out is in the sidebar (desktop) and More sheet (mobile)
 - Public `/invoice/[publicId]` (singular) is not gated by this shell
 
 ## Limitations
@@ -71,7 +72,7 @@ npm run lint
 
 ## Version
 
-1.1.7 — 2026-08-28
+1.1.8 — 2026-08-28
 
 ## Changelog
 
@@ -85,4 +86,5 @@ npm run lint
 [2026-08-28] – Changed: Overview Paid (30d) and trends upgrade CTA; snapshot-backed completed months.
 [2026-08-28] – Changed: Team page is live (invites, roles, workspace switch).
 [2026-08-28] – Changed: Signed-out app routes redirect to `/login`.
+[2026-08-28] – Fixed: Settings survives a failed Stripe/workspace lookup. Sign out is in the sidebar and More sheet.
 ```

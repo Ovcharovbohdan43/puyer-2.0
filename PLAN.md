@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.2  
+> **Version:** 1.4.3  
 > **Date:** 2026-08-28  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -1187,6 +1187,13 @@ Until `docs/` exists, keep the changelog in this file.
 [2026-08-28] – Added: Public `/login` split page (magic-link form + vector invoice hero).
   Header Login and gated routes go to `/login`. Download/Share stay on the landing modal.
   Docs: docs/auth.md, docs/UX_FLOWS.md.
+
+[2026-08-28] – Changed: `/login` hero is `public/auth/login-hero.png`.
+  Docs: docs/auth.md, docs/UX_FLOWS.md.
+
+[2026-08-28] – Fixed: Settings page no longer 500s on Connect/workspace lookup failure.
+  Sign out lives in the app shell and `POST /api/auth/signout` clears Auth cookies.
+  Docs: docs/auth.md, docs/dashboard.md.
 ```
 
 ---

@@ -51,7 +51,7 @@ npm run lint
 
 Browser:
 
-- Settings without keys: Connect shows a safe “not configured” error.
+- Settings without keys: Connect shows a safe “not configured” error. The page itself must still render (no Vercel digest crash) so Sign out stays available.
 - After Connect + webhook: public Pay redirects to Stripe Checkout branded as the connected business.
 - Return from Checkout with `?checkout=success` still shows unpaid until the webhook runs.
 
@@ -72,7 +72,7 @@ Browser:
 
 ## Version
 
-1.0.3 — 2026-08-28
+1.0.4 — 2026-08-28
 
 ## Changelog
 
@@ -82,4 +82,5 @@ Browser:
 [2026-08-28] – Changed: Connect onboarding and public Pay enforce `STRIPE_PAYMENTS`.
 [2026-08-28] – Changed: §17 checklist mapped; webhook IP rate limit (Phase 9).
 [2026-08-28] – Changed: Public payer page uses document + pay sidebar.
+[2026-08-28] – Fixed: Settings Stripe lookup failures no longer crash the page.
 ```

@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.5 — 2026-08-28
+> **Version:** 1.0.7 — 2026-08-28
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -58,9 +58,11 @@ Sidebar (desktop, collapsible): Overview, Invoices, Clients, Payments, Reports, 
 
 Mobile bottom: Overview, Invoices, Clients, Payments, More.
 
-More sheet: Reports, Settings, Team, Billing, Notifications.
+More sheet: Reports, Settings, Team, Billing, Notifications, Sign out.
 
 Logo (auth) → `/dashboard` (unsaved modal if builder dirty).
+
+Sign out (sidebar, More sheet, Settings, error boundary) → `POST /api/auth/signout` (clears Auth cookies) → `/login`.
 
 ### Universal nav rules
 
@@ -112,7 +114,7 @@ Pricing link in header → `/pricing`. In-page pricing section remains for marke
 ```
 Any public page → Login
 → TARGET: /login
-→ UI: split page — email Sign in / Create account (magic link, no password) on the left; invoice vector hero on the right
+→ UI: split page — email Sign in / Create account (magic link, no password) on the left; invoice payment illustration (`/auth/login-hero.png`) on the right
 → SERVER: send magic link (rate limited)
 → SUCCESS: “Check your inbox” + Change email + Resend (cooldown)
 → ERROR: safe message, no stack traces
@@ -318,4 +320,6 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-28] – Fixed: Save/download highlight invalid fields; empty extra line items are ignored.
 [2026-08-28] – Fixed: Public payer portal uses theme tokens (no dark cards with light-theme ink).
 [2026-08-28] – Changed: Header Login opens `/login` (split magic-link page). Download/Share stay modal.
+[2026-08-28] – Added: Sign out in the app shell (sidebar + More). Settings no longer 500s if Connect lookup fails.
+[2026-08-28] – Changed: `/login` right panel uses the invoice payment illustration PNG.
 ```

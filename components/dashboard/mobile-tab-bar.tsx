@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { SignOutButton } from "@/components/dashboard/sign-out-button";
 import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { t } from "@/lib/i18n";
 import { isNavActive, MOBILE_PRIMARY_NAV, MORE_LINKS } from "@/lib/dashboard/nav";
@@ -37,6 +38,7 @@ export function MobileTabBar() {
                 {copy.nav[item.id]}
               </Link>
             ))}
+            <SignOutButton className="mt-1 w-full rounded-lg px-3 py-2 text-left text-[12px] font-semibold tracking-[0.6px] text-[#BEC6E0]" />
           </div>
         </div>
       ) : null}

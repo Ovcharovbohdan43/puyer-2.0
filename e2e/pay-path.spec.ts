@@ -18,6 +18,8 @@ test.describe("signup → invoice → share → pay surfaces", () => {
 
     await page.goto("/team");
     await expect(page).toHaveURL(/\/login/);
+    await page.goto("/settings");
+    await expect(page).toHaveURL(/\/login/);
 
     const missingInvoice = await page.goto("/invoice/not-a-public-id");
     expect(missingInvoice?.status()).toBe(404);
