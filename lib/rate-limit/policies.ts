@@ -1,0 +1,22 @@
+export const RATE_LIMITS = {
+  "otp-email": { windowMs: 15 * 60_000, max: 5 },
+  "otp-ip": { windowMs: 15 * 60_000, max: 20 },
+  "invoice-page": { windowMs: 60_000, max: 60 },
+  "pdf-public": { windowMs: 60_000, max: 20 },
+  "pdf-auth": { windowMs: 60_000, max: 30 },
+  "pay-public": { windowMs: 60_000, max: 10 },
+  "invoice-write": { windowMs: 60_000, max: 40 },
+  "client-write": { windowMs: 60_000, max: 40 },
+  "invoice-send": { windowMs: 15 * 60_000, max: 30 },
+  "api-read": { windowMs: 60_000, max: 120 },
+  "team-invite": { windowMs: 15 * 60_000, max: 20 },
+  "team-write": { windowMs: 60_000, max: 40 },
+  "notifications-write": { windowMs: 60_000, max: 60 },
+  "stripe-onboard": { windowMs: 15 * 60_000, max: 10 },
+  "platform-checkout": { windowMs: 15 * 60_000, max: 10 },
+  "platform-portal": { windowMs: 15 * 60_000, max: 10 },
+  "stripe-disconnect": { windowMs: 15 * 60_000, max: 10 },
+  "stripe-webhook": { windowMs: 60_000, max: 300 },
+} as const;
+
+export type RateLimitPolicy = keyof typeof RATE_LIMITS;

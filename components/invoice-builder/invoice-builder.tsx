@@ -1,0 +1,658 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
+import { useBuilderSession } from "@/components/invoice-builder/builder-session";
+import { CurrencySelect } from "@/components/invoice-builder/currency-select";
+import { InvoicePreview } from "@/components/invoice-builder/invoice-preview";
+import { ACCENT_COLORS, type InvoiceTemplate } from "@/components/invoice-builder/types";
+import { FigmaIcon } from "@/components/marketing/figma-icon";
+import { Modal } from "@/components/ui/modal";
+import { SimpleSelect } from "@/components/ui/select-menu";
+import { useToast } from "@/components/ui/toast";
+import { totalsForInvoice, type DiscountType } from "@/lib/invoices/calculate";
+import { getCurrency, type Currency } from "@/lib/invoices/currencies";
+import { formatMoney } from "@/lib/invoices/money";
+import { hasBuilderErrors, validateBuilder, type BuilderErrors } from "@/lib/invoices/validate";
+import { downloadPdfResponse } from "@/lib/pdf/browser-download";
+import { t } from "@/lib/i18n";
+
+type MobileTab = "edit" | "preview";
+type BusyState = null | "preparing" | "ready";
+
+const TEMPLATES: { id: InvoiceTemplate; icon: string; width: number; height: number }[] = [
+  { id: "MINIMAL", icon: "/landing/builder-doc.svg", width: 13, height: 17 },
+  { id: "PROFESSIONAL", icon: "/landing/builder-layout.svg", width: 15, height: 16 },
+  { id: "PREMIUM", icon: "/landing/builder-preview.svg", width: 17, height: 16 },
+];
+
+export function InvoiceBuilder() {
+  const copy = t("builder");
+  const toast = useToast();
+  const { state, setState, authenticated, openAuth, persist, persisting, publicUrl, invoiceId, onCopyPublicLink } =
+    useBuilderSession();
+  const [mobileTab, setMobileTab] = useState<MobileTab>("edit");
+  const [zoom, setZoom] = useState(1);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [errors, setErrors] = useState<BuilderErrors>({ lines: {} });
+  const [errorTick, setErrorTick] = useState(0);
+  const [busy, setBusy] = useState<BusyState>(null);
+  const [pendingCurrency, setPendingCurrency] = useState<Currency | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+
+  const currency = getCurrency(state.currency);
+  const totals = useMemo(
+    () =>
+      totalsForInvoice(state.items, currency.exponent, state.discountType, state.discountValue, state.taxRate),
+    [state.items, state.discountType, state.discountValue, state.taxRate, currency.exponent],
+  );
+
+  useEffect(() => {
+    if (window.location.hash === "#builder") {
+      window.setTimeout(() => document.getElementById("invoice-business-name")?.focus(), 200);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (errorTick === 0) {
+      return;
+    }
+    const first = document.querySelector<HTMLElement>("[data-invalid='true']");
+    first?.focus();
+    first?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [errorTick]);
+
+  const showErrors = (next: BuilderErrors) => {
+    setErrors(next);
+    setErrorTick((tick) => tick + 1);
+    toast(copy.errors.summary);
+  };
+
+  const persistIfValid = async () => {
+    const nextErrors = validateBuilder(state);
+    if (hasBuilderErrors(nextErrors)) {
+      showErrors(nextErrors);
+      return null;
+    }
+    setErrors({ lines: {} });
+    if (!persist) {
+      return null;
+    }
+    return persist();
+  };
+
+  const runDownloadOrShare = async (action: "download" | "share") => {
+    if (busy) {
+      return;
+    }
+    const nextErrors = validateBuilder(state);
+    if (hasBuilderErrors(nextErrors)) {
+      showErrors(nextErrors);
+      return;
+    }
+    setErrors({ lines: {} });
+
+    if (!authenticated) {
+      if (action === "download") {
+        setBusy("preparing");
+        await new Promise((resolve) => window.setTimeout(resolve, 700));
+        setBusy("ready");
+        await new Promise((resolve) => window.setTimeout(resolve, 400));
+        setBusy(null);
+      }
+      openAuth(action);
+      return;
+    }
+
+    if (action === "share") {
+      setShareOpen(true);
+      return;
+    }
+
+    setBusy("preparing");
+    try {
+      let id = invoiceId ?? null;
+      if (persist) {
+        const saved = await persist();
+        id = saved?.id ?? id;
+      }
+      if (!id) {
+        toast(copy.pdfFailed);
+        return;
+      }
+      await downloadPdfResponse(`/api/invoices/${id}/pdf`, `${state.invoiceNumber}.pdf`);
+      toast(copy.downloadedLater);
+    } catch {
+      toast(copy.pdfFailed);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const inputClass = "rounded border border-[#e2e8f0] bg-white px-[9px] py-[11px] text-[16px] text-[#0b1c30]";
+  const fieldClass =
+    "h-11 w-full rounded border border-[#e2e8f0] bg-white px-[9px] text-[16px] leading-none text-[#0b1c30] outline-none focus-visible:border-[#0b1c30]";
+  const textareaClass = `${inputClass} min-h-[70px] min-w-0 resize-none overflow-y-auto wrap-anywhere`;
+  const labelClass = "text-[16px] font-bold leading-6 text-[#0b1c30]";
+  const errorClass = "text-[12px] text-[#b91c1c]";
+  const invalidClass = "border-[#b91c1c] bg-[#fef2f2]";
+  const mark = (base: string, invalid?: boolean) => (invalid ? `${base} ${invalidClass}` : base);
+
+  const form = (
+    <div className="flex min-w-0 flex-col gap-6">
+      <div className="grid grid-cols-2 items-end gap-4">
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className={labelClass}>{copy.invoiceNumber}</span>
+          <span className="flex h-11 items-center rounded border border-[#e2e8f0] bg-[#eff4ff] px-[9px] font-mono text-[14px] font-medium leading-none text-[#0b1c30]">
+            {state.invoiceNumber}
+          </span>
+        </label>
+        <div className="flex min-w-0 flex-col gap-1">
+          <span className={labelClass}>{copy.currency}</span>
+          <CurrencySelect
+            value={state.currency}
+            onRequestChange={(next) => {
+              const hasItems = state.items.some(
+                (item) => item.description.trim() || item.quantity.trim() || item.unitPrice.trim(),
+              );
+              if (hasItems && next.code !== state.currency) {
+                setPendingCurrency(next);
+                return;
+              }
+              setState({ ...state, currency: next.code });
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className={labelClass}>{copy.yourBusiness}</span>
+        <input
+          id="invoice-business-name"
+          data-invalid={errors.businessName ? "true" : undefined}
+          aria-invalid={Boolean(errors.businessName)}
+          value={state.businessName}
+          onChange={(event) => setState({ ...state, businessName: event.target.value })}
+          placeholder={copy.businessPlaceholder}
+          className={mark(inputClass, Boolean(errors.businessName))}
+        />
+        {errors.businessName ? <span className={errorClass}>{copy.errors.businessName}</span> : null}
+        <textarea
+          value={state.businessAddress}
+          onChange={(event) => setState({ ...state, businessAddress: event.target.value })}
+          placeholder={copy.addressPlaceholder}
+          className={textareaClass}
+          rows={3}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className={labelClass}>{copy.billTo}</span>
+        <input
+          data-invalid={errors.clientName ? "true" : undefined}
+          aria-invalid={Boolean(errors.clientName)}
+          value={state.clientName}
+          onChange={(event) => setState({ ...state, clientName: event.target.value })}
+          placeholder={copy.clientPlaceholder}
+          className={mark(inputClass, Boolean(errors.clientName))}
+        />
+        {errors.clientName ? <span className={errorClass}>{copy.errors.clientName}</span> : null}
+        <textarea
+          value={state.clientAddress}
+          onChange={(event) => setState({ ...state, clientAddress: event.target.value })}
+          placeholder={copy.clientAddressPlaceholder}
+          className={textareaClass}
+          rows={3}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <label className="flex flex-col gap-1">
+          <span className={labelClass}>{copy.issueDate}</span>
+          <input
+            type="date"
+            data-invalid={errors.issueDate ? "true" : undefined}
+            aria-invalid={Boolean(errors.issueDate)}
+            value={state.issueDate}
+            onChange={(event) => setState({ ...state, issueDate: event.target.value })}
+            className={mark(inputClass, Boolean(errors.issueDate))}
+          />
+          {errors.issueDate ? <span className={errorClass}>{copy.errors.issueDate}</span> : null}
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className={labelClass}>{copy.dueDate}</span>
+          <input
+            type="date"
+            data-invalid={errors.dueDate ? "true" : undefined}
+            aria-invalid={Boolean(errors.dueDate)}
+            value={state.dueDate}
+            onChange={(event) => setState({ ...state, dueDate: event.target.value })}
+            className={mark(inputClass, Boolean(errors.dueDate))}
+          />
+          {errors.dueDate ? <span className={errorClass}>{copy.errors.dueDate}</span> : null}
+        </label>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className={labelClass}>{copy.lineItems}</span>
+        <div className={`overflow-x-auto rounded border ${errors.items ? "border-[#b91c1c]" : "border-[#e2e8f0]"}`}>
+          <div className="min-w-[26rem]">
+            <div className="grid grid-cols-[minmax(6rem,1fr)_3.5rem_5.75rem_7.25rem_1.25rem] gap-2 bg-[#eff4ff] px-2 py-1 text-[12px] font-semibold tracking-[0.6px] text-[#45464d]">
+              <span>{copy.description}</span>
+              <span className="text-right">{copy.qty}</span>
+              <span className="text-right">{copy.price}</span>
+              <span className="text-right">{copy.amount}</span>
+              <span />
+            </div>
+            {state.items.map((item, index) => {
+              const lineErrors = errors.lines[item.id];
+              const lineInput = "min-w-0 rounded border px-1 py-1 text-[14px] focus:border-[#e2e8f0]";
+              return (
+              <div key={item.id} className="grid grid-cols-[minmax(6rem,1fr)_3.5rem_5.75rem_7.25rem_1.25rem] items-center gap-2 border-b border-[#e2e8f0] px-2 py-2">
+                <input
+                  data-invalid={lineErrors?.description ? "true" : undefined}
+                  aria-invalid={Boolean(lineErrors?.description)}
+                  value={item.description}
+                  onChange={(event) => {
+                    const items = state.items.map((row) =>
+                      row.id === item.id ? { ...row, description: event.target.value } : row,
+                    );
+                    setState({ ...state, items });
+                  }}
+                  className={`${lineInput} ${lineErrors?.description ? invalidClass : "border-transparent"}`}
+                />
+                <input
+                  data-invalid={lineErrors?.quantity ? "true" : undefined}
+                  aria-invalid={Boolean(lineErrors?.quantity)}
+                  inputMode="decimal"
+                  value={item.quantity}
+                  onChange={(event) => {
+                    const items = state.items.map((row) =>
+                      row.id === item.id ? { ...row, quantity: event.target.value } : row,
+                    );
+                    setState({ ...state, items });
+                  }}
+                  className={`${lineInput} text-right font-mono text-[13px] tabular-nums ${lineErrors?.quantity ? invalidClass : "border-transparent"}`}
+                />
+                <input
+                  data-invalid={lineErrors?.unitPrice ? "true" : undefined}
+                  aria-invalid={Boolean(lineErrors?.unitPrice)}
+                  inputMode="decimal"
+                  value={item.unitPrice}
+                  onChange={(event) => {
+                    const items = state.items.map((row) =>
+                      row.id === item.id ? { ...row, unitPrice: event.target.value } : row,
+                    );
+                    setState({ ...state, items });
+                  }}
+                  className={`${lineInput} text-right font-mono text-[13px] tabular-nums ${lineErrors?.unitPrice ? invalidClass : "border-transparent"}`}
+                />
+                <span className="overflow-hidden text-right font-mono text-[13px] leading-5 tabular-nums whitespace-nowrap">
+                  {formatMoney(totals.lineAmounts[index] ?? 0n, currency.symbol, currency.exponent)}
+                </span>
+                {state.items.length > 1 ? (
+                  <button
+                    type="button"
+                    className="text-[12px] leading-none text-[#45464d]"
+                    aria-label={copy.removeItem}
+                    onClick={() =>
+                      setState({ ...state, items: state.items.filter((row) => row.id !== item.id) })
+                    }
+                  >
+                    ×
+                  </button>
+                ) : (
+                  <span />
+                )}
+              </div>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            className="flex w-full items-center justify-center gap-1 py-2 text-[12px] font-semibold tracking-[0.6px] text-[#0070f3]"
+            onClick={() =>
+              setState({
+                ...state,
+                items: [
+                  ...state.items,
+                  { id: String(Date.now()), description: "", quantity: "1", unitPrice: "0.00" },
+                ],
+              })
+            }
+          >
+            <FigmaIcon src="/landing/plus.svg" alt="" width={12} height={12} />
+            {copy.addItem}
+          </button>
+        </div>
+        {errors.items ? <span className={errorClass}>{copy.errors.items}</span> : null}
+      </div>
+
+      <div className="grid grid-cols-2 items-start gap-4">
+        <div className="flex min-w-0 flex-col gap-1">
+          <span className={labelClass}>{copy.discount}</span>
+          <SimpleSelect
+            value={state.discountType}
+            ariaLabel={copy.discount}
+            closeLabel={copy.closeList}
+            options={[
+              { value: "NONE", label: copy.discountNone },
+              { value: "PERCENT", label: copy.discountPercent },
+              { value: "FIXED", label: copy.discountFixed },
+            ]}
+            onChange={(discountType: DiscountType) => setState({ ...state, discountType })}
+          />
+          {state.discountType !== "NONE" ? (
+            <input
+              data-invalid={errors.discount ? "true" : undefined}
+              aria-invalid={Boolean(errors.discount)}
+              value={state.discountValue}
+              onChange={(event) => setState({ ...state, discountValue: event.target.value })}
+              className={mark(fieldClass, Boolean(errors.discount))}
+            />
+          ) : null}
+          {errors.discount ? <span className={errorClass}>{copy.errors.discount}</span> : null}
+        </div>
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className={labelClass}>{copy.tax}</span>
+          <input
+            data-invalid={errors.tax ? "true" : undefined}
+            aria-invalid={Boolean(errors.tax)}
+            value={state.taxRate}
+            onChange={(event) => setState({ ...state, taxRate: event.target.value })}
+            className={mark(fieldClass, Boolean(errors.tax))}
+          />
+          {errors.tax ? <span className={errorClass}>{copy.errors.tax}</span> : null}
+        </label>
+      </div>
+
+      <label className="flex flex-col gap-1">
+        <span className={labelClass}>{copy.paymentDetails}</span>
+        <textarea
+          value={state.paymentDetails}
+          onChange={(event) => setState({ ...state, paymentDetails: event.target.value })}
+          className={textareaClass}
+          rows={3}
+        />
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className={labelClass}>{copy.notes}</span>
+        <textarea
+          value={state.notes}
+          onChange={(event) => setState({ ...state, notes: event.target.value })}
+          className={textareaClass}
+          rows={3}
+        />
+      </label>
+
+      <div className="flex flex-col gap-2">
+        <span className={labelClass}>{copy.accent}</span>
+        <div className="flex gap-2">
+          {ACCENT_COLORS.map((color) => (
+            <button
+              key={color}
+              type="button"
+              aria-label={color}
+              className={`size-8 rounded-full border ${state.accentColor === color ? "border-black" : "border-[#e2e8f0]"}`}
+              style={{ background: color }}
+              onClick={() => setState({ ...state, accentColor: color })}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const previewPane = (
+    <div className="relative flex min-h-[600px] flex-col items-center overflow-auto rounded-xl bg-[#e5eeff] p-4 sm:p-8">
+      <div className="preview-glow pointer-events-none absolute inset-0 opacity-50" />
+      <div className="relative z-[1] mb-4 flex gap-2">
+        <button
+          type="button"
+          className="rounded border border-[#e2e8f0] bg-white px-2 py-1 text-[12px] font-semibold tracking-[0.6px]"
+          onClick={() => setZoom((value) => Math.min(1.4, Math.round((value + 0.1) * 10) / 10))}
+        >
+          {copy.zoomIn}
+        </button>
+        <button
+          type="button"
+          className="rounded border border-[#e2e8f0] bg-white px-2 py-1 text-[12px] font-semibold tracking-[0.6px]"
+          onClick={() => setZoom((value) => Math.max(0.6, Math.round((value - 0.1) * 10) / 10))}
+        >
+          {copy.zoomOut}
+        </button>
+        <button
+          type="button"
+          className="rounded border border-[#e2e8f0] bg-white px-2 py-1 text-[12px] font-semibold tracking-[0.6px]"
+          onClick={() => setFullscreen(true)}
+        >
+          {copy.fullscreen}
+        </button>
+      </div>
+      <div className="relative z-[1] w-full max-w-[700px]">
+        <InvoicePreview state={state} currency={currency} totals={totals} zoom={zoom} />
+      </div>
+    </div>
+  );
+
+  const actions = (
+    <div className="flex gap-4 border-t border-[#e2e8f0] pt-[17px]">
+      {persist ? (
+        <button
+          type="button"
+          disabled={Boolean(busy) || persisting}
+          className="flex flex-1 items-center justify-center gap-1 rounded bg-[#006c49] py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
+          onClick={() => void persistIfValid()}
+        >
+          {persisting ? copy.saving : copy.save}
+        </button>
+      ) : null}
+      <button
+        type="button"
+        disabled={Boolean(busy)}
+        className="flex flex-1 items-center justify-center gap-1 rounded bg-black py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
+        onClick={() => void runDownloadOrShare("download")}
+      >
+        <FigmaIcon src="/landing/download.svg" alt="" width={12} height={12} />
+        {busy === "preparing" ? copy.preparing : busy === "ready" ? copy.ready : copy.downloadPdf}
+      </button>
+      <div className="relative">
+        <button
+          type="button"
+          disabled={Boolean(busy)}
+          aria-label={copy.share}
+          className="flex items-center justify-center rounded border border-[#e2e8f0] px-[17px] py-[15px] disabled:opacity-50"
+          onClick={() => void runDownloadOrShare("share")}
+        >
+          <FigmaIcon src="/landing/share.svg" alt="" width={15} height={17} />
+        </button>
+        {shareOpen ? (
+          <div className="absolute bottom-full right-0 mb-2 w-48 rounded border border-[#e2e8f0] bg-white p-2 shadow-lg">
+            {["email", "copyLink", "whatsapp", "nativeShare"].map((key) => (
+              <button
+                key={key}
+                type="button"
+                className="block w-full px-2 py-2 text-left text-[14px] hover:bg-[#eff4ff]"
+                onClick={() => {
+                  setShareOpen(false);
+                  void (async () => {
+                    let href = publicUrl
+                      ? publicUrl.startsWith("http")
+                        ? publicUrl
+                        : `${window.location.origin}${publicUrl}`
+                      : null;
+                    if (!href && persist) {
+                      const saved = await persist();
+                      if (saved?.publicId) {
+                        href = `${window.location.origin}/invoice/${saved.publicId}`;
+                      }
+                    }
+                    if (!href) {
+                      toast(copy.shareSoon);
+                      return;
+                    }
+                    if (key === "copyLink") {
+                      await navigator.clipboard.writeText(href);
+                      toast(copy.copyLinkDone);
+                      onCopyPublicLink?.();
+                      return;
+                    }
+                    if (key === "email") {
+                      window.location.href = `mailto:?subject=${encodeURIComponent(copy.shareEmailSubject.replace("{number}", state.invoiceNumber))}&body=${encodeURIComponent(href)}`;
+                      onCopyPublicLink?.();
+                      return;
+                    }
+                    if (key === "whatsapp") {
+                      window.open(`https://wa.me/?text=${encodeURIComponent(href)}`, "_blank", "noopener,noreferrer");
+                      onCopyPublicLink?.();
+                      return;
+                    }
+                    if (key === "nativeShare" && typeof navigator.share === "function") {
+                      try {
+                        await navigator.share({ title: state.invoiceNumber, url: href });
+                        onCopyPublicLink?.();
+                      } catch {
+                        await navigator.clipboard.writeText(href);
+                        toast(copy.copyLinkDone);
+                      }
+                      return;
+                    }
+                    await navigator.clipboard.writeText(href);
+                    toast(copy.copyLinkDone);
+                    onCopyPublicLink?.();
+                  })();
+                }}
+              >
+                {copy.shareOptions[key as keyof typeof copy.shareOptions]}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  return (
+    <section id="builder" className="scroll-mt-24 mx-auto w-full max-w-[1200px] px-5 lg:px-10">
+      <div className="mb-3 flex gap-2 md:hidden">
+        <button
+          type="button"
+          className={`flex-1 rounded border py-2 text-[12px] font-semibold tracking-[0.6px] ${
+            mobileTab === "edit" ? "border-black bg-black text-white" : "border-[#e2e8f0] bg-white"
+          }`}
+          onClick={() => setMobileTab("edit")}
+        >
+          {copy.editTab}
+        </button>
+        <button
+          type="button"
+          className={`flex-1 rounded border py-2 text-[12px] font-semibold tracking-[0.6px] ${
+            mobileTab === "preview" ? "border-black bg-black text-white" : "border-[#e2e8f0] bg-white"
+          }`}
+          onClick={() => setMobileTab("preview")}
+        >
+          {copy.previewTab}
+        </button>
+      </div>
+
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-12">
+        <div
+          className={`flex min-w-0 flex-col gap-4 overflow-x-hidden rounded-xl border border-[#e2e8f0] bg-white p-[25px] lg:col-span-5 ${
+            mobileTab === "preview" ? "hidden md:flex" : "flex"
+          }`}
+        >
+          <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-[17px]">
+            <h2 className="text-[24px] font-semibold leading-8 text-black">{copy.title}</h2>
+            <div className="flex gap-2">
+              {TEMPLATES.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  title={template.id}
+                  aria-pressed={state.template === template.id}
+                  className={`flex size-8 items-center justify-center rounded border ${
+                    state.template === template.id
+                      ? "border-black bg-[#eff4ff]"
+                      : "border-[#e2e8f0] bg-[#f8f9ff]"
+                  }`}
+                  onClick={() => setState({ ...state, template: template.id })}
+                >
+                  <FigmaIcon src={template.icon} alt="" width={template.width} height={template.height} />
+                </button>
+              ))}
+            </div>
+          </div>
+          {form}
+          {actions}
+        </div>
+
+        <div className={`min-w-0 lg:col-span-7 ${mobileTab === "edit" ? "hidden md:block" : "block"}`}>
+          {previewPane}
+        </div>
+      </div>
+
+      {mobileTab === "preview" ? <div className="mt-4 md:hidden">{actions}</div> : null}
+
+      <Modal
+        open={pendingCurrency !== null}
+        title={copy.currencyWarningTitle}
+        onClose={() => setPendingCurrency(null)}
+      >
+        <p className="text-[14px] leading-5 text-[#45464d]">{copy.currencyWarningBody}</p>
+        <div className="mt-6 flex gap-2">
+          <button
+            type="button"
+            className="flex-1 rounded bg-black py-[9px] text-[12px] font-semibold tracking-[0.6px] text-white"
+            onClick={() => {
+              if (pendingCurrency) {
+                setState({ ...state, currency: pendingCurrency.code });
+              }
+              setPendingCurrency(null);
+            }}
+          >
+            {copy.currencyContinue}
+          </button>
+          <button
+            type="button"
+            className="flex-1 rounded border border-[#e2e8f0] py-[9px] text-[12px] font-semibold tracking-[0.6px]"
+            onClick={() => setPendingCurrency(null)}
+          >
+            {copy.currencyCancel}
+          </button>
+        </div>
+      </Modal>
+
+      {fullscreen ? (
+        <div className="fixed inset-0 z-50 overflow-auto bg-[#e5eeff] p-4 sm:p-10">
+          <div className="mx-auto mb-4 flex max-w-[900px] gap-2">
+            <button
+              type="button"
+              className="rounded bg-black px-4 py-2 text-[12px] font-semibold tracking-[0.6px] text-white"
+              onClick={() => setFullscreen(false)}
+            >
+              {copy.closePreview}
+            </button>
+            <button
+              type="button"
+              className="rounded border border-[#e2e8f0] bg-white px-3 py-2 text-[12px] font-semibold tracking-[0.6px]"
+              onClick={() => setZoom((value) => Math.min(1.4, Math.round((value + 0.1) * 10) / 10))}
+            >
+              {copy.zoomIn}
+            </button>
+            <button
+              type="button"
+              className="rounded border border-[#e2e8f0] bg-white px-3 py-2 text-[12px] font-semibold tracking-[0.6px]"
+              onClick={() => setZoom((value) => Math.max(0.6, Math.round((value - 0.1) * 10) / 10))}
+            >
+              {copy.zoomOut}
+            </button>
+          </div>
+          <div className="mx-auto max-w-[900px]">
+            <InvoicePreview state={state} currency={currency} totals={totals} zoom={zoom} />
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}

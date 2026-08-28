@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="593.33" height="249.59" viewBox="0 0 593.33 249.59" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Abstract representation of an area chart using SVG for visual fidelity in the mockup" clip-path="url(#clip0_0_10)">
+<path id="Vector" d="M0 249.59V124.795C39.5553 108.156 79.1107 116.475 118.666 149.754C158.221 183.033 197.777 158.074 237.332 74.877C276.887 -8.31966 316.443 24.959 355.998 174.713C395.553 324.467 435.109 282.869 474.664 49.918C514.219 -183.033 553.775 -166.393 593.33 99.836V249.59H0" fill="url(#paint0_linear_0_10)"/>
+<path id="Vector_2" d="M0 124.795C39.5553 108.156 79.1107 116.475 118.666 149.754C158.221 183.033 197.777 158.074 237.332 74.877C276.887 -8.31966 316.443 24.959 355.998 174.713C395.553 324.467 435.109 282.869 474.664 49.918C514.219 -183.033 553.775 -166.393 593.33 99.836" stroke="#4EDEA3" stroke-width="8.4292"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_10" x1="0" y1="-113.147" x2="0" y2="262.612" gradientUnits="userSpaceOnUse">
+<stop stop-color="#4EDEA3" stop-opacity="0.2"/>
+<stop offset="1" stop-color="#4EDEA3" stop-opacity="0"/>
+</linearGradient>
+<clipPath id="clip0_0_10">
+<rect width="593.33" height="249.59" fill="white"/>
+</clipPath>
+</defs>
+</svg>

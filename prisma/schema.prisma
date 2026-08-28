@@ -1,0 +1,536 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum OrgRole {
+  OWNER
+  MEMBER
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum ThemePreference {
+  LIGHT
+  DARK
+}
+
+enum AuditAction {
+  INVOICE_CREATED
+  INVOICE_UPDATED
+  INVOICE_SENT
+  INVOICE_SHARED
+  INVOICE_DELETED
+  CLIENT_CREATED
+  CLIENT_UPDATED
+  STRIPE_CONNECTED
+  STRIPE_DISCONNECTED
+  SUBSCRIPTION_CHANGED
+  REMINDER_SENT
+  MEMBER_INVITED
+  ROLE_CHANGED
+  AUTH_SIGN_IN
+}
+
+enum InvoiceStatus {
+  DRAFT
+  READY
+  SENT
+  VIEWED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELED
+}
+
+enum DiscountType {
+  NONE
+  PERCENT
+  FIXED
+}
+
+enum InvoiceTemplate {
+  MINIMAL
+  PROFESSIONAL
+  PREMIUM
+}
+
+model User {
+  id                   String   @id @db.Uuid
+  email                String   @unique
+  name                 String?
+  avatarUrl            String?
+  locale               String   @default("en")
+  timezone             String   @default("UTC")
+  theme                ThemePreference @default(LIGHT)
+  activeOrganizationId String?  @db.Uuid
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now()) @updatedAt
+
+  memberships              OrganizationMember[]
+  notificationPreferences  NotificationPreference[]
+  notifications            Notification[]
+  auditLogs                AuditLog[]               @relation("AuditActor")
+  createdInvoices          Invoice[]                @relation("InvoiceCreator")
+  activeOrganization       Organization?            @relation("UserActiveOrganization", fields: [activeOrganizationId], references: [id], onDelete: SetNull)
+  invitesSent              OrganizationInvite[]     @relation("InviteSender")
+
+  @@index([activeOrganizationId])
+}
+
+model Organization {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  plan      Plan     @default(FREE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  members                 OrganizationMember[]
+  invites                 OrganizationInvite[]
+  activeUsers             User[]                    @relation("UserActiveOrganization")
+  businessProfile         BusinessProfile?
+  notificationPreferences NotificationPreference[]
+  auditLogs               AuditLog[]
+  clients                 Client[]
+  products                Product[]
+  invoices                Invoice[]
+  invoiceSequence         InvoiceSequence?
+  stripeConnection        StripeConnection?
+  invoicePayments         InvoicePayment[]
+  paymentEvents           PaymentEvent[]
+  webhookEvents           WebhookEvent[]
+  subscription            Subscription?
+  subscriptionEvents      SubscriptionEvent[]
+  reminderRule            ReminderRule?
+  reminderEvents          ReminderEvent[]
+  notifications           Notification[]
+  reportSnapshots         ReportSnapshot[]
+}
+
+model OrganizationMember {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String   @db.Uuid
+  organizationId String   @db.Uuid
+  role           OrgRole
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+}
+
+model OrganizationInvite {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId  String       @db.Uuid
+  email           String
+  role            OrgRole      @default(MEMBER)
+  tokenHash       String       @unique
+  status          InviteStatus @default(PENDING)
+  expiresAt       DateTime
+  invitedByUserId String       @db.Uuid
+  acceptedAt      DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("InviteSender", fields: [invitedByUserId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, email, status])
+  @@index([tokenHash])
+}
+
+model BusinessProfile {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId   String   @unique @db.Uuid
+  businessName     String   @default("")
+  businessAddress  String   @default("")
+  defaultCurrency  String   @default("USD")
+  defaultTaxRate   String   @default("0")
+  logoUrl          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model NotificationPreference {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String   @db.Uuid
+  organizationId String   @db.Uuid
+  emailEnabled   Boolean  @default(true)
+  inAppEnabled   Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
+model AuditLog {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorUserId String?    @db.Uuid
+  organizationId String? @db.Uuid
+  action     AuditAction
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+
+  actor        User?         @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+}
+
+model Client {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @db.Uuid
+  name           String
+  email          String   @default("")
+  address        String   @default("")
+  taxNumber      String   @default("")
+  phone          String   @default("")
+  notes          String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoices     Invoice[]
+
+  @@index([organizationId])
+  @@index([organizationId, name])
+}
+
+model Product {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId    String   @db.Uuid
+  name              String
+  description       String   @default("")
+  defaultPriceMinor BigInt   @default(0)
+  defaultTaxRate    Decimal  @default(0) @db.Decimal(7, 4)
+  currency          String   @default("USD")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items        InvoiceItem[]
+
+  @@index([organizationId])
+}
+
+model InvoiceSequence {
+  organizationId String @id @db.Uuid
+  nextNumber     Int    @default(1)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId       String          @db.Uuid
+  clientId             String          @db.Uuid
+  createdByUserId      String?         @db.Uuid
+  publicId             String          @unique
+  invoiceNumber        String
+  status               InvoiceStatus   @default(DRAFT)
+  currency             String          @default("USD")
+  issueDate            DateTime        @db.Date
+  dueDate              DateTime        @db.Date
+  businessName         String
+  businessAddress      String          @default("")
+  clientName           String
+  clientAddress        String          @default("")
+  discountType         DiscountType    @default(NONE)
+  discountValue        String          @default("0")
+  taxRate              String          @default("0")
+  notes                String          @default("")
+  paymentDetails       String          @default("")
+  template             InvoiceTemplate @default(PROFESSIONAL)
+  accentColor          String          @default("#000000")
+  subtotalMinor        BigInt          @default(0)
+  discountAmountMinor  BigInt          @default(0)
+  taxAmountMinor       BigInt          @default(0)
+  totalMinor           BigInt          @default(0)
+  sentAt               DateTime?
+  viewedAt             DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  client       Client       @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  createdBy    User?        @relation("InvoiceCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  items        InvoiceItem[]
+  payments     InvoicePayment[]
+  paymentEvents PaymentEvent[]
+  reminderEvents ReminderEvent[]
+
+  @@unique([organizationId, invoiceNumber])
+  @@index([organizationId, createdAt])
+  @@index([organizationId, status, dueDate])
+  @@index([clientId])
+}
+
+model InvoiceItem {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId      String  @db.Uuid
+  productId      String? @db.Uuid
+  description    String
+  quantityMinor  BigInt
+  unitPriceMinor BigInt
+  amountMinor    BigInt
+  sortOrder      Int     @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  invoice Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+  @@index([productId])
+}
+
+enum StripeConnectionStatus {
+  NOT_CONNECTED
+  CONNECTING
+  CONNECTED
+  ACTION_REQUIRED
+  DISCONNECTED
+}
+
+enum InvoicePaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
+}
+
+enum StripeWebhookDomain {
+  PLATFORM
+  CONNECT
+}
+
+enum WebhookEventStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  IGNORED
+}
+
+model StripeConnection {
+  id                       String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId           String                  @unique @db.Uuid
+  stripeConnectedAccountId String                  @unique
+  status                   StripeConnectionStatus  @default(CONNECTING)
+  chargesEnabled           Boolean                 @default(false)
+  payoutsEnabled           Boolean                 @default(false)
+  detailsSubmitted         Boolean                 @default(false)
+  lastAccountUpdatedAt     DateTime?
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model InvoicePayment {
+  id                        String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId                 String                @db.Uuid
+  organizationId            String                @db.Uuid
+  stripeConnectedAccountId  String
+  stripePaymentIntentId     String?               @unique
+  stripeCheckoutSessionId   String?               @unique
+  amountMinor               BigInt
+  currency                  String
+  status                    InvoicePaymentStatus  @default(PENDING)
+  paidAt                    DateTime?
+  createdAt                 DateTime              @default(now())
+  updatedAt                 DateTime              @updatedAt
+
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([invoiceId])
+}
+
+model PaymentEvent {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @db.Uuid
+  invoiceId      String?  @db.Uuid
+  stripeEventId  String
+  type           String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      Invoice?     @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([stripeEventId])
+}
+
+model WebhookEvent {
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventId          String               @unique
+  type             String
+  stripeAccountId  String?
+  domain           StripeWebhookDomain
+  payloadHash      String
+  status           WebhookEventStatus   @default(RECEIVED)
+  error            String?
+  processedAt      DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  organizationId String?       @db.Uuid
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@index([domain, createdAt])
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  UNPAID
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+}
+
+model Subscription {
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId       String             @unique @db.Uuid
+  stripeCustomerId     String
+  stripeSubscriptionId String             @unique
+  stripePriceId        String
+  status               SubscriptionStatus
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([stripeCustomerId])
+}
+
+model SubscriptionEvent {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @db.Uuid
+  stripeEventId  String   @unique
+  type           String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+}
+
+enum ReminderType {
+  BEFORE_DUE
+  ON_DUE
+  AFTER_DUE
+}
+
+enum ReminderStatus {
+  SCHEDULED
+  SENT
+  SKIPPED
+  FAILED
+}
+
+enum NotificationType {
+  INVOICE
+  PAYMENT
+  REMINDER
+  SYSTEM
+  SUBSCRIPTION
+}
+
+model ReminderRule {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @unique @db.Uuid
+  enabled        Boolean  @default(true)
+  daysBeforeDue  Int      @default(3)
+  onDue          Boolean  @default(true)
+  daysAfterDue   Int      @default(3)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model ReminderEvent {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId    String         @db.Uuid
+  invoiceId         String         @db.Uuid
+  type              ReminderType
+  scheduledDate     DateTime       @db.Date
+  status            ReminderStatus
+  providerMessageId String?
+  sentAt            DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@unique([invoiceId, type, scheduledDate])
+  @@index([organizationId, status, scheduledDate])
+  @@index([invoiceId])
+}
+
+model Notification {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String           @db.Uuid
+  organizationId String           @db.Uuid
+  type           NotificationType
+  title          String
+  message        String
+  entityType     String?
+  entityId       String?
+  readAt         DateTime?
+  createdAt      DateTime         @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@index([organizationId, createdAt])
+}
+
+model ReportSnapshot {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @db.Uuid
+  period         String
+  metrics        Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, period])
+}
