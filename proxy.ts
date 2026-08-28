@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { loginUrl } from "@/lib/auth/login-path";
 import { isProtectedPath } from "@/lib/auth/protected-routes";
 import { clientIp } from "@/lib/http/ip";
 import { consumeRateLimit } from "@/lib/rate-limit/consume";
@@ -7,6 +8,9 @@ import { updateSession } from "@/utils/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  if (request.method === "GET" && path === "/" && request.nextUrl.searchParams.get("login") === "1") {
+    return NextResponse.redirect(new URL(loginUrl(), request.url));
+  }
   if (request.method === "GET" && path.startsWith("/invoice/")) {
     const ip = clientIp(request);
     const publicId = path.slice("/invoice/".length).split("/")[0] ?? "";
@@ -16,9 +20,7 @@ export async function proxy(request: NextRequest) {
   }
   const { response, signedIn } = await updateSession(request);
   if (isProtectedPath(path) && !signedIn) {
-    const login = new URL("/", request.url);
-    login.searchParams.set("login", "1");
-    return NextResponse.redirect(login);
+    return NextResponse.redirect(new URL(loginUrl(), request.url));
   }
   return response;
 }

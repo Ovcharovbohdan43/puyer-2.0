@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.1  
+> **Version:** 1.4.2  
 > **Date:** 2026-08-28  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -983,6 +983,7 @@ Do not start a later phase until the previous phase’s tests/typecheck are gree
 
 - `@supabase/ssr`: `createBrowserClient` / `createServerClient` in `utils/supabase/*`. Cookie adapter uses Next `request.cookies.getAll()` / `setAll` (Context7 `/supabase/supabase` Next.js prompt). `parseCookieHeader` is for non-Next runtimes.
 - Magic link only: `signInWithOtp({ email })` — do not copy password examples from SSR snippets
+- Public `/login` is a split page (email form + invoice hero). Download/Share still use the landing modal.
 - User / Organization / Member / BusinessProfile
 - Session refresh in Next.js 16 `proxy.ts` (deprecated filename: `middleware.ts`) via `updateSession` + `auth.getClaims()`. Do not login-gate public marketing routes.
 - Authorization helpers + RLS policies
@@ -1182,6 +1183,10 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-28] – Added: Auth Send Email hook via Resend (`SEND_EMAIL_HOOK_SECRET`) and branded magic-link templates.
   Docs: docs/auth.md.
+
+[2026-08-28] – Added: Public `/login` split page (magic-link form + vector invoice hero).
+  Header Login and gated routes go to `/login`. Download/Share stay on the landing modal.
+  Docs: docs/auth.md, docs/UX_FLOWS.md.
 ```
 
 ---

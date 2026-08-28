@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   createDefaultBuilderState,
@@ -60,16 +60,13 @@ export function useBuilderSession() {
 export function PublicSession({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const copy = t("auth");
   const leave = t("leave");
 
   const [baseline, setBaseline] = useState(createDefaultBuilderState);
   const [state, setStateRaw] = useState<BuilderState>(createDefaultBuilderState);
   const [leaveHref, setLeaveHref] = useState<string | null>(null);
-  const [authScreen, setAuthScreen] = useState<AuthScreen>(() =>
-    searchParams.get("login") === "1" ? "form" : "closed",
-  );
+  const [authScreen, setAuthScreen] = useState<AuthScreen>("closed");
   const [authIntent, setAuthIntent] = useState<AuthIntent>("login");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);

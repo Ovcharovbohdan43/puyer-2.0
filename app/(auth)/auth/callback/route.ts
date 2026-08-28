@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import { loginUrl } from "@/lib/auth/login-path";
 import { createServerSupabaseClient } from "@/lib/auth/server";
 import { sanitizeReturnTo } from "@/lib/auth/return-to";
 import { logger } from "@/lib/observability/logger";
@@ -17,18 +18,18 @@ export async function GET(request: Request) {
 
   if (!code) {
     logger.warn("auth_callback_missing_code");
-    return NextResponse.redirect(new URL("/?login=1", origin));
+    return NextResponse.redirect(new URL(loginUrl({ error: true }), origin));
   }
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    return NextResponse.redirect(new URL("/?login=1", origin));
+    return NextResponse.redirect(new URL(loginUrl({ error: true }), origin));
   }
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
     logger.warn("auth_callback_exchange_failed");
-    return NextResponse.redirect(new URL("/?login=1", origin));
+    return NextResponse.redirect(new URL(loginUrl({ error: true }), origin));
   }
 
   return NextResponse.redirect(new URL(returnTo, origin));

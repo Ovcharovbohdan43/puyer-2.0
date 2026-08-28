@@ -8,7 +8,7 @@ import { t } from "@/lib/i18n";
 
 export function PublicHeader() {
   const copy = t("header");
-  const { authenticated, startInvoice, openAuth, requestNavigate } = useBuilderSession();
+  const { authenticated, startInvoice, requestNavigate } = useBuilderSession();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const go = (href: string) => {
@@ -56,7 +56,7 @@ export function PublicHeader() {
             <button
               type="button"
               className="text-[12px] font-semibold tracking-[0.6px]"
-              onClick={() => openAuth("login")}
+              onClick={() => go("/login")}
             >
               {copy.login}
             </button>
@@ -116,10 +116,7 @@ export function PublicHeader() {
               <button
                 type="button"
                 className="text-left"
-                onClick={() => {
-                  setMenuOpen(false);
-                  openAuth("login");
-                }}
+                onClick={() => go("/login")}
               >
                 {copy.login}
               </button>

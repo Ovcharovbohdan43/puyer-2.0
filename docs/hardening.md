@@ -12,7 +12,7 @@ Rate-limit every listed surface, validate uploads before they touch Storage, kee
 - Uploads: `lib/uploads/validate.ts` — JPEG/PNG/WebP, 2 MB, sanitized names, magic-byte sniff. No logo UI yet; this is the gate for a future Storage write.
 - Logs: JSON lines, secret field names, and `sk_` / `pk_` / `whsec_` / `Bearer` values redacted. API errors include `x-request-id`.
 - Indexes: pending invites, unread-style notification list `(userId, organizationId, createdAt)`, open invoices by `dueDate` for reminder sweep.
-- Playwright: `e2e/pay-path.spec.ts` walks landing → login modal → pricing → `/team` login redirect → public invoice 404 (no ID leak) → pay API 404. Optional `E2E_PUBLIC_INVOICE_ID` also checks Pay and dark-theme contrast on the payer portal.
+- Playwright: `e2e/pay-path.spec.ts` walks landing → `/login` → pricing → `/team` login redirect → public invoice 404 (no ID leak) → pay API 404. Optional `E2E_PUBLIC_INVOICE_ID` also checks Pay and dark-theme contrast on the payer portal.
 
 ## How to use
 
@@ -51,11 +51,12 @@ E2E: `npm run test:e2e`. Magic-link completion needs a real inbox; CI does not s
 
 ## Version
 
-1.0.1 — 2026-08-28
+1.0.2 — 2026-08-28
 
 ## Changelog
 
 ```
 [2026-08-28] – Added: Shared rate-limit policies (Upstash optional), origin check, upload validation, log redaction, load indexes, Playwright pay-path smoke.
 [2026-08-28] – Changed: Optional E2E_PUBLIC_INVOICE_ID also asserts dark-theme contrast on the payer portal.
+[2026-08-28] – Changed: Playwright login smoke expects `/login` instead of `/?login=1`.
 ```

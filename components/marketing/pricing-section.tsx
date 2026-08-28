@@ -24,7 +24,7 @@ export function PricingSection() {
   const [yearly, setYearly] = useState(false);
   const [pending, setPending] = useState<PlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { authenticated, startInvoice, openAuth } = useBuilderSession();
+  const { authenticated, startInvoice, requestNavigate } = useBuilderSession();
 
   const plans: Plan[] = [
     {
@@ -60,7 +60,7 @@ export function PricingSection() {
       return;
     }
     if (!authenticated) {
-      openAuth("subscribe");
+      requestNavigate("/login?intent=subscribe");
       return;
     }
     setPending(plan);

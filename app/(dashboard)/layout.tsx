@@ -10,7 +10,7 @@ import { t } from "@/lib/i18n";
 export default async function DashboardGroupLayout({ children }: { children: ReactNode }) {
   const session = await getSessionOrNull();
   if (!session) {
-    redirect("/?login=1");
+    redirect("/login");
   }
 
   const copy = t("dashboard");

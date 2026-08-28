@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.4 — 2026-08-28
+> **Version:** 1.0.5 — 2026-08-28
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -46,7 +46,7 @@ Forbidden on System B: `application_fee_amount`, destination charges, separate c
 | Templates | click | `/#templates` |
 | Pricing | click | `/pricing` |
 | FAQ | click | `/#faq` |
-| Login | click | **Auth modal** (does not navigate) |
+| Login | click | `/login` |
 | Create Invoice | click | Unauth: scroll to `#builder`, focus first input. Auth: `/invoices/new` |
 | Theme toggle | click | Moon/sun icon. Toggle light/dark. Persist `localStorage`. Public default: light. Preview and chrome follow the theme. |
 
@@ -111,14 +111,16 @@ Pricing link in header → `/pricing`. In-page pricing section remains for marke
 
 ```
 Any public page → Login
-→ TARGET: Auth modal “Sign in to Puyer”
-→ UI: email input, Continue with email (disabled while submitting)
+→ TARGET: /login
+→ UI: split page — email Sign in / Create account (magic link, no password) on the left; invoice vector hero on the right
 → SERVER: send magic link (rate limited)
 → SUCCESS: “Check your inbox” + Change email + Resend (cooldown)
 → ERROR: safe message, no stack traces
 ```
 
-Cancel / overlay / Escape → close modal, stay on page.
+Header, pricing subscribe (unauth), and gated app routes all open `/login`. Download PDF / Share on the public builder still use the registration **modal** so builder context is not lost.
+
+Cancel on `/login` is the Puyer logo → `/`.
 
 ### Magic link `/auth/callback` (or `/auth/verify`)
 
@@ -315,4 +317,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-28] – Changed: Public `/invoice/[publicId]` payer layout (document + pay sidebar).
 [2026-08-28] – Fixed: Save/download highlight invalid fields; empty extra line items are ignored.
 [2026-08-28] – Fixed: Public payer portal uses theme tokens (no dark cards with light-theme ink).
+[2026-08-28] – Changed: Header Login opens `/login` (split magic-link page). Download/Share stay modal.
 ```

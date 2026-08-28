@@ -21,7 +21,7 @@ Auth in Puyer is **email magic link only** (`signInWithOtp`). Browser/server/pro
 
 The dashboard “todos” `page.tsx` snippet is **not** applied. The marketing homepage stays the landing page.
 
-Session refresh does **not** redirect anonymous visitors on marketing routes (`/`, `/pricing`). Protected app routes (`/dashboard`, `/invoices`) redirect to `/?login=1`. See [`docs/auth.md`](./auth.md).
+Session refresh does **not** redirect anonymous visitors on marketing routes (`/`, `/pricing`, `/login`). Protected app routes (`/dashboard`, `/invoices`) redirect to `/login`. See [`docs/auth.md`](./auth.md).
 
 ## How to connect (cloud project)
 
@@ -86,3 +86,4 @@ Manual: `npm run dev`, open `/` and `/pricing`. Both must load without a login r
 - [2026-08-28] – Added: `.env.local` Prisma URLs via MCP (dedicated `puyer_prisma` role, direct 5432).
 - [2026-08-28] – Added: Invoice domain tables + RLS (`20260828180000_invoice_domain.sql`).
 - [2026-08-28] – Added: Private `invoice-pdfs` Storage bucket (`20260828190000_invoice_pdf_storage.sql`).
+- [2026-08-28] – Changed: Gated routes redirect to `/login`.

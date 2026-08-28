@@ -7,15 +7,17 @@ test.describe("signup → invoice → share → pay surfaces", () => {
     await expect(page.getByRole("button", { name: "Create Invoice" }).first()).toBeVisible();
 
     await page.getByRole("button", { name: "Login" }).first().click();
+    await expect(page).toHaveURL(/\/login$/);
     await expect(page.getByRole("heading", { name: "Sign in to Puyer" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Continue with email" })).toBeVisible();
-    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Create account" })).toBeVisible();
+    await expect(page.getByRole("img", { name: /invoice being paid/i })).toBeVisible();
 
     await page.goto("/pricing");
     await expect(page).toHaveURL(/\/pricing/);
 
     await page.goto("/team");
-    await expect(page).toHaveURL(/login=1/);
+    await expect(page).toHaveURL(/\/login/);
 
     const missingInvoice = await page.goto("/invoice/not-a-public-id");
     expect(missingInvoice?.status()).toBe(404);

@@ -19,9 +19,10 @@ describe("isProtectedPath", () => {
     expect(isProtectedPath("/settings")).toBe(true);
   });
 
-  it("does not protect marketing or public invoice pay pages", () => {
+  it("does not protect marketing, public invoice, or login", () => {
     expect(isProtectedPath("/")).toBe(false);
     expect(isProtectedPath("/pricing")).toBe(false);
+    expect(isProtectedPath("/login")).toBe(false);
     expect(isProtectedPath("/invoice/pub_123")).toBe(false);
     expect(isProtectedPath("/auth/callback")).toBe(false);
     expect(isProtectedPath("/invite/" + "ab".repeat(32))).toBe(false);

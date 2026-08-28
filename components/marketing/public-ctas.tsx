@@ -36,9 +36,19 @@ export function OpenAuthButton({
   className,
   children,
 }: ButtonProps & { intent: AuthIntent }) {
-  const { openAuth } = useBuilderSession();
+  const { openAuth, requestNavigate } = useBuilderSession();
   return (
-    <button type="button" className={className} onClick={() => openAuth(intent)}>
+    <button
+      type="button"
+      className={className}
+      onClick={() => {
+        if (intent === "login" || intent === "subscribe") {
+          requestNavigate(intent === "subscribe" ? "/login?intent=subscribe" : "/login");
+          return;
+        }
+        openAuth(intent);
+      }}
+    >
       {children}
     </button>
   );

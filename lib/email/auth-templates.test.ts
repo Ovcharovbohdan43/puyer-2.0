@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { Webhook } from "standardwebhooks";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -39,6 +42,10 @@ describe("auth email templates", () => {
       idempotencyKey: "auth-email:test",
     });
     expect(message.subject).toBe("Sign in to Puyer");
+    expect(message.html).toContain("<!DOCTYPE html");
+    expect(message.html).toContain('charset=UTF-8');
+    expect(message.html).toContain('width="600"');
+    expect(message.html).toContain('bgcolor="#F1F5F9"');
     expect(message.html).toContain("Puyer");
     expect(message.html).toContain("#006C49");
     expect(message.html).toContain("305805");
@@ -50,6 +57,17 @@ describe("auth email templates", () => {
     });
     expect(message.text).toContain(verifyUrl);
     expect(message.html).toContain("abc123hash");
+  });
+
+  it("ships a full Resend HTML document for the Magic Link dashboard template", () => {
+    const html = readFileSync(join(process.cwd(), "supabase/templates/magic_link.html"), "utf8");
+    expect(html).toContain("<!DOCTYPE html");
+    expect(html).toContain('charset=UTF-8');
+    expect(html).toContain('width="600"');
+    expect(html).toContain('bgcolor="#006C49"');
+    expect(html).toContain("{{ .ConfirmationURL }}");
+    expect(html).toContain("{{ .Token }}");
+    expect(html).not.toContain("{{{");
   });
 });
 

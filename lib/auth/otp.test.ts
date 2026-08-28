@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { loginUrl } from "@/lib/auth/login-path";
 import { allowOtpAttempt, OTP_MAX_PER_WINDOW } from "@/lib/auth/otp-limit";
 import { returnToForIntent, sanitizeReturnTo } from "@/lib/auth/return-to";
 
@@ -38,5 +39,14 @@ describe("auth return path", () => {
     expect(sanitizeReturnTo("/dashboard")).toBe("/dashboard");
     expect(sanitizeReturnTo("/invite/" + "ab".repeat(32))).toBe("/invite/" + "ab".repeat(32));
     expect(sanitizeReturnTo("/invite/not-a-token")).toBe("/dashboard");
+  });
+});
+
+describe("login path", () => {
+  it("builds /login with optional error and subscribe intent", () => {
+    expect(loginUrl()).toBe("/login");
+    expect(loginUrl({ error: true })).toBe("/login?error=1");
+    expect(loginUrl({ intent: "subscribe" })).toBe("/login?intent=subscribe");
+    expect(loginUrl({ intent: "login" })).toBe("/login");
   });
 });

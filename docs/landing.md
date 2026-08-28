@@ -54,7 +54,7 @@ Strings live in `messages/en.json`. Icons live in `public/landing/` (Figma MCP a
 
 ## Version
 
-1.2.2 — 2026-08-28
+1.2.3 — 2026-08-28
 
 ## Changelog
 
@@ -64,4 +64,5 @@ Strings live in `messages/en.json`. Icons live in `public/landing/` (Figma MCP a
 [2026-08-27] – Added: App-wide dark theme (tokens + data-theme). Moon/sun toggle.
 [2026-08-27] – Changed: Remaining light leftovers (preview, Download PDF, icons) follow dark theme.
 [2026-08-28] – Changed: Marketing routes live in `app/(marketing)`; magic link is Phase 1.
+[2026-08-28] – Changed: Header Login navigates to `/login`.
 ```

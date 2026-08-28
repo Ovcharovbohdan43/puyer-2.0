@@ -27,7 +27,7 @@ npm run dev
 
 Sign in (magic link), then open http://localhost:3000/dashboard
 
-Unauthenticated visits to `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, and `/notifications` redirect to `/?login=1`.
+Unauthenticated visits to `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, and `/notifications` redirect to `/login`.
 
 ## Examples
 
@@ -50,7 +50,7 @@ npm run lint
 - Sign in, confirm sidebar + Overview KPIs and recent table
 - Open `/invoices`, click a row, confirm drawer + `?invoice=` UUID, close, URL clears
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
-- Signed-out `/invoices` and `/clients` redirect to `/?login=1`
+- Signed-out `/invoices` and `/clients` redirect to `/login`
 - Public `/invoice/[publicId]` (singular) is not gated by this shell
 
 ## Limitations
@@ -71,7 +71,7 @@ npm run lint
 
 ## Version
 
-1.1.6 — 2026-08-28
+1.1.7 — 2026-08-28
 
 ## Changelog
 
@@ -84,4 +84,5 @@ npm run lint
 [2026-08-28] – Changed: Reports page + Overview trends/insights (Phase 7).
 [2026-08-28] – Changed: Overview Paid (30d) and trends upgrade CTA; snapshot-backed completed months.
 [2026-08-28] – Changed: Team page is live (invites, roles, workspace switch).
+[2026-08-28] – Changed: Signed-out app routes redirect to `/login`.
 ```

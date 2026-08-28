@@ -28,7 +28,7 @@ Leaving `/` for `/pricing` (or any non-hash route) while the builder is dirty op
 
 - Currency change with existing line items → warning modal, numeric strings unchanged.
 - Template icons switch Minimal / Professional / Premium without clearing data.
-- Login in the header opens “Sign in to Puyer” (email only).
+- Login in the header navigates to `/login` (email magic link, Sign in / Create account).
 
 ## How to test
 
@@ -78,7 +78,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 
 ## Version
 
-1.2.3 — 2026-08-28
+1.2.4 — 2026-08-28
 
 ## Changelog
 
@@ -99,4 +99,5 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 [2026-08-28] – Changed: Authenticated Download PDF generates a stored PDF. Share menu copies/mailto/WhatsApp/native.
 [2026-08-28] – Fixed: Long address text wraps in the live preview instead of covering the invoice number.
 [2026-08-28] – Fixed: Save validates on the client, highlights invalid fields, and ignores blank extra line items.
+[2026-08-28] – Changed: Header Login goes to `/login`; Download/Share still use the registration modal.
 ```
