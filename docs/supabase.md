@@ -87,3 +87,4 @@ Manual: `npm run dev`, open `/` and `/pricing`. Both must load without a login r
 - [2026-08-28] – Added: Invoice domain tables + RLS (`20260828180000_invoice_domain.sql`).
 - [2026-08-28] – Added: Private `invoice-pdfs` Storage bucket (`20260828190000_invoice_pdf_storage.sql`).
 - [2026-08-28] – Changed: Gated routes redirect to `/login`.
+- [2026-08-28] – Fixed: Cloud Auth templates are applied with `npm run auth:push-templates`, not `config.toml` alone.

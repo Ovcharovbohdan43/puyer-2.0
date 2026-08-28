@@ -1194,6 +1194,10 @@ Until `docs/` exists, keep the changelog in this file.
 [2026-08-28] – Fixed: Settings page no longer 500s on Connect/workspace lookup failure.
   Sign out lives in the app shell and `POST /api/auth/signout` clears Auth cookies.
   Docs: docs/auth.md, docs/dashboard.md.
+
+[2026-08-28] – Fixed: Hosted Auth still sent the default magic-link HTML.
+  `npm run auth:push-templates` PATCHes mailer templates only (not full config push).
+  Docs: docs/auth.md.
 ```
 
 ---

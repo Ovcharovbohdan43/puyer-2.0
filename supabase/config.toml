@@ -245,7 +245,8 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
+# Local `supabase start` only. Cloud Auth ignores these paths until
+# `npm run auth:push-templates` PATCHes the hosted mailer templates.
 [auth.email.template.magic_link]
 subject = "Sign in to Puyer"
 content_path = "./templates/magic_link.html"

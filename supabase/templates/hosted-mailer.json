@@ -1,0 +1,37 @@
+[
+  {
+    "id": "magic_link",
+    "file": "magic_link.html",
+    "subject": "Sign in to Puyer",
+    "subjectKey": "mailer_subjects_magic_link",
+    "contentKey": "mailer_templates_magic_link_content"
+  },
+  {
+    "id": "confirmation",
+    "file": "confirmation.html",
+    "subject": "Confirm your Puyer account",
+    "subjectKey": "mailer_subjects_confirmation",
+    "contentKey": "mailer_templates_confirmation_content"
+  },
+  {
+    "id": "invite",
+    "file": "invite.html",
+    "subject": "Join a workspace on Puyer",
+    "subjectKey": "mailer_subjects_invite",
+    "contentKey": "mailer_templates_invite_content"
+  },
+  {
+    "id": "recovery",
+    "file": "recovery.html",
+    "subject": "Reset your Puyer password",
+    "subjectKey": "mailer_subjects_recovery",
+    "contentKey": "mailer_templates_recovery_content"
+  },
+  {
+    "id": "email_change",
+    "file": "email_change.html",
+    "subject": "Confirm your new Puyer email",
+    "subjectKey": "mailer_subjects_email_change",
+    "contentKey": "mailer_templates_email_change_content"
+  }
+]

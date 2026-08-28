@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "auth:push-templates": "node scripts/push-auth-email-templates.mjs",
     "test:e2e": "playwright test",
     "prisma:generate": "prisma generate",
     "postinstall": "prisma generate"

@@ -8,7 +8,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 
 - Public login is `/login`: split layout, email magic link (Sign in / Create account). The right panel is `public/auth/login-hero.png`. Download/Share on the landing builder still use a modal.
 - Sign out is in the app sidebar, mobile More sheet, Settings, and the dashboard error boundary. It `POST`s `/api/auth/signout` so `@supabase/ssr` can clear httpOnly cookies, then sends the browser to `/login`.
-- `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Hosted Auth sends the Magic Link template over Resend SMTP (`supabase/templates/magic_link.html`). The optional Send Email hook is an alternative, not a second path.
+- `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Hosted Auth renders the Magic Link mailer template and sends it over Resend SMTP. HTML in git is applied with `npm run auth:push-templates`, not by committing `config.toml`. The optional Send Email hook is an alternative, not a second path.
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
 - `GET /auth/callback` exchanges the PKCE `code` and redirects using `puyer-auth-return`.
 - Public Supabase helpers live in `utils/supabase/*`. `lib/auth/browser.ts` and `lib/auth/server.ts` wrap them so marketing still loads when keys are missing (`trySupabasePublicEnv()`).
@@ -23,10 +23,10 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 2. Dashboard → Authentication → URL Configuration: Site URL `http://localhost:3000`, Redirect `http://localhost:3000/auth/callback`.
 3. **Auth emails via Resend SMTP (recommended for hosted Auth):**
    - Connect Resend as custom SMTP in the Supabase dashboard. Do **not** enable the Send Email hook at the same time or users can get two emails.
-   - Open **Authentication → Email Templates → Magic Link** (not Confirm signup). Subject: `Sign in to Puyer`.
-   - Paste the **entire** file `supabase/templates/magic_link.html` into the Body field (source/HTML, not a visual editor). Save. The file is a full HTML document (`DOCTYPE`, `html`/`head`/`body`, 600px tables, inline CSS). Supabase fills `{{ .ConfirmationURL }}` and `{{ .Token }}` before sending to Resend.
-   - Repeat for Confirm signup (`confirmation.html`), Invite (`invite.html`), Reset password (`recovery.html`), Change email (`email_change.html`).
-   - In Resend: disable **Click tracking** so Auth links are not rewritten. Do not create a Resend Dashboard template for magic links — SMTP sends the HTML Supabase already rendered. Resend `{{{VAR}}}` syntax will not be substituted.
+   - Git files in `supabase/templates/` are **not** applied to the cloud project by `git push`. `config.toml` `content_path` only applies to local `supabase start`.
+   - Apply them with `npm run auth:push-templates` (`SUPABASE_ACCESS_TOKEN` from [Account → Access Tokens](https://supabase.com/dashboard/account/tokens)). That PATCHes only `mailer_subjects_*` and `mailer_templates_*` — it does not send `supabase config push`, which can overwrite SMTP and Site URL.
+   - Confirm in **Authentication → Email Templates → Magic Link**: subject `Sign in to Puyer`, heading **Sign in to Puyer**, not the default “Your sign-in link”.
+   - In Resend: disable **Click tracking** so Auth links are not rewritten. Do not create a Resend Dashboard template for magic links — SMTP sends the HTML Auth already rendered.
 4. **Optional Send Email hook** (only if SMTP templates are unused): `.env.local` / Vercel `RESEND_API_KEY`, `EMAIL_FROM`, `SEND_EMAIL_HOOK_SECRET`. Dashboard → **Authentication → Hooks → Send Email** → `https://<your-app>/api/auth/send-email`. Hosted Auth cannot reach `localhost`.
 5. Prisma (only needed after login, for `/dashboard`): green **Connect** at the top of the project.
    Copy Transaction pooler (`:6543` + `?pgbouncer=true`) → `DATABASE_URL`, Session pooler (`:5432`) → `DIRECT_URL`.
@@ -48,6 +48,8 @@ npm run typecheck
 npm run lint
 ```
 
+`npm run test` includes a check that the hosted mailer patch is branded Puyer HTML, not the default “Your sign-in link” body.
+
 Without live keys, OTP returns a safe “not configured” or send-failure message. Unit tests cover OTP throttling, return-path sanitization, login URLs, and org role checks. Open `/login` to confirm the split form + hero.
 
 ## Limitations
@@ -56,7 +58,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 - In-process rate limit does not share across serverless instances.
 - Overview and Invoices read live invoice data (Phase 2). A signed-in user without a workspace is provisioned on first `requireOrganization`, not shown as 404.
 - Service role is not used by the browser. Do not expose `SUPABASE_SERVICE_ROLE_KEY`.
-- Hosted Auth email HTML is not loaded from the git repo. After changing `supabase/templates/`, paste the file into the matching dashboard template and Save.
+- Hosted Auth email HTML is not loaded from git by itself. After changing `supabase/templates/`, run `npm run auth:push-templates` (or set `SUPABASE_ACCESS_TOKEN` as a GitHub Actions secret). Do not use `supabase config push` for this — it can reset SMTP and Site URL from local `config.toml`.
 - Resend click tracking rewrites `{{ .ConfirmationURL }}` and can consume the magic link. Keep it off for Auth mail.
 - A React overlay on `/dashboard` after the magic link was a theme bootstrap `<script>` in the root layout, not a failed session exchange. See [`theme.md`](./theme.md).
 
@@ -65,14 +67,14 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 - `prisma/schema.prisma`, `lib/db/prisma.ts`
 - `utils/supabase/*`, `lib/auth/*`, `lib/authorization/*`, `lib/identity/*`, `lib/errors`, `lib/observability`, `lib/audit`
 - `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`, `app/api/auth/signout/route.ts`
-- `lib/email/auth-templates.ts`, `lib/email/layout.ts`, `lib/email/send-email-hook.ts`, `lib/auth/login-path.ts`, `supabase/templates/*`
+- `lib/email/auth-templates.ts`, `lib/email/layout.ts`, `lib/email/hosted-auth-templates.ts`, `lib/email/send-email-hook.ts`, `lib/auth/login-path.ts`, `supabase/templates/*`, `scripts/push-auth-email-templates.mjs`
 - `components/auth/*`
 - `app/(dashboard)/*`, `components/dashboard/*`
 - `components/invoice-builder/builder-session.tsx`
 
 ## Version
 
-1.0.11 — 2026-08-28
+1.0.12 — 2026-08-28
 
 ## Changelog
 
@@ -94,4 +96,5 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 [2026-08-28] – Added: Split `/login` page (Sign in / Create account + vector hero). Gated routes redirect there.
 [2026-08-28] – Changed: `/login` hero is `public/auth/login-hero.png` (invoice + card illustration).
 [2026-08-28] – Fixed: Settings no longer 500s when Connect/workspace lookup fails. Sign out is in the app shell via `POST /api/auth/signout`.
+[2026-08-28] – Fixed: Cloud Auth kept the default “Your sign-in link” mail because `config.toml` templates never reach hosted GoTrue. `npm run auth:push-templates` PATCHes mailer HTML only.
 ```
