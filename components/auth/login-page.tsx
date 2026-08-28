@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { MagicLinkForm } from "@/components/auth/magic-link-form";
@@ -37,16 +38,16 @@ export function LoginPageView({ intent, expired }: LoginPageViewProps) {
         </div>
       </section>
 
-      <aside className="relative flex min-h-[320px] items-center justify-center overflow-hidden bg-[#0B1C30] px-8 py-12 lg:min-h-dvh">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/auth/login-hero.svg"
+      <aside className="relative flex min-h-[320px] items-center justify-center overflow-hidden bg-[#F4FBF7] px-8 py-12 lg:min-h-dvh">
+        <Image
+          src="/auth/login-hero.png"
           alt={copy.heroAlt}
-          width={520}
-          height={520}
+          width={1024}
+          height={1024}
+          priority
           className="mx-auto size-full max-h-[520px] max-w-[520px] object-contain"
         />
-        <p className="pointer-events-none absolute bottom-8 left-8 right-8 text-center text-[14px] leading-5 text-[#94A3B8]">
+        <p className="pointer-events-none absolute bottom-8 left-8 right-8 text-center text-[14px] leading-5 text-[#475569]">
           {copy.heroCaption}
         </p>
       </aside>

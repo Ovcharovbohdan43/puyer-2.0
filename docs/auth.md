@@ -72,7 +72,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.10 — 2026-08-28
+1.0.11 — 2026-08-28
 
 ## Changelog
 
