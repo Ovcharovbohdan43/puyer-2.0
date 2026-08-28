@@ -17,6 +17,7 @@ export const RATE_LIMITS = {
   "platform-portal": { windowMs: 15 * 60_000, max: 10 },
   "stripe-disconnect": { windowMs: 15 * 60_000, max: 10 },
   "stripe-webhook": { windowMs: 60_000, max: 300 },
+  "auth-email-hook": { windowMs: 60_000, max: 300 },
 } as const;
 
 export type RateLimitPolicy = keyof typeof RATE_LIMITS;

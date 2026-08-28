@@ -951,9 +951,10 @@ STRIPE_API_VERSION=
 INNGEST_EVENT_KEY=
 INNGEST_SIGNING_KEY=
 
-# Email
+# Email — Resend + Auth Send Email hook (HTTPS: /api/auth/send-email)
 RESEND_API_KEY=
 EMAIL_FROM=
+SEND_EMAIL_HOOK_SECRET=
 
 # Upstash
 UPSTASH_REDIS_REST_URL=
@@ -1178,6 +1179,9 @@ Until `docs/` exists, keep the changelog in this file.
 [2026-08-28] – Fixed: PDF wrap and Cyrillic.
   Noto Sans embed, character hyphenation, flexBasis 0 on text columns, hash layout 3.
   Docs: docs/pdf.md.
+
+[2026-08-28] – Added: Auth Send Email hook via Resend (`SEND_EMAIL_HOOK_SECRET`) and branded magic-link templates.
+  Docs: docs/auth.md.
 ```
 
 ---

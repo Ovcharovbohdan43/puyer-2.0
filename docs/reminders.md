@@ -17,7 +17,7 @@ Inngest SDK 4: `serve` exports `GET`/`POST`/`PUT` only. Functions use `cron()` a
 ## How to use
 
 1. Apply [`supabase/migrations/20260828230000_reminders_notifications.sql`](../supabase/migrations/20260828230000_reminders_notifications.sql). `npx prisma generate`.
-2. `.env.local`: `RESEND_API_KEY`, `EMAIL_FROM` (verified domain). Optional: `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`.
+2. `.env.local`: `RESEND_API_KEY`, `EMAIL_FROM` (verified domain). Auth magic links also need `SEND_EMAIL_HOOK_SECRET` (see [`auth.md`](./auth.md)). Optional: `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`.
 3. Local: `INNGEST_DEV=1` in `.env.local` and/or `npx inngest-cli@latest dev` (syncs `/api/inngest`). Production: Inngest Cloud app pointing at `https://<host>/api/inngest` with `INNGEST_SIGNING_KEY`.
 4. Workspace must be Pro/Business. Client needs a valid email.
 
@@ -53,10 +53,11 @@ Without Resend keys, due reminders are claimed then **SKIPPED** (logged). Overvi
 
 ## Version
 
-1.0.0 — 2026-08-28
+1.0.1 — 2026-08-28
 
 ## Changelog
 
 ```
 [2026-08-28] – Added: Inngest reminder cron, Resend client/invoice email, in-app notifications and preferences.
+[2026-08-28] – Changed: Invoice, reminder, and invite emails use the branded Puyer layout.
 ```

@@ -7,7 +7,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 ## Description
 
 - Public login stays a **modal** (no `/login` page).
-- `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords.
+- `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Delivery is the Auth **Send Email** hook → Resend branded templates (`/api/auth/send-email`).
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
 - `GET /auth/callback` exchanges the PKCE `code` and redirects using `puyer-auth-return`.
 - Public Supabase helpers live in `utils/supabase/*`. `lib/auth/browser.ts` and `lib/auth/server.ts` wrap them so marketing still loads when keys are missing (`trySupabasePublicEnv()`).
@@ -20,10 +20,15 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 
 1. Public keys in `.env.local` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`).
 2. Dashboard → Authentication → URL Configuration: Site URL `http://localhost:3000`, Redirect `http://localhost:3000/auth/callback`.
-3. Prisma (only needed after login, for `/dashboard`): green **Connect** at the top of the project.
+3. **Auth emails via Resend (connected to this project):**
+   - `.env.local` / Vercel: `RESEND_API_KEY`, `EMAIL_FROM` (verified domain), and **`SEND_EMAIL_HOOK_SECRET`**.
+   - Dashboard → **Authentication → Hooks → Send Email** → HTTPS → `https://<your-app>/api/auth/send-email` (local: `http://localhost:3000/api/auth/send-email`). Generate Secret and paste the full `v1,whsec_…` value into `SEND_EMAIL_HOOK_SECRET`.
+   - Until the hook is on, Auth still uses the built-in mailer. Do not enable both a custom SMTP *and* this hook or users can get two emails.
+   - HTML for the dashboard mailer (SMTP fallback) lives in `supabase/templates/`.
+4. Prisma (only needed after login, for `/dashboard`): green **Connect** at the top of the project.
    Copy Transaction pooler (`:6543` + `?pgbouncer=true`) → `DATABASE_URL`, Session pooler (`:5432`) → `DIRECT_URL`.
-4. SQL Editor: run identity SQL, then [`supabase/migrations/20260828180000_invoice_domain.sql`](../supabase/migrations/20260828180000_invoice_domain.sql), then [`supabase/migrations/20260828200000_backfill_identity_workspaces.sql`](../supabase/migrations/20260828200000_backfill_identity_workspaces.sql) if any Auth user predates the trigger.
-5. `npm run dev` → Login → email → open the magic link.
+5. SQL Editor: run identity SQL, then [`supabase/migrations/20260828180000_invoice_domain.sql`](../supabase/migrations/20260828180000_invoice_domain.sql), then [`supabase/migrations/20260828200000_backfill_identity_workspaces.sql`](../supabase/migrations/20260828200000_backfill_identity_workspaces.sql) if any Auth user predates the trigger.
+6. `npm run dev` → Login → email → open the magic link.
 
 ## Examples
 
@@ -54,13 +59,14 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 - `prisma/schema.prisma`, `lib/db/prisma.ts`
 - `utils/supabase/*`, `lib/auth/*`, `lib/authorization/*`, `lib/identity/*`, `lib/errors`, `lib/observability`, `lib/audit`
-- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`
+- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/api/auth/send-email/route.ts`
+- `lib/email/auth-templates.ts`, `lib/email/layout.ts`, `lib/email/send-email-hook.ts`, `supabase/templates/*`
 - `app/(dashboard)/*`, `components/dashboard/*`
 - `components/invoice-builder/builder-session.tsx`
 
 ## Version
 
-1.0.6 — 2026-08-28
+1.0.7 — 2026-08-28
 
 ## Changelog
 
@@ -77,4 +83,5 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 [2026-08-28] – Changed: Subscribe intent returns to `/pricing` after magic link.
 [2026-08-28] – Changed: Magic-link `returnTo` may be `/invite/{token}` for team invites (Phase 8).
 [2026-08-28] – Changed: OTP limited by email and IP; optional Upstash; Origin check on POST.
+[2026-08-28] – Added: Resend Send Email hook (`SEND_EMAIL_HOOK_SECRET`) and branded Auth templates.
 ```
