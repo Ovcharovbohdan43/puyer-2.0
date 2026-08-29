@@ -1295,6 +1295,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Changed: Overview KPIs have Phosphor + sparklines; six-month trends are ungated.
   Docs: docs/dashboard.md, docs/reports.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Fixed: Team invite emails use `invites@puyer.org` and the request host; skipped Resend is a 400.
+  Docs: docs/team.md, docs/UX_FLOWS.md.
 ```
 
 ---

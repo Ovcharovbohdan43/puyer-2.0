@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireOrgRole, requireOrganization } from "@/lib/authorization";
+import { magicLinkRedirectOrigin } from "@/lib/auth/public-origin";
 import { handleRoute, requireApiSession } from "@/lib/http/route";
 import { planFromOrganization } from "@/lib/entitlements/load";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
@@ -29,6 +30,7 @@ export async function POST(request: Request) {
       plan,
       email,
       orgName: membership.organization.name,
+      appOrigin: magicLinkRedirectOrigin(request),
     });
     return NextResponse.json({ ok: true, ...result });
   }, request);

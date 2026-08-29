@@ -388,4 +388,6 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Dashboard KPI sparks fade without a stroke; long names stay inside the rail and drawers.
 [2026-08-29] – Added: Clients list row opens a right drawer (`?client=`).
 [2026-08-29] – Changed: Overview Revenue Trends is on every plan; Insights stay Business.
+
+[2026-08-29] – Fixed: Team invite emails send from invites@puyer.org with a production accept URL; failed delivery is shown to the owner.
 ```

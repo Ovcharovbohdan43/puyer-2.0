@@ -64,6 +64,7 @@ export async function inviteMember(input: {
   plan: ReturnType<typeof planFromRow>;
   email: string;
   orgName: string;
+  appOrigin: string;
 }) {
   requireOrgPermission(input.actorRole, "MANAGE_MEMBERS");
   requireEntitlement({ plan: input.plan }, "TEAM_MEMBERS");
@@ -115,9 +116,13 @@ export async function inviteMember(input: {
     orgName: input.orgName,
     token,
     idempotencyKey: `invite:${invite.id}:${tokenHash.slice(0, 12)}`,
+    appOrigin: input.appOrigin,
   });
   if (sent.skipped) {
     logger.warn("team_invite_email_skipped", { organizationId: input.organizationId });
+    throw new ValidationError(
+      "The invitation email could not be sent. Email delivery is not configured.",
+    );
   }
   return { inviteId: invite.id, email };
 }

@@ -45,8 +45,10 @@ export default async function TeamPage() {
         }))}
       />
     );
-  } catch {
-    logger.warn("team_unavailable");
+  } catch (error) {
+    logger.warn("team_unavailable", {
+      errorName: error instanceof Error ? error.name : "unknown",
+    });
     return (
       <TeamScreen
         canManage={false}

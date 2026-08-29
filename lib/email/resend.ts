@@ -24,7 +24,8 @@ export async function deliverEmail(message: OutboundEmail): Promise<EmailSendRes
     { idempotencyKey: message.idempotencyKey.slice(0, 256) },
   );
   if (error) {
-    throw new Error(error.message);
+    logger.error("email_provider_rejected", { errorName: error.name });
+    throw new Error("email_provider_rejected");
   }
   return { skipped: false, providerMessageId: data?.id ?? null };
 }

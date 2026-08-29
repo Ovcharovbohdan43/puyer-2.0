@@ -3,9 +3,12 @@ import "server-only";
 import type { OutboundEmail } from "@/lib/email/types";
 import { puyerEmailHtml, puyerParagraph } from "@/lib/email/layout";
 import { deliverEmail } from "@/lib/email/resend";
+import { ValidationError } from "@/lib/errors";
+import { logger } from "@/lib/observability/logger";
 import { appBaseUrl } from "@/lib/stripe/client";
 import type { ReminderKind } from "@/lib/reminders/evaluate";
 import { reminderBodyLines, reminderFromAddress } from "@/lib/reminders/message";
+import { inviteAcceptUrl, inviteFromAddress } from "@/lib/team/invite-email";
 
 export async function sendReminderEmail(input: {
   to: string;
@@ -107,19 +110,31 @@ export async function sendInviteEmail(input: {
   orgName: string;
   token: string;
   idempotencyKey: string;
+  appOrigin: string;
 }) {
-  const url = `${appBaseUrl()}/invite/${encodeURIComponent(input.token)}`;
-  return deliverEmail({
-    to: input.to,
-    subject: `Join ${input.orgName} on Puyer`,
-    text: `You were invited to the ${input.orgName} workspace on Puyer. Accept: ${url}`,
-    html: puyerEmailHtml({
-      preview: `Join ${input.orgName} on Puyer`,
-      heading: "You’re invited to Puyer",
-      bodyHtml: puyerParagraph(`You were invited to join ${input.orgName} on Puyer.`),
-      ctaLabel: "Accept invitation",
-      ctaUrl: url,
-    }),
-    idempotencyKey: input.idempotencyKey,
-  });
+  const url = inviteAcceptUrl(input.appOrigin, input.token);
+  try {
+    return await deliverEmail({
+      to: input.to,
+      from: inviteFromAddress(),
+      subject: `Join ${input.orgName} on Puyer`,
+      text: `You were invited to the ${input.orgName} workspace on Puyer. Accept: ${url}`,
+      html: puyerEmailHtml({
+        preview: `Join ${input.orgName} on Puyer`,
+        heading: "You’re invited to Puyer",
+        bodyHtml: puyerParagraph(`You were invited to join ${input.orgName} on Puyer.`),
+        ctaLabel: "Accept invitation",
+        ctaUrl: url,
+      }),
+      idempotencyKey: input.idempotencyKey,
+    });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw error;
+    }
+    logger.error("team_invite_email_failed", {
+      errorName: error instanceof Error ? error.name : "unknown",
+    });
+    throw new ValidationError("The invitation email could not be sent. Try again in a moment.");
+  }
 }
