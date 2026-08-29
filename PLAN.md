@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.9  
+> **Version:** 1.4.10  
 > **Date:** 2026-08-29  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -1320,6 +1320,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Added: Help Center (`/help`) with contact form, searchable guides, and Resend support mail.
   Docs: docs/help.md, docs/UX_FLOWS.md, docs/dashboard.md.
+
+[2026-08-29] – Fixed: Help/Resend reads `RESEND_API_KEY` at request runtime and uses verified `EMAIL_FROM` when `help@` is unset.
+  Docs: docs/help.md.
 ```
 
 ---

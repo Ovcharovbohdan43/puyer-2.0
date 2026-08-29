@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
 import { handleRoute } from "@/lib/http/route";
@@ -8,9 +8,11 @@ import { submitHelpRequest } from "@/lib/help/service";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   return handleRoute(async () => {
+    await connection();
     await requireRateLimit("help-contact-ip", clientIp(request));
     let body: unknown = {};
     try {

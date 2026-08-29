@@ -2,14 +2,28 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import { envString } from "@/lib/email/env";
 import type { EmailSendResult, OutboundEmail } from "@/lib/email/types";
 import { logger } from "@/lib/observability/logger";
 
+async function bindRequestRuntime(): Promise<void> {
+  try {
+    const { connection } = await import("next/server");
+    await connection();
+  } catch {
+    // Inngest, Vitest, and other non-request workers still read process.env below.
+  }
+}
+
 export async function deliverEmail(message: OutboundEmail): Promise<EmailSendResult> {
-  const apiKey = process.env.RESEND_API_KEY?.trim() ?? "";
-  const from = message.from?.trim() || process.env.EMAIL_FROM?.trim() || "";
+  await bindRequestRuntime();
+  const apiKey = envString("RESEND_API_KEY");
+  const from = message.from?.trim() || envString("EMAIL_FROM");
   if (!apiKey || !from.includes("@")) {
-    logger.warn("email_skipped_unconfigured");
+    logger.warn("email_skipped_unconfigured", {
+      hasApiKey: Boolean(apiKey),
+      hasFrom: from.includes("@"),
+    });
     return { skipped: true, providerMessageId: null };
   }
   const resend = new Resend(apiKey);
