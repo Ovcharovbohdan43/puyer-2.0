@@ -12,7 +12,7 @@ Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 
 
 Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines, no stroke), a full-bleed Revenue Trends SVG (smooth path, vertical forest→mint gradient, `preserveAspectRatio="none"`), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
 
-Clients: search, Filter, Export, four KPI cards with the same fade sparklines as Home, paginated table. **Add Client** collects name, email (required for reminders), and optional phone. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer. Long client names and addresses truncate or wrap; they do not stretch the left rail or the right drawer.
+Clients: search, Filter, Export, four KPI cards with the same fade sparklines as Home, paginated table. **Add Client** collects name, email (required for reminders), and optional phone. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer. Long client names and addresses truncate or wrap; they do not stretch the left rail or the right drawer. On a narrow screen the invoice and client tables scroll horizontally (`table-auto`); amount and status cells do not wrap, so badges cannot cover figures.
 
 The invoice drawer timeline is a two-column grid (icon rail + labels). Each node draws its own stem; labels stay in normal flow so status text does not slide.
 
@@ -54,6 +54,7 @@ npm run lint
 - Open `/clients`, click a row, confirm white right drawer + `?client=` UUID, close, URL clears
 - Open `/clients`, confirm KPI cards have fade sparklines like Home
 - A long client name truncates in the table, drawer, and does not widen the left sidebar
+- Narrow viewport: Recent Invoices and Clients tables scroll sideways; status pills stay off amounts
 - Client drawer lists invoices; Create Invoice / Edit / Delete work (delete blocked if invoices exist)
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
 - Sidebar icons stay readable when idle (not faint mixed-color SVGs)
@@ -79,11 +80,12 @@ npm run lint
 
 ## Version
 
-1.2.10 — 2026-08-29
+1.2.11 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Mobile invoice and client tables scroll; status pills no longer cover amounts.
 [2026-08-29] – Fixed: Invoice drawer Edit opens the builder after share/view; paid invoices stay locked.
 [2026-08-29] – Added: Add Client collects email and phone; invoice timeline uses a stable two-column rail.
 [2026-08-29] – Changed: Revenue Trends fills the card with an SVG gradient; Paid invoices show Payment Received on the timeline.

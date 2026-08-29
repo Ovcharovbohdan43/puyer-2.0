@@ -58,7 +58,7 @@ export function StatusPill({ status, variant }: StatusPillProps) {
         : "px-[9px] py-[3px] text-[12px] font-semibold leading-4";
 
   return (
-    <span className={`inline-flex items-center justify-center rounded-full ${size} ${className}`}>
+    <span className={`inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full ${size} ${className}`}>
       {label}
     </span>
   );

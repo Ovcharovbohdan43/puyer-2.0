@@ -45,5 +45,7 @@ describe("OverviewScreen", () => {
     expect(html).toContain('stop-opacity="0"');
     expect(html).toContain('preserveAspectRatio="none"');
     expect(html).toContain("linearGradient");
+    expect(html).toContain("min-w-full");
+    expect(html).not.toContain("table-fixed");
   });
 });

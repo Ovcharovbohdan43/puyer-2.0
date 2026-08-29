@@ -391,4 +391,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 
 [2026-08-29] – Fixed: Team invite emails send from invites@puyer.org with a production accept URL; failed delivery is shown to the owner.
 [2026-08-29] – Fixed: Sent and viewed invoices open the builder; paid invoices stay locked.
+[2026-08-29] – Fixed: Mobile Home/Clients tables scroll so status badges do not cover amounts.
 ```

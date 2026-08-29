@@ -235,15 +235,15 @@ export function OverviewScreen({
               {copy.viewAll}
             </Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full table-fixed text-left">
+          <div className={dash.tableScroll}>
+            <table className={dash.dataTable}>
               <thead className={dash.tableHead}>
                 <tr>
-                  <th className="px-4 py-3">{copy.colInvoice}</th>
+                  <th className={`px-4 py-3 ${dash.cellNowrap}`}>{copy.colInvoice}</th>
                   <th className="px-4 py-3">{copy.colClient}</th>
-                  <th className="px-4 py-3">{copy.colDate}</th>
-                  <th className="px-4 py-3 text-right">{copy.colAmount}</th>
-                  <th className="px-4 py-3 text-center">{copy.colStatus}</th>
+                  <th className={`px-4 py-3 ${dash.cellNowrap}`}>{copy.colDate}</th>
+                  <th className={`px-4 py-3 text-right ${dash.cellNowrap}`}>{copy.colAmount}</th>
+                  <th className={`px-4 py-3 text-center ${dash.cellNowrap}`}>{copy.colStatus}</th>
                 </tr>
               </thead>
               <tbody>
@@ -267,11 +267,11 @@ export function OverviewScreen({
                         }
                       }}
                     >
-                      <td className="px-4 py-3 text-[14px] font-medium text-[#111827]">{invoice.invoiceNumber}</td>
-                      <td className={`px-4 py-3 text-[14px] text-[#6B7280] ${dash.ellipsis}`}>{invoice.clientName}</td>
-                      <td className="px-4 py-3 text-[14px] text-[#6B7280]">{invoice.date}</td>
-                      <td className="px-4 py-3 text-right font-mono text-[14px] text-[#111827]">{invoice.amount}</td>
-                      <td className="px-4 py-3 text-center">
+                      <td className={`px-4 py-3 text-[14px] font-medium text-[#111827] ${dash.cellNowrap}`}>{invoice.invoiceNumber}</td>
+                      <td className={`max-w-[10rem] px-4 py-3 text-[14px] text-[#6B7280] ${dash.ellipsis}`}>{invoice.clientName}</td>
+                      <td className={`px-4 py-3 text-[14px] text-[#6B7280] ${dash.cellNowrap}`}>{invoice.date}</td>
+                      <td className={`px-4 py-3 text-right font-mono text-[14px] text-[#111827] ${dash.cellNowrap}`}>{invoice.amount}</td>
+                      <td className={`px-4 py-3 text-center ${dash.cellNowrap}`}>
                         <StatusPill status={invoice.displayStatus} variant="overview" />
                       </td>
                     </tr>

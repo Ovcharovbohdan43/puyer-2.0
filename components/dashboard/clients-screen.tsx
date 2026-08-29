@@ -37,7 +37,7 @@ function ClientStatusPill({ status }: { status: ClientStatusKind }) {
     NONE: { label: copy.clientNone, className: "bg-[#F3F4F6] text-[#6B7280]" },
   }[status];
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${map.className}`}>{map.label}</span>
+    <span className={`inline-flex shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${map.className}`}>{map.label}</span>
   );
 }
 
@@ -233,15 +233,15 @@ export function ClientsScreen({
       </div>
 
       <div className={dash.tableWrap}>
-        <div className="overflow-x-auto">
-          <table className="w-full table-fixed text-left">
+        <div className={dash.tableScroll}>
+          <table className={dash.dataTable}>
             <thead className={dash.tableHead}>
               <tr>
                 <th className="px-4 py-3">{copy.colClient}</th>
                 <th className="px-4 py-3">{copy.colEmail}</th>
-                <th className="px-4 py-3">{copy.colOutstandingAmount}</th>
-                <th className="px-4 py-3">{copy.colLastInvoice}</th>
-                <th className="px-4 py-3">{copy.colStatus}</th>
+                <th className={`px-4 py-3 ${dash.cellNowrap}`}>{copy.colOutstandingAmount}</th>
+                <th className={`px-4 py-3 ${dash.cellNowrap}`}>{copy.colLastInvoice}</th>
+                <th className={`px-4 py-3 ${dash.cellNowrap}`}>{copy.colStatus}</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -269,7 +269,7 @@ export function ClientsScreen({
                       }}
                     >
                       <td className="px-4 py-4">
-                        <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex min-w-0 max-w-[12rem] items-center gap-3">
                           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#E8F5EF] text-[12px] font-semibold text-[#006C49]">
                             {clientInitials(client.name)}
                           </span>
@@ -278,13 +278,13 @@ export function ClientsScreen({
                           </p>
                         </div>
                       </td>
-                      <td className={`px-4 py-4 text-[14px] text-[#6B7280] ${dash.ellipsis}`}>{client.email || "—"}</td>
-                      <td className="px-4 py-4 text-[14px] font-semibold text-[#111827]">{client.outstanding}</td>
-                      <td className="px-4 py-4 text-[14px] text-[#6B7280]">{client.lastInvoiceDate ?? "—"}</td>
-                      <td className="px-4 py-4">
+                      <td className={`max-w-[12rem] px-4 py-4 text-[14px] text-[#6B7280] ${dash.ellipsis}`}>{client.email || "—"}</td>
+                      <td className={`px-4 py-4 text-[14px] font-semibold text-[#111827] ${dash.cellNowrap}`}>{client.outstanding}</td>
+                      <td className={`px-4 py-4 text-[14px] text-[#6B7280] ${dash.cellNowrap}`}>{client.lastInvoiceDate ?? "—"}</td>
+                      <td className={`px-4 py-4 ${dash.cellNowrap}`}>
                         <ClientStatusPill status={client.status} />
                       </td>
-                      <td className="px-4 py-4 text-right">
+                      <td className={`px-4 py-4 text-right ${dash.cellNowrap}`}>
                         <Link
                           href={`/invoices/new?client=${encodeURIComponent(client.id)}`}
                           className={dash.link}

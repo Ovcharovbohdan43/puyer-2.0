@@ -1301,6 +1301,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Fixed: Sent and viewed invoices stay editable in the builder; paid stay locked.
   Docs: docs/invoices.md, docs/dashboard.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Fixed: Mobile invoice and client list tables scroll; pills no longer overlap amounts.
+  Docs: docs/dashboard.md, docs/UX_FLOWS.md.
 ```
 
 ---
