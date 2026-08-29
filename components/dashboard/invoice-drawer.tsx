@@ -58,6 +58,13 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
 
   const events = useMemo((): TimelineEvent[] => {
     const items: TimelineEvent[] = [];
+    if (invoice.status === "PAID" || invoice.paidAt) {
+      items.unshift({
+        kind: "paid",
+        title: copy.paymentReceived,
+        date: invoice.paidAt ?? invoice.createdAt,
+      });
+    }
     if (invoice.viewedAt) {
       items.push({ kind: "viewed", title: copy.invoiceViewed, date: invoice.viewedAt });
     }
@@ -66,7 +73,17 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
     }
     items.push({ kind: "created", title: copy.invoiceCreated, date: invoice.createdAt });
     return items;
-  }, [copy.invoiceCreated, copy.invoiceSent, copy.invoiceViewed, invoice.createdAt, invoice.sentAt, invoice.viewedAt]);
+  }, [
+    copy.invoiceCreated,
+    copy.invoiceSent,
+    copy.invoiceViewed,
+    copy.paymentReceived,
+    invoice.createdAt,
+    invoice.paidAt,
+    invoice.sentAt,
+    invoice.status,
+    invoice.viewedAt,
+  ]);
 
   function sendReminder() {
     if (!remindersEnabled) {

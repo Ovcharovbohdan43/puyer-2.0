@@ -28,7 +28,10 @@ describe("OverviewScreen", () => {
         remindersEnabled={false}
         recent={[]}
         kpis={kpis}
-        monthly={[{ period: "2026-08", label: "Aug", paid: "$0.00", heightPct: 0 }]}
+        monthly={[
+          { period: "2026-07", label: "Jul", paid: "$10.00", heightPct: 40 },
+          { period: "2026-08", label: "Aug", paid: "$25.00", heightPct: 100 },
+        ]}
         insights={null}
       />,
     );
@@ -40,5 +43,7 @@ describe("OverviewScreen", () => {
     expect(html).toContain("hover:bg-[#F6FBF8]");
     expect(html).toContain("kpi-revenue-fill");
     expect(html).toContain('stop-opacity="0"');
+    expect(html).toContain('preserveAspectRatio="none"');
+    expect(html).toContain("linearGradient");
   });
 });

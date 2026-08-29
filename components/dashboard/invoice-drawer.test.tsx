@@ -24,6 +24,7 @@ const invoice: InvoiceListRow = {
   createdAt: "2026-08-01",
   sentAt: "2026-08-01",
   viewedAt: null,
+  paidAt: null,
 };
 
 describe("InvoiceDrawer", () => {
@@ -36,5 +37,17 @@ describe("InvoiceDrawer", () => {
     expect(html).toContain("puyer-timeline");
     expect(html).toContain("Invoice Created");
     expect(html).toContain("Invoice Sent");
+  });
+
+  it("adds Payment Received when the invoice is paid", () => {
+    const html = renderToStaticMarkup(
+      <InvoiceDrawer
+        invoice={{ ...invoice, status: "PAID", displayStatus: "PAID", paidAt: "2026-08-28" }}
+        remindersEnabled
+        onClose={() => undefined}
+      />,
+    );
+    expect(html).toContain("Payment Received");
+    expect(html).toContain("2026-08-28");
   });
 });

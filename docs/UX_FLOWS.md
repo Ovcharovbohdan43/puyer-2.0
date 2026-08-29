@@ -282,7 +282,7 @@ Customer Portal = Puyer subscription only. Never connected-account invoice money
 | Dashboard View Payments | click | `/payments` |
 | Invoices row | click | **drawer**, optional `?invoice=` |
 | Drawer Send reminder | click | Pro: edit body, email from reminders@puyer.org; Free: upgrade |
-| Drawer Set status | change | allowed `STATUS_TRANSITIONS` only |
+| Drawer Set status | change | allowed `STATUS_TRANSITIONS` only; Paid adds **Payment Received** on the timeline |
 | Drawer Edit | click | `/invoices/:id/edit` |
 | Clients row | click | **client drawer**, optional `?client=` |
 | Client Create Invoice | click | `/invoices/new?client=` |
@@ -380,6 +380,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Landing trust bar is Phosphor chips (not clickable); copy unchanged.
 [2026-08-29] – Changed: Landing FAQ covers live product questions (no guest PDF download).
 [2026-08-29] – Changed: Dashboard sidebar and mobile tabs use Phosphor nav icons.
+[2026-08-29] – Changed: Overview/Reports trend chart fills the card; Paid invoices show Payment Received on the timeline.
 [2026-08-29] – Added: Invoice drawer manual reminder (editable) and status change; animated timeline.
 [2026-08-29] – Changed: Dashboard KPI sparks fade without a stroke; long names stay inside the rail and drawers.
 [2026-08-29] – Added: Clients list row opens a right drawer (`?client=`).

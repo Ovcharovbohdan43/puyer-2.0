@@ -167,8 +167,8 @@ export function OverviewScreen({
         </section>
 
         <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-          <article className={`${dash.card} flex min-h-[320px] flex-col p-5 xl:col-span-2`}>
-            <div className="mb-4 flex items-center justify-between">
+          <article className={`${dash.card} flex h-full min-h-[420px] flex-col overflow-hidden p-0 xl:col-span-2`}>
+            <div className="flex items-center justify-between px-5 pt-5 pb-2">
               <h2 className="text-[20px] font-semibold text-[#111827]">{copy.revenueTrends}</h2>
               <p className="text-[14px] text-[#6B7280]">{copy.last6Months}</p>
             </div>

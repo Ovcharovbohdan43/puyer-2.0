@@ -667,11 +667,11 @@ html[data-theme="dark"] .app-shell {
 
 @keyframes puyer-timeline-travel {
   from {
-    top: calc(100% - 10px);
+    top: calc(100% - 0.875rem);
     opacity: 0.2;
   }
   to {
-    top: 4px;
+    top: 0.875rem;
     opacity: 1;
   }
 }
@@ -694,8 +694,8 @@ html[data-theme="dark"] .app-shell {
 .puyer-timeline-track,
 .puyer-timeline-fill {
   position: absolute;
-  top: 0.55rem;
-  bottom: 0.55rem;
+  top: 0.875rem;
+  bottom: 0.875rem;
   left: 0.7rem;
   width: 2px;
   border-radius: 999px;

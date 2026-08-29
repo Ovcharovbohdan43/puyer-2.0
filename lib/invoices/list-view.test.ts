@@ -20,6 +20,7 @@ describe("computeWorkspaceKpis", () => {
         createdAt: new Date("2026-01-01T00:00:00.000Z"),
         sentAt: new Date("2026-01-02T00:00:00.000Z"),
         viewedAt: null,
+        updatedAt: new Date("2026-01-02T00:00:00.000Z"),
       },
       now,
     );
@@ -38,6 +39,7 @@ describe("computeWorkspaceKpis", () => {
         createdAt: new Date("2026-08-01T00:00:00.000Z"),
         sentAt: new Date("2026-08-01T00:00:00.000Z"),
         viewedAt: null,
+        updatedAt: new Date("2026-08-01T00:00:00.000Z"),
       },
       now,
     );
@@ -56,6 +58,7 @@ describe("computeWorkspaceKpis", () => {
         createdAt: new Date("2026-08-01T00:00:00.000Z"),
         sentAt: null,
         viewedAt: null,
+        updatedAt: new Date("2026-08-01T00:00:00.000Z"),
       },
       now,
     );
@@ -69,5 +72,27 @@ describe("computeWorkspaceKpis", () => {
     expect(kpis.revenue).toBe("$0.00");
     expect(kpis.paid30).toBe("$0.00");
     expect(kpis.paid30Count).toBe(0);
+  });
+});
+
+describe("toInvoiceListRow", () => {
+  it("exposes paidAt when the invoice status is PAID", () => {
+    const row = toInvoiceListRow({
+      id: "1",
+      invoiceNumber: "INV-2026-0001",
+      publicId: "aaaaaaaaaaaaaaaaaaaaaa",
+      clientId: "c1",
+      clientName: "Acme",
+      issueDate: new Date("2026-08-01T00:00:00.000Z"),
+      dueDate: new Date("2026-08-15T00:00:00.000Z"),
+      totalMinor: 10000n,
+      currency: "USD",
+      status: "PAID",
+      createdAt: new Date("2026-08-01T00:00:00.000Z"),
+      sentAt: new Date("2026-08-02T00:00:00.000Z"),
+      viewedAt: new Date("2026-08-03T00:00:00.000Z"),
+      updatedAt: new Date("2026-08-28T00:00:00.000Z"),
+    });
+    expect(row.paidAt).toBe("2026-08-28");
   });
 });

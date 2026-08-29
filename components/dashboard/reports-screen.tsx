@@ -45,8 +45,8 @@ export function ReportsScreen({ report }: ReportsScreenProps) {
 
       {advanced ? (
         <>
-          <article className={`${dash.card} p-5`}>
-            <div className="mb-4 flex items-center justify-between">
+          <article className={`${dash.card} flex min-h-[380px] flex-col overflow-hidden p-0`}>
+            <div className="flex items-center justify-between px-5 pt-5 pb-2">
               <h2 className="text-[20px] font-semibold text-[#111827]">{copy.monthlyRevenue}</h2>
               <p className="text-[14px] text-[#6B7280]">{copy.last6Months}</p>
             </div>

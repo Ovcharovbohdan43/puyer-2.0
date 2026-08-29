@@ -8,7 +8,7 @@ import { PlusCircleIcon } from "@phosphor-icons/react/dist/csr/PlusCircle";
 
 import { t } from "@/lib/i18n";
 
-export type TimelineKind = "created" | "sent" | "viewed" | "reminded";
+export type TimelineKind = "created" | "sent" | "viewed" | "reminded" | "paid";
 
 export type TimelineEvent = {
   kind: TimelineKind;
@@ -21,6 +21,7 @@ const ICONS: Record<TimelineKind, typeof PlusCircleIcon> = {
   sent: PaperPlaneTiltIcon,
   viewed: EyeIcon,
   reminded: EnvelopeSimpleIcon,
+  paid: CheckCircleIcon,
 };
 
 export function InvoiceTimeline({ events }: { events: TimelineEvent[] }) {
@@ -44,7 +45,11 @@ export function InvoiceTimeline({ events }: { events: TimelineEvent[] }) {
               className="puyer-timeline-node relative flex items-start gap-3"
               style={{ animationDelay: `${index * 180}ms` }}
             >
-              <span className="absolute top-0.5 -left-8 flex size-7 items-center justify-center rounded-full bg-[#E8F5EF] text-[#006C49] ring-4 ring-white">
+              <span
+                className={`absolute top-0.5 -left-8 flex size-7 items-center justify-center rounded-full ring-4 ring-white ${
+                  event.kind === "paid" ? "bg-[#006C49] text-white" : "bg-[#E8F5EF] text-[#006C49]"
+                }`}
+              >
                 <Icon size={14} weight="duotone" aria-hidden />
               </span>
               <div className="min-w-0 pt-0.5">

@@ -20,6 +20,7 @@ export type InvoiceListRow = {
   createdAt: string;
   sentAt: string | null;
   viewedAt: string | null;
+  paidAt: string | null;
 };
 
 export type WorkspaceKpis = {
@@ -48,6 +49,7 @@ export type InvoiceListSource = {
   createdAt: Date;
   sentAt: Date | null;
   viewedAt: Date | null;
+  updatedAt: Date;
 };
 
 export function toInvoiceListRow(invoice: InvoiceListSource, now = new Date()): InvoiceListRow {
@@ -69,6 +71,10 @@ export function toInvoiceListRow(invoice: InvoiceListSource, now = new Date()): 
     createdAt: invoice.createdAt.toISOString().slice(0, 10),
     sentAt: invoice.sentAt ? invoice.sentAt.toISOString().slice(0, 10) : null,
     viewedAt: invoice.viewedAt ? invoice.viewedAt.toISOString().slice(0, 10) : null,
+    paidAt:
+      invoice.status === "PAID"
+        ? invoice.updatedAt.toISOString().slice(0, 10)
+        : null,
   };
 }
 

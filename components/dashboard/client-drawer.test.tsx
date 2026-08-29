@@ -41,6 +41,7 @@ const invoice: InvoiceListRow = {
   createdAt: "2026-08-01",
   sentAt: "2026-08-01",
   viewedAt: null,
+  paidAt: null,
 };
 
 describe("ClientDrawer", () => {

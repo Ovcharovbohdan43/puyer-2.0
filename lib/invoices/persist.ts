@@ -42,6 +42,7 @@ export async function listOrganizationInvoices(user: SessionUser) {
       createdAt: true,
       sentAt: true,
       viewedAt: true,
+      updatedAt: true,
     },
     orderBy: { createdAt: "desc" },
   });

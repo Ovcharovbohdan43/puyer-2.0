@@ -56,6 +56,7 @@ describe("sparkMonthlyFromInvoices", () => {
           createdAt: "2026-08-01",
           sentAt: null,
           viewedAt: null,
+          paidAt: null,
         },
         {
           id: "i2",
@@ -73,6 +74,7 @@ describe("sparkMonthlyFromInvoices", () => {
           createdAt: "2026-07-01",
           sentAt: null,
           viewedAt: null,
+          paidAt: "2026-07-01",
         },
       ],
       now,

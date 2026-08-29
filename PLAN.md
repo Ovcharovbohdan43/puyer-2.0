@@ -1107,6 +1107,9 @@ Until `docs/` exists, keep the changelog in this file.
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Revenue Trends fills the card with an SVG gradient; Paid invoices show Payment Received on the timeline.
+  Docs: docs/dashboard.md, docs/reports.md, docs/invoices.md, docs/UX_FLOWS.md.
+
 [2026-08-29] – Added: Invoice drawer manual reminders (editable body, reminders@puyer.org) and allowed status changes.
   Docs: docs/reminders.md, docs/invoices.md, docs/dashboard.md, docs/UX_FLOWS.md.
 

@@ -10,7 +10,7 @@ Sources: light forest-green product frames (Clients, Reports, Payment reminders)
 
 Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications.
 
-Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines, no stroke), revenue chart for every plan, Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline.
+Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines, no stroke), a full-bleed Revenue Trends SVG (smooth path, vertical forest→mint gradient, `preserveAspectRatio="none"`), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
 
 Clients: search, Filter, Export, four KPI cards with the same fade sparklines as Home, paginated table. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer. Long client names and addresses truncate or wrap; they do not stretch the left rail or the right drawer.
 
@@ -46,8 +46,9 @@ npm run typecheck
 npm run lint
 ```
 
-- Sign in, confirm light sidebar + Overview KPIs with sparklines, Revenue Trends (no Business wall), and readable Quick Actions
+- Sign in, confirm light sidebar + Overview KPIs with sparklines, Revenue Trends filling the card (no Business wall), and readable Quick Actions
 - Click an invoice row → right preview drawer + `?invoice=` UUID, Send reminder / Set status, animated timeline, close, URL clears
+- Mark an invoice Paid → timeline shows Payment Received; the green track does not run past the last node
 - Open `/clients`, click a row, confirm white right drawer + `?client=` UUID, close, URL clears
 - Open `/clients`, confirm KPI cards have fade sparklines like Home
 - A long client name truncates in the table, drawer, and does not widen the left sidebar
@@ -76,11 +77,12 @@ npm run lint
 
 ## Version
 
-1.2.7 — 2026-08-29
+1.2.8 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Revenue Trends fills the card with an SVG gradient; Paid invoices show Payment Received on the timeline.
 [2026-08-29] – Added: Invoice drawer Send reminder (editable) and Set status; timeline animates along the track.
 [2026-08-29] – Changed: KPI sparklines fade with no stroke; Clients cards match Home; Invoice KPIs use Phosphor; long names no longer stretch the shell.
 [2026-08-29] – Added: Clients row opens a 400px right drawer (`?client=`) with preview, history, edit, and delete.

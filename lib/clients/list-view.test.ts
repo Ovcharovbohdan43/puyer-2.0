@@ -24,6 +24,7 @@ function invoice(partial: Partial<InvoiceListRow> & Pick<InvoiceListRow, "id" | 
     createdAt: "2026-05-01",
     sentAt: "2026-05-01",
     viewedAt: null,
+    paidAt: null,
     ...partial,
   };
 }
