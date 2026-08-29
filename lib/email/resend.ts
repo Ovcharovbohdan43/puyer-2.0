@@ -3,7 +3,7 @@ import "server-only";
 import { connection } from "next/server";
 import { Resend } from "resend";
 
-import { envString } from "@/lib/email/env";
+import { envString, findResendApiKey, listResendEnvNames } from "@/lib/email/env";
 import type { EmailSendResult, OutboundEmail } from "@/lib/email/types";
 import { logger } from "@/lib/observability/logger";
 
@@ -17,12 +17,13 @@ async function bindRequestRuntime(): Promise<void> {
 
 export async function deliverEmail(message: OutboundEmail): Promise<EmailSendResult> {
   await bindRequestRuntime();
-  const apiKey = envString("RESEND_API_KEY") || envString("RESEND_KEY");
+  const apiKey = findResendApiKey();
   const from = message.from?.trim() || envString("EMAIL_FROM");
   if (!apiKey || !from.includes("@")) {
     logger.warn("email_skipped_unconfigured", {
       keyPresent: Boolean(apiKey),
       fromPresent: from.includes("@"),
+      resendNames: listResendEnvNames(),
     });
     return { skipped: true, providerMessageId: null };
   }

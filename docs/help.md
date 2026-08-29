@@ -9,7 +9,7 @@ Public and signed-in Help Center at `/help`: searchable guides plus a contact fo
 - `/help` is **not** a protected route. Guests see marketing chrome; signed-in users see the app shell (sidebar Help, More sheet Help).
 - Articles: product guides in `messages/en.json` (`help.guides`) plus the landing FAQ (`faq.items`). Client-side search filters title, body, and category.
 - `POST /api/help`: origin check (`handleRoute`), rate limits `help-contact-ip` and `help-contact-email` (5 / 15 minutes), validates name / email / topic / message (max 4000 chars, control characters stripped).
-- Delivery: Resend HTTP API. After `connection()`, keys are read from `node:process.env` so Next/webpack cannot replace `process.env.RESEND_API_KEY` with an empty build-time value (typical for Vercel Sensitive / runtime-only vars). From is `EMAIL_FROM_HELP` when it is a real mailbox; the example `help@puyer.org` value uses `Puyer Help <EMAIL_FROM>` instead. Inbox `HELP_INBOX` (else `EMAIL_FROM` mailbox, else `support@puyer.org`). `replyTo` is the submitter. Skipped Resend (missing key/from) is a 400. Message bodies are not logged.
+- Delivery: Resend HTTP API. After `connection()`, the key is found by scanning `process.env` keys that match `/resend/i` for a `re_…` value (webpack cannot inline that). Skip logs include `resendNames` (names only). From is `EMAIL_FROM_HELP` when it is a real mailbox; the example `help@puyer.org` value uses `Puyer Help <EMAIL_FROM>` instead. Inbox `HELP_INBOX` (else `EMAIL_FROM` mailbox, else `support@puyer.org`). `replyTo` is the submitter. Skipped Resend (missing key/from) is a 400. Message bodies are not logged.
 - Persistence: `SupportRequest` (OPEN/CLOSED). Optional `userId` / `organizationId` when signed in. RLS: authenticated users may select rows where `userId = auth.uid()`; writes go through Prisma (`puyer_prisma`).
 
 Re-checked Context7 `/vercel/next.js/v16.2.9` (`connection()` for runtime `process.env`) and `/websites/resend` on 2026-08-29.
@@ -53,11 +53,12 @@ Playwright `e2e/pay-path.spec.ts` loads `/help` as a public page.
 
 ## Version
 
-1.0.3 — 2026-08-29
+1.0.4 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Resend API key is discovered by scanning env names for a `re_` value; skip logs list Resend env names.
 [2026-08-29] – Fixed: Resend reads `RESEND_API_KEY` via `node:process.env` so Vercel Sensitive keys are not inlined empty at build.
 [2026-08-29] – Fixed: Help/Resend uses static `process.env.RESEND_API_KEY` after `connection()` so Vercel injects the key into `/api/help`.
 [2026-08-29] – Fixed: Help email reads Resend at request runtime and sends from the verified EMAIL_FROM mailbox when help@ is only the example value.
