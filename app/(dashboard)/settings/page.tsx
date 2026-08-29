@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { StripeSettings } from "@/components/dashboard/stripe-settings";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
 import { can } from "@/lib/entitlements";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { logger } from "@/lib/observability/logger";
 import { loadConnectionForSettings, refreshConnectionStatus } from "@/lib/stripe/connect/service";
 
@@ -40,7 +40,7 @@ export default async function SettingsPage({
   const connection = await loadConnectionForSettings(membership.organizationId);
   let canConnect = false;
   try {
-    canConnect = can({ plan: planFromRow(membership.organization.subscription) }, "STRIPE_PAYMENTS");
+    canConnect = can({ plan: planFromOrganization(membership.organization) }, "STRIPE_PAYMENTS");
   } catch {
     logger.warn("settings_plan_unavailable");
   }

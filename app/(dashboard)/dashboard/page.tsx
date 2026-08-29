@@ -3,7 +3,7 @@ import type { Plan } from "@prisma/client";
 import { OverviewScreen } from "@/components/dashboard/overview-screen";
 import { requireOrganization, requireSession } from "@/lib/authorization";
 import { can } from "@/lib/entitlements";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { computeWorkspaceKpis, toInvoiceListRow } from "@/lib/invoices/list-view";
 import type { PaymentInsight } from "@/lib/reports/compute";
 import { loadOrganizationReportBundle } from "@/lib/reports/load";
@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   try {
     const membership = await requireOrganization(session);
     name = membership.user.name;
-    plan = planFromRow(membership.organization.subscription);
+    plan = planFromOrganization(membership.organization);
     const { report, snapshot, listRows } = await loadOrganizationReportBundle(membership.organizationId, plan);
     recent = listRows.slice(0, 5);
     kpis = toWorkspaceKpis(report.base);

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { requireOrgRole, requireOrganization } from "@/lib/authorization";
 import { handleRoute, requireApiSession } from "@/lib/http/route";
 import { ValidationError } from "@/lib/errors";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
 import { removeMember, updateMemberRole } from "@/lib/team/service";
 import type { OrgRole } from "@prisma/client";
@@ -34,7 +34,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       organizationId: membership.organizationId,
       actorUserId: user.id,
       actorRole: membership.role,
-      plan: planFromRow(membership.organization.subscription),
+      plan: planFromOrganization(membership.organization),
       memberId: id,
       nextRole: parseRole(body.role),
     });
@@ -53,7 +53,7 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
       organizationId: membership.organizationId,
       actorUserId: user.id,
       actorRole: membership.role,
-      plan: planFromRow(membership.organization.subscription),
+      plan: planFromOrganization(membership.organization),
       memberId: id,
     });
     return NextResponse.json({ ok: true });

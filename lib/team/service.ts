@@ -15,7 +15,7 @@ import {
 import { prisma } from "@/lib/db/prisma";
 import { sendInviteEmail } from "@/lib/email";
 import { requireEntitlement } from "@/lib/entitlements";
-import { planFromRow } from "@/lib/entitlements/load";
+import { loadEffectivePlan, planFromRow } from "@/lib/entitlements/load";
 import { ForbiddenError, NotFoundError, ValidationError } from "@/lib/errors";
 import { isValidEmail } from "@/lib/invoices/validate";
 import { logger } from "@/lib/observability/logger";
@@ -141,9 +141,7 @@ export async function acceptInvite(input: { token: string; userId: string; email
   if (!emailsMatch(invite.email, input.email)) {
     throw new ForbiddenError("Sign in with the invited email address to join this workspace.");
   }
-  const plan = planFromRow(
-    await prisma.subscription.findUnique({ where: { organizationId: invite.organizationId } }),
-  );
+  const plan = await loadEffectivePlan(invite.organizationId);
   requireEntitlement({ plan }, "TEAM_MEMBERS");
 
   await prisma.$transaction(async (tx) => {

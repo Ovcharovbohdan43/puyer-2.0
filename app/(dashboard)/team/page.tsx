@@ -2,7 +2,7 @@ import { TeamScreen } from "@/components/dashboard/team-screen";
 import { requireOrganization, requireSession } from "@/lib/authorization";
 import { canOrgPermission } from "@/lib/authorization/permissions";
 import { can } from "@/lib/entitlements";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { logger } from "@/lib/observability/logger";
 import { listTeam, listUserWorkspaces } from "@/lib/team/service";
 
@@ -10,7 +10,7 @@ export default async function TeamPage() {
   const session = await requireSession();
   try {
     const membership = await requireOrganization(session);
-    const plan = planFromRow(membership.organization.subscription);
+    const plan = planFromOrganization(membership.organization);
     const [{ members, invites }, workspaces] = await Promise.all([
       listTeam(membership.organizationId),
       listUserWorkspaces(session.id),

@@ -25,6 +25,11 @@ enum Plan {
   BUSINESS
 }
 
+enum PlanSource {
+  STRIPE
+  MANUAL
+}
+
 enum ThemePreference {
   LIGHT
   DARK
@@ -94,11 +99,13 @@ model User {
 }
 
 model Organization {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
-  plan      Plan     @default(FREE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String
+  plan                 Plan               @default(FREE)
+  planSource           PlanSource         @default(STRIPE)
+  subscriptionStatus   SubscriptionStatus @default(ACTIVE)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now()) @updatedAt
 
   members                 OrganizationMember[]
   invites                 OrganizationInvite[]

@@ -1,6 +1,6 @@
 import { BillingSettings } from "@/components/dashboard/billing-settings";
 import { requireOrganization, requireSession } from "@/lib/authorization";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { messages, t } from "@/lib/i18n";
 import { logger } from "@/lib/observability/logger";
 
@@ -13,10 +13,15 @@ export default async function BillingPage() {
   try {
     const membership = await requireOrganization(session);
     const subscription = membership.organization.subscription;
-    const plan = planFromRow(subscription);
+    const plan = planFromOrganization(membership.organization);
     const planLabel =
       plan === "BUSINESS" ? dash.businessPlan : plan === "PRO" ? dash.proPlan : dash.freePlan;
-    const statusLabel = statusCopy(subscription?.status ?? null, copy);
+    const statusLabel = statusCopy(
+      membership.organization.planSource === "MANUAL"
+        ? membership.organization.subscriptionStatus
+        : (subscription?.status ?? null),
+      copy,
+    );
     const periodEndLabel = subscription?.currentPeriodEnd
       ? copy.renewsOn.replace("{date}", subscription.currentPeriodEnd.toISOString().slice(0, 10))
       : null;

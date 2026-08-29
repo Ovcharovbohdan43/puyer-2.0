@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { InvoicesScreen } from "@/components/dashboard/invoices-screen";
 import { requireOrganization, requireSession } from "@/lib/authorization";
 import { can } from "@/lib/entitlements";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { t } from "@/lib/i18n";
 import { toInvoiceListRow } from "@/lib/invoices/list-view";
 import { listOrganizationInvoices } from "@/lib/invoices/persist";
@@ -24,7 +24,7 @@ export default async function InvoicesPage() {
   let remindersEnabled = false;
   try {
     const membership = await requireOrganization(session);
-    remindersEnabled = can({ plan: planFromRow(membership.organization.subscription) }, "AUTOMATIC_REMINDERS");
+    remindersEnabled = can({ plan: planFromOrganization(membership.organization) }, "AUTOMATIC_REMINDERS");
     const invoices = await listOrganizationInvoices(session);
     rows = invoices.map((invoice) => toInvoiceListRow(invoice));
   } catch {

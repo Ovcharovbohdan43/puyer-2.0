@@ -85,3 +85,14 @@ export function effectivePlan(
 export function billingRedirectIsAuthoritative(): boolean {
   return false;
 }
+
+export function assignedPlan(plan: Plan, status: SubscriptionStatus, now = new Date()): Plan {
+  if (plan === "FREE") {
+    return "FREE";
+  }
+  return effectivePlan(
+    { status, stripePriceId: "manual", currentPeriodEnd: null },
+    { manual: plan },
+    now,
+  );
+}

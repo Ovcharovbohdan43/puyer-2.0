@@ -103,10 +103,16 @@ async function upsertFromSubscription(
           cancelAtPeriodEnd: subscription.cancel_at_period_end,
         },
       });
-      await tx.organization.update({
+      const organization = await tx.organization.findUnique({
         where: { id: organizationId },
-        data: { plan },
+        select: { planSource: true },
       });
+      if (organization?.planSource !== "MANUAL") {
+        await tx.organization.update({
+          where: { id: organizationId },
+          data: { plan, subscriptionStatus: status },
+        });
+      }
       await tx.subscriptionEvent.upsert({
         where: { stripeEventId },
         create: { organizationId, stripeEventId, type },

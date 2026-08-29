@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireOrgRole, requireOrganization } from "@/lib/authorization";
 import { handleRoute, requireApiSession } from "@/lib/http/route";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
 import { revokeInvite } from "@/lib/team/service";
 
@@ -18,7 +18,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     await revokeInvite({
       organizationId: membership.organizationId,
       actorRole: membership.role,
-      plan: planFromRow(membership.organization.subscription),
+      plan: planFromOrganization(membership.organization),
       inviteId: id,
     });
     return NextResponse.json({ ok: true });

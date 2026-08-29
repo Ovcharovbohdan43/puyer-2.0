@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  assignedPlan,
   billingRedirectIsAuthoritative,
   can,
   effectivePlan,
@@ -78,6 +79,13 @@ describe("entitlements matrix", () => {
       ),
     ).toBe("FREE");
     expect(effectivePlan(null, prices)).toBe("FREE");
+  });
+
+  it("honors MANUAL assigned plans and treats canceled comps as Free", () => {
+    expect(assignedPlan("BUSINESS", "ACTIVE")).toBe("BUSINESS");
+    expect(assignedPlan("PRO", "TRIALING")).toBe("PRO");
+    expect(assignedPlan("PRO", "CANCELED")).toBe("FREE");
+    expect(assignedPlan("FREE", "ACTIVE")).toBe("FREE");
   });
 
   it("denies premium mutations server-side and never trusts the billing success URL", () => {

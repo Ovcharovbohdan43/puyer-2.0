@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireOrgRole, requireOrganization } from "@/lib/authorization";
 import { handleRoute, requireApiSession } from "@/lib/http/route";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
 import { inviteMember } from "@/lib/team/service";
 
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       body = {};
     }
     const email = typeof body.email === "string" ? body.email : "";
-    const plan = planFromRow(membership.organization.subscription);
+    const plan = planFromOrganization(membership.organization);
     const result = await inviteMember({
       organizationId: membership.organizationId,
       actorUserId: user.id,

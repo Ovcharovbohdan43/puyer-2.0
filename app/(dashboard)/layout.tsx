@@ -4,7 +4,7 @@ import type { Plan } from "@prisma/client";
 
 import { AppShell } from "@/components/dashboard/app-shell";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
-import { planFromRow } from "@/lib/entitlements/load";
+import { planFromOrganization } from "@/lib/entitlements/load";
 import { t } from "@/lib/i18n";
 
 export default async function DashboardGroupLayout({ children }: { children: ReactNode }) {
@@ -19,7 +19,7 @@ export default async function DashboardGroupLayout({ children }: { children: Rea
   try {
     const membership = await requireOrganization(session);
     displayName = membership.user.name?.trim() || session.email;
-    plan = planFromRow(membership.organization.subscription);
+    plan = planFromOrganization(membership.organization);
   } catch {
     displayName = copy.fallbackName;
   }
