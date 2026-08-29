@@ -17,11 +17,11 @@ The current approach (Tailwind CSS v4):
 5. **Invoice preview follows the theme.** `.invoice-paper` uses the same card tokens. Soft panels use `bg-puyer-soft` (not `#F8FAFC`). Black accent `#000000` maps to `--invoice-accent` so totals stay visible. Form fields use `bg-puyer-card` plus `color-scheme: dark` so native date/text inputs do not stay white. PDF export remains a light document. Landing `.template-mockup` still forces light paper.
 6. **Public payer portal (`/invoice/[publicId]`)** uses tokens (`bg-puyer-card`, `text-puyer-ink`, `text-puyer-muted`, `border-puyer-border`), not Figma uppercase hex. `bg-white` remaps in dark mode, but `text-[#0B1C30]` does not — that mix made invoice text invisible.
 
-The header control is a moon icon in light mode and a sun icon in dark mode (inline geometric SVG, `currentColor`). Labels live in `aria-label`. **Landing, `/pricing`, `/login`, and the authenticated dashboard do not show this control.** The dashboard is always light (`.app-shell`). Dark theme still applies to the public invoice page if `puyer-theme` is `dark`.
+The header control is a moon icon in light mode and a sun icon in dark mode (inline geometric SVG, `currentColor`). Labels live in `aria-label`. **Landing, `/pricing`, `/login`, and the authenticated dashboard do not show this control.** The dashboard is always light (`.app-shell`) and must not overwrite `puyer-theme` in localStorage. Dark theme still applies to the public invoice page if `puyer-theme` is `dark`; that page shows the moon/sun control.
 
 ## How to use
 
-Click the moon/sun button in the public header (desktop and mobile). Preference persists across reloads.
+Click the moon/sun button on `/invoice/[publicId]`. Preference persists across reloads. Visiting the dashboard does not clear it.
 
 Programmatic:
 
@@ -47,7 +47,7 @@ npm run dev
 
 Browser:
 
-- Header shows a moon, not the word “Dark” (dashboard / payer portal — not landing).
+- Header shows a moon on the public invoice page (not landing, `/pricing`, `/login`, or the dashboard).
 - Landing and `/pricing` stay white with no moon/sun control, even if dark was stored from the app.
 - Download PDF stays a dark solid button (not inverted to white).
 - Black accent on the preview becomes light ink so totals stay readable.
@@ -77,11 +77,12 @@ Browser:
 
 ## Version
 
-1.0.9 — 2026-08-29
+1.0.10 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Dashboard light shell does not persist over the payer-portal theme; public invoice has the moon/sun control.
 [2026-08-29] – Changed: Landing trust bar stays dark; icons are Phosphor, not Figma SVGs.
 [2026-08-29] – Changed: Dashboard is light-only; Overview moon removed.
 [2026-08-29] – Changed: Invoice preview scrollbar is hidden (scroll still works).

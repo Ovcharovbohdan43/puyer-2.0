@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.29 — 2026-08-29
+> **Version:** 1.0.30 — 2026-08-29
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -393,4 +393,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Fixed: Sent and viewed invoices open the builder; paid invoices stay locked.
 [2026-08-29] – Fixed: Mobile Home/Clients tables scroll so status badges do not cover amounts.
 [2026-08-29] – Added: Browser tab uses the square Puyer ring favicon.
+[2026-08-29] – Changed: Payer portal has theme toggle; dashboard no longer overwrites `puyer-theme`. Signed-in template/client builder matches this contract. Payments rows open a drawer.
 ```

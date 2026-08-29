@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { MobileTabBar } from "@/components/dashboard/mobile-tab-bar";
-import { THEME_STORAGE_KEY } from "@/lib/theme";
+import { forceLightDocument, restoreStoredTheme } from "@/components/ui/theme";
 
 type AppShellProps = {
   displayName: string;
@@ -15,8 +15,10 @@ type AppShellProps = {
 
 export function AppShell({ displayName, plan, children }: AppShellProps) {
   useEffect(() => {
-    document.documentElement.dataset.theme = "light";
-    window.localStorage.setItem(THEME_STORAGE_KEY, "light");
+    forceLightDocument();
+    return () => {
+      restoreStoredTheme();
+    };
   }, []);
 
   return (

@@ -5,12 +5,13 @@ import { requireOrganization, requireSession } from "@/lib/authorization";
 import { listClients } from "@/lib/clients/persist";
 import { t } from "@/lib/i18n";
 import { emptyWorkspaceBuilderState } from "@/lib/invoices/builder-state";
+import { parseInvoiceTemplate } from "@/lib/invoices/template-layout";
 import { logger } from "@/lib/observability/logger";
 
 export default async function NewInvoicePage({
   searchParams,
 }: {
-  searchParams: Promise<{ client?: string }>;
+  searchParams: Promise<{ client?: string; template?: string }>;
 }) {
   const session = await requireSession();
   const query = await searchParams;
@@ -19,6 +20,7 @@ export default async function NewInvoicePage({
     const profile = membership.organization.businessProfile;
     const clients = await listClients(session);
     const presetClient = clients.find((client) => client.id === query.client);
+    const template = parseInvoiceTemplate(query.template);
 
     const initial = emptyWorkspaceBuilderState({
       businessName: profile?.businessName || membership.user.name || session.email,
@@ -26,15 +28,20 @@ export default async function NewInvoicePage({
       currency: profile?.defaultCurrency || "USD",
       taxRate: profile?.defaultTaxRate || "0",
       clientName: presetClient?.name,
+      clientAddress: presetClient?.address || undefined,
+      template: template ?? undefined,
     });
-    if (presetClient?.address) {
-      initial.clientAddress = presetClient.address;
-    }
 
     return (
       <div className="bg-[#F6F7F6] py-8">
         <WorkspaceSession initial={initial}>
-          <InvoiceBuilder />
+          <InvoiceBuilder
+            clients={clients.map((client) => ({
+              id: client.id,
+              name: client.name,
+              address: client.address,
+            }))}
+          />
         </WorkspaceSession>
       </div>
     );

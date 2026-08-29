@@ -69,7 +69,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 ## Limitations
 
 - Unauthenticated refresh loses builder state (intentional). The public landing builder still does not persist.
-- Authenticated `/invoices/new` saves through `POST /api/invoices` and then `/invoices/{id}/edit`.
+- Authenticated `/invoices/new` saves through `POST /api/invoices` and then `/invoices/{id}/edit`. `?template=` and saved-client picker apply on that page.
 - Authenticated Download PDF requires a saved invoice (the builder saves first).
 
 ## Modules
@@ -83,7 +83,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 
 ## Version
 
-1.2.17 — 2026-08-29
+1.2.18 — 2026-08-29
 
 ## Changelog
 
@@ -118,4 +118,5 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 [2026-08-29] – Changed: Invoice preview drops Terms & conditions so bank details use full width.
 [2026-08-29] – Changed: Filled Total due uses the selected accent color (preview and PDF).
 [2026-08-29] – Changed: Dashboard `/invoices/{id}/edit` stays available after send/view.
+[2026-08-29] – Changed: Signed-in “Use this template” opens `/invoices/new?template=`; the builder lists saved clients.
 ```

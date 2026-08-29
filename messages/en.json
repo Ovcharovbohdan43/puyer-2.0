@@ -23,6 +23,7 @@
     "businessPlaceholder": "Your Name or Company",
     "addressPlaceholder": "Your Address",
     "billTo": "Bill To",
+    "newClient": "New client",
     "clientPlaceholder": "Client Name",
     "clientAddressPlaceholder": "Client address",
     "issueDate": "Date",

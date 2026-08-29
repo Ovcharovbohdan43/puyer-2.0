@@ -28,7 +28,13 @@ const TEMPLATES: { id: InvoiceTemplate; icon: string; width: number; height: num
   { id: "PREMIUM", icon: "/landing/builder-preview.svg", width: 17, height: 16 },
 ];
 
-export function InvoiceBuilder({ paged = false }: { paged?: boolean }) {
+export function InvoiceBuilder({
+  paged = false,
+  clients = [],
+}: {
+  paged?: boolean;
+  clients?: { id: string; name: string; address: string }[];
+}) {
   const copy = t("builder");
   const toast = useToast();
   const { state, setState, authenticated, openAuth, persist, persisting, publicUrl, invoiceId, onCopyPublicLink } =
@@ -194,6 +200,27 @@ export function InvoiceBuilder({ paged = false }: { paged?: boolean }) {
 
       <div className="flex flex-col gap-1">
         <span className={labelClass}>{copy.billTo}</span>
+        {authenticated && clients.length > 0 ? (
+          <select
+            className={inputClass}
+            value={clients.find((client) => client.name === state.clientName)?.id ?? ""}
+            onChange={(event) => {
+              const chosen = clients.find((client) => client.id === event.target.value);
+              if (!chosen) {
+                setState({ ...state, clientName: "", clientAddress: "" });
+                return;
+              }
+              setState({ ...state, clientName: chosen.name, clientAddress: chosen.address });
+            }}
+          >
+            <option value="">{copy.newClient}</option>
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.name}
+              </option>
+            ))}
+          </select>
+        ) : null}
         <input
           data-invalid={errors.clientName ? "true" : undefined}
           aria-invalid={Boolean(errors.clientName)}

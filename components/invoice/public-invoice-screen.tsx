@@ -4,6 +4,7 @@ import { PuyerLogo } from "@/components/brand/puyer-logo";
 import { InvoiceBankTransfer } from "@/components/invoice/invoice-bank-transfer";
 import { InvoicePlatformDisclaimer } from "@/components/invoice/invoice-platform-disclaimer";
 import { PublicPayPanel } from "@/components/invoice/public-pay-panel";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import type { BuilderState } from "@/components/invoice-builder/types";
 import type { InvoiceTotals } from "@/lib/invoices/calculate";
 import type { Currency } from "@/lib/invoices/currencies";
@@ -60,10 +61,11 @@ export function PublicInvoiceScreen({
 
   return (
     <div className="payer-portal min-h-dvh bg-[#f1f5f9] text-puyer-ink dark:bg-background">
-      <header className="border-b border-puyer-border bg-puyer-card px-6 py-4 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] sm:px-10">
+      <header className="flex items-center justify-between gap-4 border-b border-puyer-border bg-puyer-card px-6 py-4 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] sm:px-10">
         <Link href="/" className="inline-flex items-center">
           <PuyerLogo height={32} />
         </Link>
+        <ThemeToggle />
       </header>
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 py-8 sm:px-10 sm:py-12 lg:flex-row lg:items-start">
         <article className="flex min-w-0 flex-1 flex-col gap-8 rounded-xl border border-puyer-border bg-puyer-card p-6 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] sm:p-12">

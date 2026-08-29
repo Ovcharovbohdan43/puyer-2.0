@@ -109,13 +109,17 @@ export function PublicSession({ children }: { children: React.ReactNode }) {
   }, [authenticated, pathname, router, scrollToBuilder]);
 
   const applyTemplate = useCallback((template: InvoiceTemplate) => {
+    if (authenticated) {
+      router.push(`/invoices/new?template=${template}`);
+      return;
+    }
     setStateRaw((current) => ({ ...current, template }));
     if (pathname === "/") {
       scrollToBuilder();
     } else {
       router.push("/#builder");
     }
-  }, [pathname, router, scrollToBuilder]);
+  }, [authenticated, pathname, router, scrollToBuilder]);
 
   const navigateNow = useCallback(
     (href: string) => {

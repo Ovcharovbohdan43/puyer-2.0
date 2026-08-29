@@ -1,5 +1,12 @@
 import type { InvoiceTemplate } from "@/components/invoice-builder/types";
 
+export function parseInvoiceTemplate(value: string | undefined | null): InvoiceTemplate | null {
+  if (value === "MINIMAL" || value === "PROFESSIONAL" || value === "PREMIUM") {
+    return value;
+  }
+  return null;
+}
+
 export const INVOICE_NAVY = "#0B1C30";
 
 export type InvoiceTemplateSkin = {

@@ -31,6 +31,7 @@ describe("public payer screen", () => {
     );
 
     expect(html).toContain("payer-portal");
+    expect(html).toContain("aria-pressed");
     expect(html).toContain("bg-puyer-card");
     expect(html).toContain("text-puyer-ink");
     expect(html).not.toContain("text-[#0B1C30]");

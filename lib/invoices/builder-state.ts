@@ -61,6 +61,8 @@ export function emptyWorkspaceBuilderState(input: {
   currency: string;
   taxRate: string;
   clientName?: string;
+  clientAddress?: string;
+  template?: InvoiceTemplate;
 }): BuilderState {
   const today = new Date();
   const due = new Date(today);
@@ -71,7 +73,7 @@ export function emptyWorkspaceBuilderState(input: {
     businessName: input.businessName,
     businessAddress: input.businessAddress,
     clientName: input.clientName ?? "",
-    clientAddress: "",
+    clientAddress: input.clientAddress ?? "",
     items: [{ id: "1", description: "", quantity: "1", unitPrice: "" }],
     discountType: "NONE",
     discountValue: "0",
@@ -80,7 +82,7 @@ export function emptyWorkspaceBuilderState(input: {
     paymentDetails: "",
     storeBankDetailsConsent: false,
     ...emptyBankTransfer(),
-    template: "PROFESSIONAL",
+    template: input.template ?? "PROFESSIONAL",
     accentColor: "#000000",
     issueDate: today.toISOString().slice(0, 10),
     dueDate: due.toISOString().slice(0, 10),

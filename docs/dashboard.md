@@ -65,7 +65,7 @@ npm run lint
 ## Limitations
 
 - Revenue Trends on Overview is the last 6 months of paid totals for every plan (empty state if none). Insights stay on the Business reports gate. Paid (30d) is last 30 days, not lifetime revenue.
-- Payments lists synchronized Connect charges. Billing is live (Puyer subscription). Notifications inbox + preferences are live. Reports are live (base KPIs all plans; advanced Business). Team invites are live for Business.
+- Payments lists synchronized Connect charges; a row opens a right drawer (Stripe copy, public invoice link). Billing is live (Puyer subscription). Notifications inbox + preferences are live. Reports are live (base KPIs all plans; advanced Business). Team invites are live for Business.
 - Desktop sidebar does not collapse to icons; mobile hides the rail.
 - Sidebar and mobile tabs use Phosphor duotone icons (same family as marketing). Overview KPI and Quick Action icons are Phosphor too.
 - Dashboard routes other than Overview used to hit the page error UI when Prisma/PgBouncer returned `42P05`; Overview swallowed the same failure. Runtime Prisma now forces pooler-safe flags, and list pages render empty instead of `error.tsx`.
@@ -80,11 +80,12 @@ npm run lint
 
 ## Version
 
-1.2.11 — 2026-08-29
+1.2.12 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Payments rows open a Stripe-not-Puyer drawer; tables scroll on mobile.
 [2026-08-29] – Fixed: Mobile invoice and client tables scroll; status pills no longer cover amounts.
 [2026-08-29] – Fixed: Invoice drawer Edit opens the builder after share/view; paid invoices stay locked.
 [2026-08-29] – Added: Add Client collects email and phone; invoice timeline uses a stable two-column rail.

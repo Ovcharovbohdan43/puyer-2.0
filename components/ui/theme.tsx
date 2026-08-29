@@ -41,6 +41,15 @@ function applyTheme(next: Theme) {
   emit();
 }
 
+export function restoreStoredTheme() {
+  applyTheme(readStoredTheme());
+}
+
+export function forceLightDocument() {
+  document.documentElement.dataset.theme = "light";
+  document.documentElement.style.colorScheme = "light";
+}
+
 if (typeof window !== "undefined") {
   currentTheme = readStoredTheme();
   document.documentElement.dataset.theme = currentTheme;

@@ -1307,6 +1307,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Added: Square tab favicon from the Puyer ring mark (`app/icon.svg`).
   Docs: docs/brand.md.
+
+[2026-08-29] – Changed: UX contract polish — payer theme toggle, `/invoices/new?template=`, client picker, payments drawer.
+  Docs: docs/UX_FLOWS.md, docs/theme.md, docs/dashboard.md, docs/invoice-builder.md.
 ```
 
 ---
