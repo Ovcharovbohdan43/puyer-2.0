@@ -22,6 +22,7 @@ Re-checked Context7 `/vercel/next.js/v16.2.9` (`connection()` for runtime `proce
 
 ## Examples
 
+- Guest GET `/api/help` → `{ keyPresent, fromPresent, resendNames, linuxEnvKeys, commit }` (no secrets).
 - Guest POST with a valid form → 200, inbox + ack emails when Resend is configured.
 - Sixth POST from the same IP in 15 minutes → 429.
 - POST without Resend → 400 (`Your request could not be sent…`).
@@ -53,11 +54,12 @@ Playwright `e2e/pay-path.spec.ts` loads `/help` as a public page.
 
 ## Version
 
-1.0.5 — 2026-08-29
+1.0.6 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Added: GET `/api/help` reports whether a Resend key is visible (no secret values).
 [2026-08-29] – Fixed: Resend key is read from `/proc/self/environ` on Vercel so Next cannot empty `process.env.RESEND_API_KEY`.
 [2026-08-29] – Fixed: Resend API key is discovered by scanning env names for a `re_` value; skip logs list Resend env names.
 [2026-08-29] – Fixed: Resend reads `RESEND_API_KEY` via `node:process.env` so Vercel Sensitive keys are not inlined empty at build.

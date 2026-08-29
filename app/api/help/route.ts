@@ -1,14 +1,32 @@
 import { connection, NextResponse } from "next/server";
 
+import { envString, findResendApiKey, linuxEnvironSize, listResendEnvNames } from "@/lib/email/env";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
 import { handleRoute } from "@/lib/http/route";
 import { clientIp } from "@/lib/http/ip";
+import { helpFromAddress } from "@/lib/help/from";
 import { parseHelpContact } from "@/lib/help/input";
 import { submitHelpRequest } from "@/lib/help/service";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  return handleRoute(async () => {
+    await connection();
+    await requireRateLimit("api-read", clientIp(request));
+    const from = helpFromAddress();
+    return NextResponse.json({
+      ok: true,
+      keyPresent: Boolean(findResendApiKey()),
+      fromPresent: from.includes("@"),
+      resendNames: listResendEnvNames(),
+      linuxEnvKeys: linuxEnvironSize(),
+      commit: envString("VERCEL_GIT_COMMIT_SHA").slice(0, 7) || null,
+    });
+  }, request);
+}
 
 export async function POST(request: Request) {
   return handleRoute(async () => {
