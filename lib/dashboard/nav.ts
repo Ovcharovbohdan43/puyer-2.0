@@ -15,8 +15,8 @@ export type AppNavItem = {
 
 export const SIDEBAR_NAV: AppNavItem[] = [
   { id: "overview", href: "/dashboard", icon: "/app/kpi-revenue.svg" },
-  { id: "invoices", href: "/invoices", icon: "/landing/builder-doc.svg" },
   { id: "clients", href: "/clients", icon: "/app/action-client.svg" },
+  { id: "invoices", href: "/invoices", icon: "/landing/builder-doc.svg" },
   { id: "payments", href: "/payments", icon: "/app/kpi-paid.svg" },
   { id: "reports", href: "/reports", icon: "/app/chart.svg" },
 ];
@@ -26,6 +26,12 @@ export const SETTINGS_NAV: AppNavItem = {
   href: "/settings",
   icon: "/app/theme.svg",
 };
+
+export const FOOTER_NAV = [
+  SETTINGS_NAV,
+  { id: "team" as const, href: "/team", icon: "/app/action-client.svg" },
+  { id: "notifications" as const, href: "/notifications", icon: "/app/insight.svg" },
+];
 
 export const MOBILE_PRIMARY_NAV: AppNavItem[] = SIDEBAR_NAV.filter(
   (item) => item.id !== "reports",

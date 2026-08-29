@@ -18,6 +18,7 @@ import {
 } from "@/components/invoice-builder/types";
 import { Modal } from "@/components/ui/modal";
 import { createBrowserSupabaseClient } from "@/lib/auth/browser";
+import { shouldOpenDashboardAfterImplicitMagicLink } from "@/lib/auth/public-origin";
 import type { AuthIntent } from "@/lib/auth/return-to";
 import { t } from "@/lib/i18n";
 import { isValidEmail } from "@/lib/invoices/validate";
@@ -225,6 +226,17 @@ export function PublicSession({ children }: { children: React.ReactNode }) {
     }
     void supabase.auth.getSession().then(({ data }) => {
       setAuthenticated(Boolean(data.session));
+      if (
+        data.session &&
+        shouldOpenDashboardAfterImplicitMagicLink(
+          window.location.pathname,
+          window.location.hash,
+          window.location.search,
+        )
+      ) {
+        window.history.replaceState(null, "", "/");
+        router.replace("/dashboard");
+      }
     });
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setAuthenticated(Boolean(session));
@@ -232,7 +244,7 @@ export function PublicSession({ children }: { children: React.ReactNode }) {
     return () => {
       data.subscription.unsubscribe();
     };
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (authScreen !== "inbox") {

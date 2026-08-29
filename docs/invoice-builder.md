@@ -27,7 +27,7 @@ Leaving `/` for `/pricing` (or any non-hash route) while the builder is dirty op
 ## Examples
 
 - Currency change with existing line items → warning modal, numeric strings unchanged.
-- Template icons switch Minimal / Professional / Premium without clearing data. Layouts differ: Minimal is sparse, Professional uses the accent, Premium has a navy header and totals panel.
+- Template icons switch Minimal / Professional / Premium without clearing data. Every template uses the same document (business left, INVOICE right, billed-to + dates, item table, Total due, full-width payment). Paint differs: Minimal is sparse, Professional has a grey table header and an accent Total due bar, Premium adds an accent stripe, accent table header, and the same accent Total due bar.
 - Login in the header navigates to `/login` (email magic link, Sign in / Create account).
 
 ## How to test
@@ -51,7 +51,7 @@ Browser:
 - Dirty builder + header Pricing → leave confirmation. Continue editing stays. Leave discards state.
 - `/pricing` Free **Get Started** returns to `/#builder`. Pro/Business opens login.
 - Theme moon/sun restyles builder chrome, modals, and the live invoice preview.
-- Dark theme: form fields and Premium billed-to/table stripes stay dark, not white.
+- Dark theme: form fields stay themed; invoice paper uses tokens; zebra/table fills use `bg-puyer-soft`.
 - Notes always prints a small Puyer platform disclaimer under the issuer’s notes (not editable).
 - Bank transfer fields are optional. A checkbox must be checked before Save/PDF if those details should be stored. Unchecked: details stay on-screen only, are not sent/saved, and must be re-entered later.
 - Line items: Qty, Price, and Amount stay in separate columns; `$2,500.00` does not cover `2500.00`.
@@ -83,7 +83,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 
 ## Version
 
-1.2.13 — 2026-08-29
+1.2.16 — 2026-08-29
 
 ## Changelog
 
@@ -114,4 +114,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 [2026-08-29] – Changed: Landing Next is the green CTA with hover/press motion so it does not blend into the form.
 [2026-08-29] – Changed: Download PDF and Share use the same contrast + hover/press treatment.
 [2026-08-29] – Changed: Download PDF and Share use brand green (`#006c49` / `--puyer-green`).
+[2026-08-29] – Changed: All templates share one Figma invoice skeleton (table + Total due + payment/terms).
+[2026-08-29] – Changed: Invoice preview drops Terms & conditions so bank details use full width.
+[2026-08-29] – Changed: Filled Total due uses the selected accent color (preview and PDF).
 ```

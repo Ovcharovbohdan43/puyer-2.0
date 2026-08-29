@@ -6,11 +6,11 @@ Generate invoice PDFs on the server, cache them in private Supabase Storage, and
 
 ## Description
 
-PDFs use `@react-pdf/renderer` (no Chromium). Three visual templates match the builder:
+PDFs use `@react-pdf/renderer` (no Chromium). All three templates share one Figma document skeleton (business mark left, INVOICE + number right, billed-to / dates, item table with unit price and tax %, navy-style Total due, full-width payment). Paint only:
 
-- **Minimal** — sparse type, gray rules, ink totals, no logo mark.
-- **Professional** — accent title, circular mark, accent table rule, colored total.
-- **Premium** — navy full-bleed header, accent table header, navy totals panel. Never shows Puyer branding.
+- **Minimal** — sparse type, no zebra, no filled Total due bar.
+- **Professional** — grey table header, zebra rows, Total due bar in the accent color (black swatch uses navy).
+- **Premium** — accent top stripe, table header, and Total due bar. Never shows Puyer branding.
 
 Page size is A4 by default or US Letter via `?paper=letter`.
 
@@ -53,7 +53,7 @@ Browser:
 - Public page Download PDF works signed out
 - A very long address without spaces stays inside the page **in both the HTML preview and the downloaded PDF**
 - Cyrillic (and other Noto-covered scripts) render as real letters in the PDF, not `?`
-- After a renderer change, download again — Storage cache keys include `layout: 6`
+- After a renderer change, download again — Storage cache keys include `layout: 9`
 - View-source / network on the public page has no `organizationId`
 
 ## Limitations
@@ -76,7 +76,7 @@ Browser:
 
 ## Version
 
-1.0.6 — 2026-08-29
+1.0.9 — 2026-08-29
 
 ## Changelog
 
@@ -88,4 +88,7 @@ Browser:
 [2026-08-29] – Changed: Minimal / Professional / Premium layouts are distinct (Premium navy band + totals). Cache key `layout: 4`.
 [2026-08-29] – Added: Platform disclaimer under Notes on every PDF. Cache key `layout: 5`.
 [2026-08-29] – Added: Bank transfer block on the PDF when the issuer consented to store it. Cache key `layout: 6`.
+[2026-08-29] – Changed: PDFs use the shared Figma invoice skeleton for every template. Cache key `layout: 7`.
+[2026-08-29] – Changed: PDF payment block is full width; Terms & conditions column removed. Cache key `layout: 8`.
+[2026-08-29] – Changed: Filled Total due bar uses the invoice accent. Cache key `layout: 9`.
 ```

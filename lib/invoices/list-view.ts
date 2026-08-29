@@ -8,6 +8,7 @@ export type InvoiceListRow = {
   id: string;
   invoiceNumber: string;
   publicId: string;
+  clientId: string;
   clientName: string;
   date: string;
   dueDate: string;
@@ -37,6 +38,7 @@ export type InvoiceListSource = {
   id: string;
   invoiceNumber: string;
   publicId: string;
+  clientId: string;
   clientName: string;
   issueDate: Date;
   dueDate: Date;
@@ -55,6 +57,7 @@ export function toInvoiceListRow(invoice: InvoiceListSource, now = new Date()): 
     id: invoice.id,
     invoiceNumber: invoice.invoiceNumber,
     publicId: invoice.publicId,
+    clientId: invoice.clientId,
     clientName: invoice.clientName,
     date: invoice.issueDate.toISOString().slice(0, 10),
     dueDate: invoice.dueDate.toISOString().slice(0, 10),

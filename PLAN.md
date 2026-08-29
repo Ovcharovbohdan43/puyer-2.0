@@ -2,8 +2,8 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.3  
-> **Date:** 2026-08-28  
+> **Version:** 1.4.8  
+> **Date:** 2026-08-29  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
 ---
@@ -486,7 +486,7 @@ Not microservices. Bounded contexts inside one Next.js app.
 /app
   /(marketing)          # light-first public site
   /(auth)               # magic link
-  /(dashboard)          # dark-first app
+  /(dashboard)          # light-first app (forest green)
   /invoice/[publicId]   # public invoice + pay
   /api
     /webhooks/stripe/platform
@@ -849,8 +849,12 @@ Never log payment credentials or secrets.
 Same design tokens.
 
 - Public website: **light-first**
-- Dashboard: **dark-first**
-- User theme preference stored on User
+- Dashboard: **light-first** (forest green, no dark chrome)
+- User theme preference stored on User (not used by the dashboard; public invoice page may still honor stored theme)
+
+### Legal and cookies
+
+Public routes `/privacy`, `/terms`, `/cookies`. First visit shows a cookie choice window (necessary always on; analytics/marketing opt-in). See [`docs/legal.md`](./docs/legal.md).
 
 ### Responsive
 
@@ -1224,6 +1228,45 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Changed: Landing Invoice Builder is two steps so the preview column stays compact.
   Docs: docs/landing.md, docs/invoice-builder.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Landing and `/pricing` stay light (no public theme toggle).
+  Docs: docs/landing.md, docs/theme.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Invoice templates share one Figma document skeleton; PDF cache `layout: 7`.
+  Docs: docs/pdf.md, docs/invoice-builder.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Site chrome and Auth mail use the Puyer lockup.
+  Docs: docs/brand.md, docs/landing.md, docs/auth.md, docs/dashboard.md.
+
+[2026-08-29] – Changed: Invoice footer is full-width payment only (no Terms column); PDF cache `layout: 8`.
+  Docs: docs/pdf.md, docs/invoice-builder.md.
+
+[2026-08-29] – Changed: Dashboard is light-first (forest green). No dark chrome or Overview theme toggle.
+
+
+[2026-08-29] – Changed: Landing Features is a Phosphor-icon horizontal marquee.
+  Docs: docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Landing Why capabilities use dual Phosphor chip marquees.
+  Docs: docs/landing.md.
+
+[2026-08-29] – Changed: Landing How is a Phosphor step track with screenshot hover zoom.
+  Docs: docs/landing.md.
+
+[2026-08-29] – Changed: Landing Stripe flow uses Phosphor nodes; required payment copy unchanged.
+  Docs: docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Landing clients block has no CTA; marketing buttons use a light hover.
+  Docs: docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Added: Privacy, Terms, Cookie Policy, and cookie choice window.
+  Docs: docs/legal.md, docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Landing pricing is Phosphor plan cards with a segmented Monthly/Yearly control.
+  Docs: docs/landing.md, docs/billing.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Landing trust bar uses Phosphor chips; the three lines are unchanged.
+  Docs: docs/landing.md, docs/theme.md, docs/UX_FLOWS.md.
 ```
 
 ---

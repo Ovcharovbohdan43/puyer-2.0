@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import type { AuthIntent } from "@/lib/auth/return-to";
 import { t } from "@/lib/i18n";
@@ -172,6 +173,17 @@ export function MagicLinkForm({
       >
         {busy ? copy.sending : isRegister ? copy.register : copy.continueEmail}
       </button>
+      <p className="text-[12px] leading-4 text-puyer-muted">
+        {copy.legalLead}{" "}
+        <Link href="/terms" className="font-medium text-puyer-ink underline-offset-2 hover:underline">
+          {copy.terms}
+        </Link>{" "}
+        {copy.legalAnd}{" "}
+        <Link href="/privacy" className="font-medium text-puyer-ink underline-offset-2 hover:underline">
+          {copy.privacy}
+        </Link>
+        .
+      </p>
     </form>
   );
 }

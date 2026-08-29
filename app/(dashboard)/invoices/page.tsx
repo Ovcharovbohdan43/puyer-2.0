@@ -9,8 +9,8 @@ import { t } from "@/lib/i18n";
 function InvoicesFallback() {
   const copy = t("dashboard");
   return (
-    <div className="p-10">
-      <h1 className="text-[32px] leading-10 font-semibold text-[#F8F9FF]">{copy.invoicesTitle}</h1>
+    <div className="bg-[#F6F7F6] p-10">
+      <h1 className="text-[32px] leading-10 font-semibold text-[#111827]">{copy.invoicesTitle}</h1>
     </div>
   );
 }

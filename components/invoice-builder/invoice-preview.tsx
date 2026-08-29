@@ -1,7 +1,9 @@
 import { InvoiceBankTransfer } from "@/components/invoice/invoice-bank-transfer";
 import { InvoicePlatformDisclaimer } from "@/components/invoice/invoice-platform-disclaimer";
 import { formatInvoiceDate } from "@/lib/invoices/dates";
-import { formatMoney } from "@/lib/invoices/money";
+import { formatMajorMoney, formatMoney } from "@/lib/invoices/money";
+import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
+import { invoiceTemplateSkin } from "@/lib/invoices/template-layout";
 import type { Currency } from "@/lib/invoices/currencies";
 import type { InvoiceTotals } from "@/lib/invoices/calculate";
 import type { BuilderState } from "@/components/invoice-builder/types";
@@ -14,192 +16,153 @@ type InvoicePreviewProps = {
 };
 
 const wrap = "min-w-0 wrap-anywhere";
-const NAVY = "#0B1C30";
-const MINT = "#6CF8BB";
+const tableGrid =
+  "grid grid-cols-[minmax(0,1.6fr)_minmax(2rem,0.45fr)_minmax(4.75rem,0.75fr)_minmax(3rem,0.5fr)_minmax(4.75rem,0.75fr)]";
 
 export function InvoicePreview({ state, currency, totals, zoom }: InvoicePreviewProps) {
   const accent = state.accentColor === "#000000" ? "var(--invoice-accent)" : state.accentColor;
-  const isMinimal = state.template === "MINIMAL";
-  const isPremium = state.template === "PREMIUM";
+  const skin = invoiceTemplateSkin(state.template);
   const taxLabel = state.taxRate.trim() === "" ? "0" : state.taxRate;
   const money = (minor: bigint) => formatMoney(minor, currency.symbol, currency.exponent);
+  const unit = (value: string) => formatMajorMoney(value, currency.symbol, currency.exponent);
+  const showPayment = hasBankTransfer(state) || Boolean(state.paymentDetails.trim());
+  const showNotes = Boolean(state.notes.trim());
+  const markColor = skin.markUsesAccent ? accent : "var(--invoice-accent)";
 
   return (
     <article
-      className={`invoice-paper w-full max-w-[700px] origin-top overflow-hidden bg-white ${
-        isPremium ? "p-0" : "p-8 sm:p-12"
-      }`}
+      className="invoice-paper w-full max-w-[700px] origin-top overflow-hidden bg-white p-8 sm:p-12"
       style={{ transform: `scale(${zoom})` }}
     >
-      {isPremium ? (
-        <PremiumHeader state={state} accent={accent} />
-      ) : (
-        <ClassicHeader state={state} accent={accent} isMinimal={isMinimal} />
-      )}
+      {skin.accentStripe ? <div className="-mx-8 mb-8 h-1 sm:-mx-12" style={{ background: accent }} /> : null}
 
-      <div className={isPremium ? "px-8 pb-8 pt-6 sm:px-12 sm:pb-12" : ""}>
-        <div className={`flex min-w-0 gap-8 ${isPremium ? "rounded-lg bg-puyer-soft p-4" : "mt-8"}`}>
-          <div className={`flex-1 ${wrap}`}>
-            <p className="text-[12px] font-semibold tracking-[0.6px] text-[#45464d]">Billed To</p>
-            <p className={`pt-1 text-[16px] font-semibold leading-6 text-black ${wrap}`}>
-              {state.clientName || "Client"}
-            </p>
-            <p className={`whitespace-pre-wrap text-[14px] leading-5 text-[#45464d] ${wrap}`}>{state.clientAddress}</p>
-          </div>
-          <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-4 gap-y-1 text-[14px]">
-            <p className="text-[12px] font-semibold tracking-[0.6px] text-[#45464d]">Date</p>
-            <p className="min-w-0 font-mono font-medium">{formatInvoiceDate(state.issueDate)}</p>
-            <p className="text-[12px] font-semibold tracking-[0.6px] text-[#45464d]">Due Date</p>
-            <p className="min-w-0 font-mono font-medium">{formatInvoiceDate(state.dueDate)}</p>
-          </div>
-        </div>
-
-        <div className={`min-w-0 ${isPremium ? "mt-6" : "mt-8"}`}>
-          <div
-            className={`grid grid-cols-[minmax(0,1fr)_72px_110px] pb-2 text-[12px] font-semibold tracking-[0.6px] ${
-              isPremium
-                ? accent === "var(--invoice-accent)"
-                  ? "rounded-t px-3 py-2.5 text-puyer-ink"
-                  : "rounded-t px-3 py-2.5 text-white"
-                : isMinimal
-                  ? "border-b border-[#e2e8f0] text-[#45464d]"
-                  : "border-b-2 text-[#45464d]"
-            }`}
-            style={
-              isPremium
-                ? { background: accent }
-                : isMinimal
-                  ? undefined
-                  : { borderBottomColor: accent }
-            }
-          >
-            <span>Description</span>
-            <span className="text-right">Qty</span>
-            <span className="text-right">Amount</span>
-          </div>
-          {state.items.map((item, index) => (
-            <div
-              key={item.id}
-              className={`grid grid-cols-[minmax(0,1fr)_72px_110px] py-2 text-[14px] ${
-                isPremium ? "border-x border-[#e2e8f0] px-3 even:bg-puyer-soft" : "border-b border-[#e2e8f0]"
-              }`}
-            >
-              <span className={wrap}>{item.description || "—"}</span>
-              <span className="text-right font-mono">{item.quantity || "0"}</span>
-              <span className="text-right font-mono">{money(totals.lineAmounts[index] ?? 0n)}</span>
-            </div>
-          ))}
-          {isPremium ? <div className="h-px bg-[#e2e8f0]" /> : null}
-
-          <div className={`ml-auto mt-4 w-full max-w-[265px] text-[14px] ${isPremium ? "rounded-lg p-4 text-white" : ""}`} style={isPremium ? { background: NAVY } : undefined}>
-            <div className={`flex justify-between py-1 ${isPremium ? "" : "border-b border-[#e2e8f0]"}`}>
-              <span className={isPremium ? "text-[#94A3B8]" : "text-[#45464d]"}>Subtotal</span>
-              <span className="font-mono">{money(totals.subtotal)}</span>
-            </div>
-            {totals.discountAmount > 0n ? (
-              <div className={`flex justify-between py-1 ${isPremium ? "" : "border-b border-[#e2e8f0]"}`}>
-                <span className={isPremium ? "text-[#94A3B8]" : "text-[#45464d]"}>Discount</span>
-                <span className="font-mono">−{money(totals.discountAmount)}</span>
-              </div>
-            ) : null}
-            <div className={`flex justify-between py-1 ${isPremium ? "" : "border-b border-[#e2e8f0]"}`}>
-              <span className={isPremium ? "text-[#94A3B8]" : "text-[#45464d]"}>Tax ({taxLabel}%)</span>
-              <span className="font-mono">{money(totals.taxAmount)}</span>
-            </div>
-            <div
-              className={`flex justify-between pb-1 pt-3 text-[24px] font-semibold leading-8`}
-              style={{ color: isPremium ? MINT : isMinimal ? "var(--invoice-accent)" : accent }}
-            >
-              <span>Total</span>
-              <span>{money(totals.total)}</span>
-            </div>
-          </div>
-        </div>
-
-        <InvoiceBankTransfer state={state} />
-        {state.paymentDetails ? (
-          <p className={`mt-6 whitespace-pre-wrap text-[14px] leading-5 text-[#45464d] ${wrap}`}>{state.paymentDetails}</p>
-        ) : null}
-
-        {state.notes ? (
-          <p
-            className={`mt-8 pt-[25px] text-center text-[12px] font-semibold tracking-[0.6px] text-[#45464d] ${wrap} ${
-              isMinimal ? "border-t-0" : "border-t border-[#e2e8f0]"
-            }`}
-          >
-            {state.notes}
-          </p>
-        ) : null}
-        <InvoicePlatformDisclaimer
-          className={state.notes ? "mt-4" : isMinimal ? "mt-8" : "mt-8 border-t border-[#e2e8f0] pt-[25px]"}
-        />
-      </div>
-    </article>
-  );
-}
-
-function ClassicHeader({
-  state,
-  accent,
-  isMinimal,
-}: {
-  state: BuilderState;
-  accent: string;
-  isMinimal: boolean;
-}) {
-  return (
-    <div
-      className="flex items-start justify-between gap-6 pb-[26px]"
-      style={{ borderBottom: isMinimal ? "1px solid var(--puyer-border)" : `2px solid ${accent}` }}
-    >
-      <div className="min-w-0 shrink-0">
-        <p
-          className={`font-semibold uppercase leading-10 ${
-            isMinimal ? "text-[22px] tracking-[4px] text-puyer-ink" : "text-[32px] tracking-[-0.8px]"
-          }`}
-          style={isMinimal ? undefined : { color: accent }}
-        >
-          Invoice
-        </p>
-        <p className="font-mono text-[14px] font-medium leading-5 tracking-normal whitespace-nowrap text-[#45464d]">
-          #{state.invoiceNumber}
-        </p>
-      </div>
-      <div className={`flex max-w-[58%] flex-1 flex-col items-end gap-2 ${wrap}`}>
-        {isMinimal ? null : <span className="size-12 shrink-0 rounded-full" style={{ background: accent }} />}
-        <p className={`w-full text-right text-[24px] font-semibold leading-8 text-black ${wrap}`}>
-          {state.businessName || "Your business"}
-        </p>
-        {state.businessAddress ? (
-          <p className={`w-full whitespace-pre-wrap text-right text-[12px] leading-4 text-[#45464d] ${wrap}`}>
-            {state.businessAddress}
-          </p>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function PremiumHeader({ state, accent }: { state: BuilderState; accent: string }) {
-  return (
-    <div style={{ background: NAVY }}>
-      <div className="h-[6px]" style={{ background: accent }} />
-      <div className="flex items-start justify-between gap-6 px-8 py-8 sm:px-12">
-        <div className="min-w-0">
-          <p className="text-[13px] font-semibold tracking-[3px] text-[#6CF8BB] uppercase">Invoice</p>
-          <p className="mt-2 text-[32px] font-semibold leading-10 tracking-[-0.6px] text-white">#{state.invoiceNumber}</p>
-        </div>
-        <div className={`max-w-[58%] flex-1 text-right ${wrap}`}>
-          <p className={`text-[20px] font-semibold leading-7 text-white ${wrap}`}>
+      <header className="flex min-w-0 items-start justify-between gap-6">
+        <div className={`min-w-0 flex-1 ${wrap}`}>
+          <p className={`text-[28px] font-semibold leading-8 tracking-[-0.6px] ${wrap}`} style={{ color: markColor }}>
             {state.businessName || "Your business"}
           </p>
           {state.businessAddress ? (
-            <p className={`mt-1 whitespace-pre-wrap text-[12px] leading-4 text-[#94A3B8] ${wrap}`}>
+            <p className={`mt-2 whitespace-pre-wrap text-[13px] leading-5 text-puyer-muted ${wrap}`}>
               {state.businessAddress}
             </p>
           ) : null}
         </div>
+        <div className="shrink-0 text-right">
+          <p className="text-[28px] font-bold leading-8 tracking-[-0.4px] text-puyer-ink uppercase">Invoice</p>
+          <p className="mt-1 font-mono text-[13px] font-medium leading-5 whitespace-nowrap text-puyer-muted">
+            #{state.invoiceNumber}
+          </p>
+        </div>
+      </header>
+
+      <div className="mt-10 flex min-w-0 gap-8">
+        <div className={`min-w-0 flex-1 ${wrap}`}>
+          <p className="text-[11px] font-semibold tracking-[0.8px] text-puyer-muted uppercase">Billed to</p>
+          <p className={`pt-1 text-[16px] font-semibold leading-6 text-puyer-ink ${wrap}`}>
+            {state.clientName || "Client"}
+          </p>
+          <p className={`whitespace-pre-wrap text-[13px] leading-5 text-puyer-muted ${wrap}`}>{state.clientAddress}</p>
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold tracking-[0.8px] text-puyer-muted uppercase">Invoice details</p>
+          <dl className="mt-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-1 text-[13px] leading-5">
+            <dt className="text-puyer-muted">Date issued</dt>
+            <dd className="min-w-0 text-right font-medium text-puyer-ink">{formatInvoiceDate(state.issueDate)}</dd>
+            <dt className="text-puyer-muted">Due date</dt>
+            <dd className="min-w-0 text-right font-medium text-puyer-ink">{formatInvoiceDate(state.dueDate)}</dd>
+          </dl>
+        </div>
       </div>
-    </div>
+
+      <div className="mt-8 min-w-0 overflow-x-auto">
+        <div
+          className={`${tableGrid} min-w-[520px] px-3 py-2.5 text-[10px] font-semibold tracking-[0.7px] uppercase ${
+            skin.filledTableHead
+              ? skin.tableHeadUsesAccent
+                ? "text-white"
+                : "bg-puyer-soft text-puyer-muted"
+              : "border-b border-puyer-border text-puyer-muted"
+          }`}
+          style={skin.tableHeadUsesAccent ? { background: accent } : undefined}
+        >
+          <span>Description</span>
+          <span className="text-right">Qty</span>
+          <span className="text-right">Unit price</span>
+          <span className="text-right">Tax (%)</span>
+          <span className="text-right">Total</span>
+        </div>
+        {state.items.map((item, index) => (
+          <div
+            key={item.id}
+            className={`${tableGrid} min-w-[520px] px-3 py-2.5 text-[13px] leading-5 ${
+              skin.zebra
+                ? index % 2 === 1
+                  ? "bg-puyer-soft"
+                  : ""
+                : "border-b border-puyer-border"
+            }`}
+          >
+            <span className={wrap}>{item.description || "—"}</span>
+            <span className="text-right font-mono">{item.quantity || "0"}</span>
+            <span className="text-right font-mono">{unit(item.unitPrice)}</span>
+            <span className="text-right font-mono">{taxLabel}</span>
+            <span className="text-right font-mono">{money(totals.lineAmounts[index] ?? 0n)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 ml-auto w-full max-w-[280px] text-[13px] leading-5">
+        <div className="flex justify-between border-b border-dotted border-puyer-border py-2">
+          <span className="text-puyer-muted">Subtotal</span>
+          <span className="font-mono font-medium">{money(totals.subtotal)}</span>
+        </div>
+        <div className="flex justify-between border-b border-dotted border-puyer-border py-2">
+          <span className="text-puyer-muted">Tax ({taxLabel}%)</span>
+          <span className="font-mono font-medium">{money(totals.taxAmount)}</span>
+        </div>
+        {totals.discountAmount > 0n ? (
+          <div className="flex justify-between border-b border-dotted border-puyer-border py-2">
+            <span className="text-puyer-muted">Discount</span>
+            <span className="font-mono font-medium">−{money(totals.discountAmount)}</span>
+          </div>
+        ) : null}
+        <div
+          className={`mt-2 flex justify-between px-3 py-2.5 text-[15px] font-semibold ${
+            skin.filledTotalDue ? "text-white" : "text-puyer-ink"
+          }`}
+          style={skin.filledTotalDue ? { background: accent } : { color: markColor }}
+        >
+          <span>Total due</span>
+          <span className="font-mono">{money(totals.total)}</span>
+        </div>
+      </div>
+
+      {showPayment ? (
+        <div className="mt-10 min-w-0">
+          <p className="text-[11px] font-semibold tracking-[0.8px] text-puyer-ink uppercase">Payment instructions</p>
+          {hasBankTransfer(state) ? (
+            <div className="mt-2 rounded border border-puyer-border bg-puyer-soft p-3">
+              <InvoiceBankTransfer state={state} className="mt-0" />
+            </div>
+          ) : null}
+          {state.paymentDetails.trim() ? (
+            <p className={`mt-2 whitespace-pre-wrap text-[12px] leading-5 text-puyer-muted ${wrap}`}>
+              {state.paymentDetails}
+            </p>
+          ) : null}
+          {hasBankTransfer(state) ? (
+            <p className="mt-2 text-[11px] leading-4 text-puyer-muted italic">
+              Please include invoice number #{state.invoiceNumber} in remittance.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {showNotes ? (
+        <p className={`mt-8 whitespace-pre-wrap text-[12px] leading-5 text-puyer-muted ${wrap}`}>{state.notes}</p>
+      ) : null}
+
+      <InvoicePlatformDisclaimer className="mt-8" />
+    </article>
   );
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { MagicLinkForm } from "@/components/auth/magic-link-form";
+import { PuyerLogo } from "@/components/brand/puyer-logo";
 import type { AuthIntent } from "@/lib/auth/return-to";
 import { t } from "@/lib/i18n";
 
@@ -14,14 +15,13 @@ type LoginPageViewProps = {
 
 export function LoginPageView({ intent, expired }: LoginPageViewProps) {
   const copy = t("auth");
-  const header = t("header");
 
   return (
     <main className="login-shell grid min-h-dvh bg-white lg:grid-cols-2">
       <section className="flex min-h-dvh flex-col px-6 py-6 sm:px-10">
         <div className="flex items-center">
-          <Link href="/" className="text-[24px] font-semibold leading-8 text-puyer-ink">
-            {header.brand}
+          <Link href="/" className="inline-flex items-center">
+            <PuyerLogo height={36} />
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center py-10">

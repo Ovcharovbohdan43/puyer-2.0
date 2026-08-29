@@ -149,6 +149,9 @@
     "step1": "Create",
     "step2": "Send",
     "step3": "Get Paid",
+    "step1Alt": "Invoice builder with a live preview and a green Next button",
+    "step2Alt": "Invoice builder with green Download PDF and Share buttons",
+    "step3Alt": "Paid invoice page with green Download PDF and Share actions",
     "mockup": "UI Mockup"
   },
   "why": {
@@ -189,20 +192,23 @@
   "tracking": {
     "title": "Know what's been paid. And what hasn't.",
     "body": "Keep track of paid, pending, and overdue invoices at a glance.",
-    "mockup": "Payments UI Mockup"
+    "mockup": "Payments UI Mockup",
+    "imageAlt": "Puyer dashboard showing paid, pending, and overdue invoices"
   },
   "reminders": {
     "title": "Stop chasing unpaid invoices.",
     "badge": "PRO",
     "body": "Set up automatic email reminders for past due invoices and let Puyer do the heavy lifting.",
-    "mockup": "Reminders UI Mockup"
+    "mockup": "Reminders UI Mockup",
+    "imageAlt": "Automatic reminder settings and a past-due invoice email preview"
   },
   "clientsReports": {
     "clientsTitle": "Keep your clients organized.",
     "clientsMockup": "Clients UI Mockup",
-    "clientsCta": "Manage clients",
+    "clientsImageAlt": "Puyer clients list with company names, emails, and active or pending status",
     "reportsTitle": "See how your business is doing.",
     "reportsMockup": "Reporting UI Mockup",
+    "reportsImageAlt": "Puyer reports dashboard with revenue KPI cards and a six-month trends chart",
     "reportsNote": "Advanced analytics available on the Business plan."
   },
   "pricing": {
@@ -231,23 +237,55 @@
     "items": [
       {
         "q": "Do I need an account to create an invoice?",
-        "a": "No. You can build, preview, and download invoices without creating an account. An account is needed to save invoices, connect Stripe, and use Pro or Business features."
+        "a": "You can design and preview an invoice on the homepage without signing in. To save, download a PDF, share a payment link, or get paid, sign in with an email magic link. Guest drafts are not stored if you leave the page."
+      },
+      {
+        "q": "What's included on Free, Pro, and Business?",
+        "a": "Free includes unlimited invoices, PDF export, all three templates, and clients. Pro adds Stripe card payments on your connected account and automatic reminders. Business adds team seats and advanced reports. Yearly pricing is 10× monthly (two months free)."
       },
       {
         "q": "Are the templates free to use?",
-        "a": "Yes. Minimal, Professional, and Premium are all available on the Free plan. The Premium template does not include Puyer branding."
+        "a": "Yes. Minimal, Professional, and Premium are all on the Free plan. Premium does not add Puyer branding on the invoice."
       },
       {
-        "q": "Can I download as PDF?",
-        "a": "Yes. Every invoice can be downloaded as a PDF in A4 or US Letter."
+        "q": "Can I download a PDF?",
+        "a": "Yes. After you sign in, every invoice can be downloaded as A4 or US Letter. On the homepage, Download PDF asks you to sign in first, then you can download."
       },
       {
-        "q": "How does Stripe integration work?",
-        "a": "You connect your own Stripe account. Your customers pay you directly through that account. Puyer is invoicing software and does not hold your customers' funds or charge transaction fees."
+        "q": "How do I sign in? Is there a password?",
+        "a": "No password. Enter your email and we send a one-time magic link. Open it on this device to reach your workspace."
+      },
+      {
+        "q": "How do invoice card payments work?",
+        "a": "On Pro or Business, connect your own Stripe account in Settings. Your customer opens the invoice link and pays you on that account. Puyer is invoicing software: it does not hold your customers' funds."
       },
       {
         "q": "Are there transaction fees?",
-        "a": "Puyer does not charge transaction fees on invoice payments. Stripe's standard processing fees apply on your connected Stripe account."
+        "a": "Puyer does not charge a fee or percentage on invoice payments. Stripe's processing fees still apply on your connected account (they vary by country and payment method)."
+      },
+      {
+        "q": "Does my client need a Puyer or Stripe account?",
+        "a": "No. They open your unguessable invoice link. To pay by card they use Stripe Checkout as a guest. They do not need a Puyer login."
+      },
+      {
+        "q": "Can I get paid without Stripe?",
+        "a": "Yes. You can show bank transfer details on the invoice (saved only if you consent). Puyer does not confirm bank payments. The Pay button for cards requires Stripe on Pro or Business."
+      },
+      {
+        "q": "Do you send payment reminders?",
+        "a": "Automatic reminders (before due, on the due date, and after) are on Pro and Business. You can also send the invoice email yourself from the app."
+      },
+      {
+        "q": "Can my team use Puyer?",
+        "a": "Yes, on Business. The workspace owner invites people by email. Members work on invoices and clients; billing and Stripe stay with the owner."
+      },
+      {
+        "q": "Do you handle VAT or sales tax for me?",
+        "a": "You can add a tax percentage on each invoice. Puyer does not file taxes or act as your accountant. You remain responsible for the document and local rules."
+      },
+      {
+        "q": "Can I send recurring invoices?",
+        "a": "Not yet. Create each invoice when you need it. Reminders on Pro help collect payment on invoices you have already sent."
       }
     ]
   },
@@ -264,13 +302,33 @@
     "pricing": "Pricing",
     "templates": "Templates",
     "company": "Company",
-    "about": "About",
     "contact": "Contact",
-    "careers": "Careers",
+    "contactEmail": "support@puyer.org",
     "legal": "Legal",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "cookieSettings": "Cookie settings",
     "copyright": "© 2026 Puyer Inc. All rights reserved."
+  },
+  "cookies": {
+    "title": "Cookies on Puyer",
+    "body": "We use strictly necessary cookies to sign you in and keep the service secure. Optional analytics and marketing are off unless you allow them. We do not load ads or third-party analytics today.",
+    "policy": "Cookie Policy",
+    "privacy": "Privacy Policy",
+    "accept": "Accept all",
+    "reject": "Reject optional",
+    "customize": "Customize",
+    "back": "Back",
+    "save": "Save choices",
+    "necessary": "Necessary",
+    "necessaryHint": "Sign-in, security, and remembering this choice. Always on.",
+    "preferences": "Preferences",
+    "preferencesHint": "Appearance (theme) on pages that still honor it, such as the public invoice.",
+    "analytics": "Analytics",
+    "analyticsHint": "Product measurement. Not loaded unless you allow this category.",
+    "marketing": "Marketing",
+    "marketingHint": "Advertising or cross-site tracking. Not used unless you allow this category."
   },
   "header": {
     "brand": "Puyer",
@@ -312,6 +370,10 @@
     "changeEmail": "Change email",
     "resend": "Resend link",
     "cancel": "Cancel",
+    "legalLead": "By continuing you agree to the",
+    "legalAnd": "and",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
     "benefits": [
       "Unlimited invoices",
       "Download PDF",
@@ -339,7 +401,7 @@
     "proPlan": "Pro Plan",
     "businessPlan": "Business Plan",
     "nav": {
-      "overview": "Overview",
+      "overview": "Home",
       "invoices": "Invoices",
       "clients": "Clients",
       "payments": "Payments",
@@ -434,6 +496,23 @@
     "kpiOutstandingCount": "{count} invoices awaiting payment",
     "kpiOverdueCount": "{count} invoices require action",
     "emptyInvoices": "No invoices yet. Create one to get started.",
+    "searchClients": "Search clients...",
+    "exportCsv": "Export",
+    "paginationShowing": "Showing {from} to {to} of {total} results",
+    "colEmail": "Email",
+    "colOutstandingAmount": "Outstanding amount",
+    "colLastInvoice": "Last invoice date",
+    "kpiTotalClients": "Total clients",
+    "kpiActiveClients": "Active clients",
+    "clientActive": "Active",
+    "clientPending": "Pending",
+    "clientOverdue": "Overdue",
+    "clientNone": "No invoices",
+    "previewTo": "To: {client}",
+    "previewSubject": "Subject: Invoice {number}",
+    "previewBody": "Hi {client}, here is invoice {number}. Due {due}.",
+    "invoiceAmount": "Invoice amount",
+    "viewPublicInvoice": "View invoice",
     "clientsSoon": "Add a client, then create an invoice for them.",
     "paymentsSoon": "Payments show money collected through your connected Stripe account, not Puyer. This list lands in a later phase.",
     "reportsSoon": "Reports land in a later phase.",
@@ -548,6 +627,11 @@
     "kpiOverdue": "Overdue",
     "paidCount": "{count} paid invoices",
     "paid30Count": "{count} paid in the last 30 days",
+    "paidShare": "{share} of issued invoices",
+    "outstandingShare": "{share} outstanding",
+    "monthlyRevenue": "Monthly revenue",
+    "topClients": "Top clients",
+    "viewAllClients": "View all clients",
     "outstandingCount": "{count} invoices awaiting payment",
     "overdueCount": "{count} invoices require action",
     "trends": "Revenue trends",

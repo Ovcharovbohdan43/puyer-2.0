@@ -20,7 +20,7 @@ export function FaqSection() {
           return (
             <div
               key={item.q}
-              className="rounded border border-[#e2e8f0] bg-white p-[17px]"
+              className="landing-btn landing-btn--quiet rounded border border-[#e2e8f0] bg-white p-[17px]"
             >
               <button
                 type="button"

@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.12 — 2026-08-29
+> **Version:** 1.0.24 — 2026-08-29
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -42,21 +42,38 @@ Forbidden on System B: `application_fee_amount`, destination charges, separate c
 | Object | Action | Target |
 |---|---|---|
 | Logo `Puyer` | click | `/` (scroll top). If builder dirty → unsaved modal first |
-| Features | click | `/#features` (smooth scroll if already on `/`) |
+| Features | click | `/#features` (smooth scroll if already on `/`). Cards loop horizontally; hover pauses. |
 | Templates | click | `/#templates` |
 | Pricing | click | `/pricing` |
 | FAQ | click | `/#faq` |
 | Login | click | `/login` |
 | Create Invoice | click | Unauth: scroll to `#builder`, focus first input. Auth: `/invoices/new` |
-| Theme toggle | click | Moon/sun icon. Toggle light/dark. Persist `localStorage`. Public default: light. Preview and chrome follow the theme. |
+| Theme toggle | — | Not on landing, `/pricing`, `/login`, or the dashboard. Those stay light. Public `/invoice/[publicId]` may still follow stored `puyer-theme`. |
 
 Mobile public header: Logo + Create Invoice + Menu. Menu opens sheet with the remaining links.
 
+Footer (marketing): Features, Pricing, Templates, Contact, Privacy, Terms, Cookie Policy, Cookie settings.
+
+### Cookie window
+
+```
+Any page (first visit, no puyer-cookie-consent)
+→ UI: floating card (not a full-page wall)
+→ Accept all | Reject optional | Customize
+→ TARGET: localStorage puyer-cookie-consent
+→ Necessary cookies always run (Auth, return path)
+→ Analytics/marketing scripts only if those flags are true (none shipped in v1)
+```
+
+Footer Cookie settings or `/cookies` button → reopen Customize.
+
+`/privacy` `/terms` `/cookies` → legal articles. Login form links Terms and Privacy under Continue with email.
+
 ### Authenticated app
 
-Sidebar (desktop, collapsible): Overview, Invoices, Clients, Payments, Reports, Settings.
+Sidebar (desktop): Home, Clients, Invoices, Payments, Reports. Footer: Settings, Team, Notifications.
 
-Mobile bottom: Overview, Invoices, Clients, Payments, More.
+Mobile bottom: Home, Clients, Invoices, Payments, More.
 
 More sheet: Reports, Settings, Team, Billing, Notifications, Sign out.
 
@@ -103,7 +120,17 @@ Landing → click Create Invoice → authenticated
 
 In-page smooth scroll. **Use this template** → apply template on current builder (unauth) or `/invoices/new?template=` (if navigating away). Cards show live invoice previews; hover zooms the preview. Keep data. Do not register.
 
+FAQ accordion answers live product questions (account vs guest builder, plans, PDF after sign-in, magic link, Stripe on Pro, fees, client pay, bank transfer, reminders, team, tax %, no recurring yet).
+
 Pricing link in header → `/pricing`. In-page pricing section remains for marketing; header Pricing always goes to `/pricing`.
+
+### Stripe (`#stripe`)
+
+Phosphor flow: customer → Stripe → business. Required note: Puyer is invoicing software; payments go through the connected Stripe account. **Connect Stripe** is `OpenAuthButton` with `intent="login"` (same as other unauth login CTAs).
+
+The dark `#trust` bar is display-only (Stripe / GDPR / data). Not a control.
+
+The clients marketing block is image + title only (no button). Other marketing CTAs use a light hover; `prefers-reduced-motion` keeps color/border changes without lift.
 
 ---
 
@@ -128,7 +155,7 @@ Cancel on `/login` is the Puyer logo → `/`.
 
 ```
 Email → click link → validate token → session
-→ Restore `authReturnTo` context:
+→ Restore `authReturnTo` context (never stay on `/` after a successful login):
 
 A login          → /dashboard
 B download PDF   → builder + resume download
@@ -161,7 +188,7 @@ Temporary number e.g. `INV-2026-001` is **preview only**. Server issues the real
 | Bank transfer | type | Optional IBAN / account fields. Preview updates. Not saved unless the storage-consent checkbox is checked |
 | Bank storage consent | checkbox | Required to send/store bank details. Unchecked: on-screen only; saved invoice/PDF omit them; no reuse on reload |
 | Notes | type | Issuer notes only. A small Puyer platform disclaimer is always printed under Notes and cannot be edited or removed |
-| Template icons | click | Keep data, switch visual only. All templates free. Minimal = sparse; Professional = accent; Premium = navy header + totals panel |
+| Template icons | click | Keep data, switch visual only. All templates free. Same Figma invoice skeleton; Minimal = sparse paint; Professional = grey table + navy Total due; Premium = accent stripe + accent table header |
 | Accent color | click | Preview color only |
 | Zoom + / − | click | Session-only preview zoom, not browser zoom |
 | Fullscreen | click | Desktop: modal. Mobile: full screen. Close returns to builder |
@@ -233,7 +260,7 @@ Double-click: disable primary button while in-flight. Especially Pay, Download, 
 
 ## 6. Pricing & Puyer billing (System A)
 
-`/pricing` — Free / Pro / Business, monthly/yearly toggle (no reload).
+`/pricing` and landing `#pricing` — Free / Pro / Business, Monthly/Yearly segmented control (no reload). Same Checkout contract.
 
 | Plan CTA | Unauth | Auth |
 |---|---|---|
@@ -336,4 +363,18 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Added: Bank transfer details require a storage-consent checkbox before they are saved.
 [2026-08-29] – Changed: Landing builder fills invoice data in two steps (details, then payment).
 [2026-08-29] – Changed: Landing step 1 is Next only; Download PDF and Share appear on step 2. Preview scrollbar is hidden.
+[2026-08-29] – Changed: Landing and `/pricing` stay light; no header theme toggle.
+[2026-08-29] – Changed: Invoice templates share one Figma document skeleton.
+[2026-08-29] – Changed: Invoice preview has no Terms & conditions column; bank details use full width.
+[2026-08-29] – Fixed: After magic link, login returns to `/dashboard` even if Auth landed on Site URL (`/`).
+[2026-08-29] – Changed: Landing Features is a horizontal marquee with Phosphor icons.
+[2026-08-29] – Changed: Landing Why list is dual Phosphor chip marquees.
+[2026-08-29] – Changed: Authenticated dashboard is light forest-green; invoice row still opens a right preview drawer.
+[2026-08-29] – Changed: Landing How steps use Phosphor badges, a connector line, and screenshot hover zoom.
+[2026-08-29] – Changed: Landing `#stripe` uses Phosphor flow icons; Connect Stripe still opens login.
+[2026-08-29] – Changed: Landing clients block has no button; remaining marketing CTAs have a light hover.
+[2026-08-29] – Added: Cookie choice window; footer links to Privacy, Terms, Cookie Policy.
+[2026-08-29] – Changed: Pricing is Phosphor plan cards with a Monthly/Yearly segmented control.
+[2026-08-29] – Changed: Landing trust bar is Phosphor chips (not clickable); copy unchanged.
+[2026-08-29] – Changed: Landing FAQ covers live product questions (no guest PDF download).
 ```

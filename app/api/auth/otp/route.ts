@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/auth/server";
 import { normalizeOtpEmail } from "@/lib/auth/otp-limit";
+import { magicLinkEmailRedirectTo } from "@/lib/auth/public-origin";
 import { returnToForIntent, sanitizeReturnTo, type AuthIntent } from "@/lib/auth/return-to";
 import { toPublicError, ValidationError } from "@/lib/errors";
 import { clientIp } from "@/lib/http/ip";
@@ -54,18 +55,19 @@ export async function POST(request: Request) {
         : returnToForIntent(intent);
     const returnTo = sanitizeReturnTo(requested);
     const cookieStore = await cookies();
+    const secure = new URL(request.url).protocol === "https:" || request.headers.get("x-forwarded-proto") === "https";
     cookieStore.set(RETURN_COOKIE, returnTo, {
       httpOnly: true,
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 10,
+      secure,
     });
 
-    const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,
+        emailRedirectTo: magicLinkEmailRedirectTo(request),
         shouldCreateUser: true,
       },
     });

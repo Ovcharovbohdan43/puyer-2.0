@@ -17,7 +17,7 @@ The current approach (Tailwind CSS v4):
 5. **Invoice preview follows the theme.** `.invoice-paper` uses the same card tokens. Soft panels use `bg-puyer-soft` (not `#F8FAFC`). Black accent `#000000` maps to `--invoice-accent` so totals stay visible. Form fields use `bg-puyer-card` plus `color-scheme: dark` so native date/text inputs do not stay white. PDF export remains a light document. Landing `.template-mockup` still forces light paper.
 6. **Public payer portal (`/invoice/[publicId]`)** uses tokens (`bg-puyer-card`, `text-puyer-ink`, `text-puyer-muted`, `border-puyer-border`), not Figma uppercase hex. `bg-white` remaps in dark mode, but `text-[#0B1C30]` does not — that mix made invoice text invisible.
 
-The header control is a moon icon in light mode and a sun icon in dark mode (inline geometric SVG, `currentColor`). Labels live in `aria-label`.
+The header control is a moon icon in light mode and a sun icon in dark mode (inline geometric SVG, `currentColor`). Labels live in `aria-label`. **Landing, `/pricing`, `/login`, and the authenticated dashboard do not show this control.** The dashboard is always light (`.app-shell`). Dark theme still applies to the public invoice page if `puyer-theme` is `dark`.
 
 ## How to use
 
@@ -47,13 +47,13 @@ npm run dev
 
 Browser:
 
-- Header shows a moon, not the word “Dark”.
-- Toggle restyles hero, builder chrome, FAQ, pricing, modals, **and** the live invoice preview.
+- Header shows a moon, not the word “Dark” (dashboard / payer portal — not landing).
+- Landing and `/pricing` stay white with no moon/sun control, even if dark was stored from the app.
 - Download PDF stays a dark solid button (not inverted to white).
 - Black accent on the preview becomes light ink so totals stay readable.
 - Reload with dark selected does not flash white.
 - After a magic-link login, the overlay `Encountered a script tag while rendering React component` must not appear.
-- `/pricing` follows the same theme.
+- `/pricing` stays light (same as landing). The dashboard is always light. Dark theme is only for the public invoice page if stored.
 - `/invoice/{publicId}` stays readable in both themes (no dark-on-dark text).
 - Green CTAs stay readable. Footer/trust blocks stay dark.
 
@@ -77,12 +77,15 @@ Browser:
 
 ## Version
 
-1.0.6 — 2026-08-29
+1.0.9 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Landing trust bar stays dark; icons are Phosphor, not Figma SVGs.
+[2026-08-29] – Changed: Dashboard is light-only; Overview moon removed.
 [2026-08-29] – Changed: Invoice preview scrollbar is hidden (scroll still works).
+[2026-08-29] – Changed: Landing and `/pricing` stay light (no public theme toggle).
 [2026-08-29] – Fixed: Dark theme no longer paints builder fields and Premium
   invoice panels white (tokens + native input color-scheme).
 [2026-08-29] – Changed: `/login` has no moon/sun control and keeps a white canvas.

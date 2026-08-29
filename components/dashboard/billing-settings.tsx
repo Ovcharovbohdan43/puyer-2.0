@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { dash as ui } from "@/lib/dashboard/chrome";
 import { t } from "@/lib/i18n";
 
 type BillingSettingsProps = {
@@ -70,54 +71,39 @@ export function BillingSettings({
   }
 
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-6 px-6 py-16">
-      <p className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE]">{dash.nav.billing}</p>
-      <h1 className="text-[24px] leading-8 font-semibold text-[#F8F9FF]">{copy.title}</h1>
-      <p className="text-[14px] leading-5 text-[#BEC6E0]">{copy.body}</p>
-      <div className="flex flex-col gap-1 rounded-xl border border-[rgba(198,198,205,0.5)] bg-[#131B2E] p-4">
-        <p className="text-[16px] font-semibold text-[#F8F9FF]">{planLabel}</p>
-        <p className="text-[14px] text-[#BEC6E0]">{statusLabel}</p>
-        {periodEndLabel ? <p className="text-[12px] text-[#BEC6E0]">{periodEndLabel}</p> : null}
-        {cancelAtPeriodEnd ? <p className="text-[12px] text-[#ff8a80]">{copy.cancelScheduled}</p> : null}
+    <main className={`${ui.page} mx-auto flex max-w-xl flex-col gap-6 px-6 py-16`}>
+      <p className="text-[12px] font-semibold text-[#006C49]">{dash.nav.billing}</p>
+      <h1 className="text-[24px] leading-8 font-semibold text-[#111827]">{copy.title}</h1>
+      <p className="text-[14px] leading-5 text-[#6B7280]">{copy.body}</p>
+      <div className={`${ui.card} flex flex-col gap-1 p-4`}>
+        <p className="text-[16px] font-semibold text-[#111827]">{planLabel}</p>
+        <p className="text-[14px] text-[#6B7280]">{statusLabel}</p>
+        {periodEndLabel ? <p className="text-[12px] text-[#6B7280]">{periodEndLabel}</p> : null}
+        {cancelAtPeriodEnd ? <p className="text-[12px] text-[#DC2626]">{copy.cancelScheduled}</p> : null}
       </div>
       {isOwner ? (
         <div className="flex flex-wrap gap-3">
           {canCheckout ? (
             <>
-              <button
-                type="button"
-                disabled={pending !== null}
-                onClick={() => void checkout("PRO")}
-                className="rounded-lg bg-[#6FFBBE] px-4 py-2 text-[12px] font-semibold tracking-[0.6px] text-[#0B1320] disabled:opacity-60"
-              >
+              <button type="button" disabled={pending !== null} onClick={() => void checkout("PRO")} className={`${ui.btnPrimary} disabled:opacity-60`}>
                 {pending === "pro" ? copy.redirecting : copy.subscribePro}
               </button>
-              <button
-                type="button"
-                disabled={pending !== null}
-                onClick={() => void checkout("BUSINESS")}
-                className="rounded-lg border border-[#C6C6CD] px-4 py-2 text-[12px] font-semibold tracking-[0.6px] text-[#F8F9FF] disabled:opacity-60"
-              >
+              <button type="button" disabled={pending !== null} onClick={() => void checkout("BUSINESS")} className={`${ui.btnSecondary} disabled:opacity-60`}>
                 {pending === "business" ? copy.redirecting : copy.subscribeBusiness}
               </button>
             </>
           ) : null}
           {hasCustomer ? (
-            <button
-              type="button"
-              disabled={pending !== null}
-              onClick={() => void openPortal()}
-              className="rounded-lg border border-[#C6C6CD] px-4 py-2 text-[12px] font-semibold tracking-[0.6px] text-[#F8F9FF] disabled:opacity-60"
-            >
+            <button type="button" disabled={pending !== null} onClick={() => void openPortal()} className={`${ui.btnSecondary} disabled:opacity-60`}>
               {pending === "portal" ? copy.redirecting : copy.manage}
             </button>
           ) : null}
         </div>
       ) : (
-        <p className="text-[12px] text-[#BEC6E0]">{copy.ownerOnly}</p>
+        <p className="text-[12px] text-[#6B7280]">{copy.ownerOnly}</p>
       )}
-      {error ? <p className="text-[12px] text-[#ff8a80]">{error}</p> : null}
-      <Link href="/pricing" className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE]">
+      {error ? <p className="text-[12px] text-[#DC2626]">{error}</p> : null}
+      <Link href="/pricing" className={ui.link}>
         {copy.viewPricing}
       </Link>
     </main>

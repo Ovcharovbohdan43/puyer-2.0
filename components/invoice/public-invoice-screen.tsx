@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PuyerLogo } from "@/components/brand/puyer-logo";
 import { InvoiceBankTransfer } from "@/components/invoice/invoice-bank-transfer";
 import { InvoicePlatformDisclaimer } from "@/components/invoice/invoice-platform-disclaimer";
 import { PublicPayPanel } from "@/components/invoice/public-pay-panel";
@@ -8,7 +9,7 @@ import type { InvoiceTotals } from "@/lib/invoices/calculate";
 import type { Currency } from "@/lib/invoices/currencies";
 import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
 import { formatInvoiceDate } from "@/lib/invoices/dates";
-import { formatMoney, parseMajorToMinor } from "@/lib/invoices/money";
+import { formatMajorMoney, formatMoney } from "@/lib/invoices/money";
 import type { PublicPayBadge } from "@/lib/invoices/status";
 import { t } from "@/lib/i18n";
 
@@ -60,8 +61,8 @@ export function PublicInvoiceScreen({
   return (
     <div className="payer-portal min-h-dvh bg-[#f1f5f9] text-puyer-ink dark:bg-background">
       <header className="border-b border-puyer-border bg-puyer-card px-6 py-4 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] sm:px-10">
-        <Link href="/" className="block text-[24px] leading-8 font-bold text-puyer-ink">
-          {pay.brand}
+        <Link href="/" className="inline-flex items-center">
+          <PuyerLogo height={32} />
         </Link>
       </header>
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 py-8 sm:px-10 sm:py-12 lg:flex-row lg:items-start">
@@ -142,7 +143,7 @@ export function PublicInvoiceScreen({
                       {item.quantity || "0"}
                     </td>
                     <td className="py-[18px] text-right font-mono text-[14px] leading-5 font-medium text-puyer-ink">
-                      {formatUnitPrice(item.unitPrice, currency)}
+                      {formatMajorMoney(item.unitPrice, currency.symbol, currency.exponent)}
                     </td>
                     <td className="py-[18px] text-right font-mono text-[14px] leading-5 font-medium text-puyer-ink">
                       {money(totals.lineAmounts[index] ?? 0n)}
@@ -202,12 +203,4 @@ export function PublicInvoiceScreen({
       </div>
     </div>
   );
-}
-
-function formatUnitPrice(unitPrice: string, currency: Currency): string {
-  try {
-    return formatMoney(parseMajorToMinor(unitPrice || "0", currency.exponent), currency.symbol, currency.exponent);
-  } catch {
-    return unitPrice || formatMoney(0n, currency.symbol, currency.exponent);
-  }
 }

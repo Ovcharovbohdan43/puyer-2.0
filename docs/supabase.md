@@ -1,6 +1,6 @@
 # Supabase clients
 
-**Version / updated:** 2026-08-28
+**Version / updated:** 2026-08-29
 
 ## Purpose
 
@@ -27,8 +27,8 @@ Session refresh does **not** redirect anonymous visitors on marketing routes (`/
 
 1. Public keys belong in `.env.local` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`).
 2. In the [Supabase dashboard](https://supabase.com/dashboard) → **Authentication → URL Configuration**:
-   - Site URL: `http://localhost:3000`
-   - Redirect URLs: `http://localhost:3000/auth/callback`
+   - Site URL: `https://www.puyer.org` in production (`http://localhost:3000` locally). Do not set Site URL to `/auth/callback`.
+   - Redirect URLs: `https://www.puyer.org/auth/callback` **and** `https://puyer.org/auth/callback` (plus `http://localhost:3000/auth/callback` for local). Both hosts are required; a mismatch sends the magic link to the homepage.
 3. Prisma URLs — green **Connect** button at the top of the project (not Settings → Database):
    - TypeScript / ORMs → copy **Transaction pooler** (`:6543`) into `DATABASE_URL`, add `?pgbouncer=true`
    - copy **Session pooler** (`:5432`) into `DIRECT_URL` (Windows is IPv4; do not use `db.*.supabase.co`)
@@ -86,5 +86,6 @@ Manual: `npm run dev`, open `/` and `/pricing`. Both must load without a login r
 - [2026-08-28] – Added: `.env.local` Prisma URLs via MCP (dedicated `puyer_prisma` role, direct 5432).
 - [2026-08-28] – Added: Invoice domain tables + RLS (`20260828180000_invoice_domain.sql`).
 - [2026-08-28] – Added: Private `invoice-pdfs` Storage bucket (`20260828190000_invoice_pdf_storage.sql`).
-- [2026-08-28] – Changed: Gated routes redirect to `/login`.
+- [2026-08-29] – Fixed: Document production Site URL vs Redirect URLs (www + apex). Auth cookies use `.puyer.org` so PKCE survives host switches.
+
 - [2026-08-28] – Fixed: Cloud Auth templates are applied with `npm run auth:push-templates`, not `config.toml` alone.

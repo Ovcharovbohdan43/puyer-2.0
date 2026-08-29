@@ -47,6 +47,7 @@ describe("auth email templates", () => {
     expect(message.html).toContain('width="600"');
     expect(message.html).toContain('bgcolor="#F1F5F9"');
     expect(message.html).toContain("Puyer");
+    expect(message.html).toContain("puyer-logo.png");
     expect(message.html).toContain("#006C49");
     expect(message.html).toContain("305805");
     const verifyUrl = authVerifyUrl({

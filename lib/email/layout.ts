@@ -1,3 +1,4 @@
+import { puyerLogoAbsoluteUrl } from "@/lib/brand";
 import { escapeHtml } from "@/lib/email/types";
 
 const INK = "#0B1C30";
@@ -91,7 +92,7 @@ export function puyerEmailHtml(input: PuyerEmailLayoutInput): string {
                   <td bgcolor="${GREEN}" height="8" style="background-color:${GREEN};height:8px;font-size:0;line-height:0;">&nbsp;</td>
                 </tr>
                 <tr>
-                  <td style="padding:32px 32px 8px;font-family:${FONT};font-size:24px;font-weight:bold;line-height:32px;color:${INK};">Puyer</td>
+                  <td style="padding:32px 32px 8px;"><img src="${puyerLogoAbsoluteUrl()}" alt="Puyer" height="36" style="display:block;height:36px;width:auto;border:0;" /></td>
                 </tr>
                 <tr>
                   <td style="padding:8px 32px 0;font-family:${FONT};font-size:22px;font-weight:bold;line-height:30px;color:${INK};">${heading}</td>

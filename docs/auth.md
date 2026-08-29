@@ -6,11 +6,11 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 
 ## Description
 
-- Public login is `/login`: split layout, email magic link (Sign in / Create account). Both columns use a white canvas. There is no theme toggle on this page. The right panel is `public/auth/login-hero.png`. Download/Share on the landing builder still use a modal.
+- Public login is `/login`: split layout, email magic link (Sign in / Create account). Both columns use a white canvas. There is no theme toggle on this page. The right panel is `public/auth/login-hero.png`. The form links to Terms and Privacy. Download/Share on the landing builder still use a modal.
 - Sign out is in the app sidebar, mobile More sheet, Settings, and the dashboard error boundary. It `POST`s `/api/auth/signout` so `@supabase/ssr` can clear httpOnly cookies, then sends the browser to `/login`.
 - `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Hosted Auth renders the Magic Link mailer template and sends it over Resend SMTP. HTML in git is applied with `npm run auth:push-templates`, not by committing `config.toml`. The optional Send Email hook is an alternative, not a second path.
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
-- `GET /auth/callback` exchanges the PKCE `code` and redirects using `puyer-auth-return`.
+- `GET /auth/callback` exchanges a PKCE `code` or `token_hash` and redirects using `puyer-auth-return` (login → `/dashboard`). If Auth falls back to Site URL, `/?code=` is forwarded to the callback, and an implicit `#access_token` on `/` continues to `/dashboard`.
 - Public Supabase helpers live in `utils/supabase/*`. `lib/auth/browser.ts` and `lib/auth/server.ts` wrap them so marketing still loads when keys are missing (`trySupabasePublicEnv()`).
 - Next.js 16 request gate is [`proxy.ts`](../proxy.ts) (`getClaims()` before the response is committed). `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, and `/notifications` require a session; otherwise redirect to `/login`. `/?login=1` also redirects to `/login`.
 - Prisma uses the server connection **and** `requireSession` / `requireOrganization` / `requireOrgRole`. RLS in [`supabase/migrations/20260828120000_identity_rls_and_trigger.sql`](../supabase/migrations/20260828120000_identity_rls_and_trigger.sql) is defense in depth.
@@ -20,18 +20,25 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 ## How to use
 
 1. Public keys in `.env.local` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`).
-2. Dashboard → Authentication → URL Configuration: Site URL `http://localhost:3000`, Redirect `http://localhost:3000/auth/callback`.
-3. **Auth emails via Resend SMTP (recommended for hosted Auth):**
+2. Dashboard → Authentication → URL Configuration:
+   - **Site URL:** canonical origin only, e.g. `https://www.puyer.org` (not `/auth/callback`). Local: `http://localhost:3000`.
+   - **Redirect URLs** (exact match; add **both** www and apex in production):
+     - `https://www.puyer.org/auth/callback`
+     - `https://puyer.org/auth/callback`
+     - `http://localhost:3000/auth/callback`
+   If only www is allow-listed and the user opens `https://puyer.org/login`, the magic link is rejected and Auth sends them to Site URL (the landing page). They can look signed in (header **Dashboard**) without ever hitting `/dashboard`.
+3. Vercel `NEXT_PUBLIC_APP_URL` must be the production origin (`https://www.puyer.org` or `https://puyer.org`), not `http://localhost:3000`. OTP still uses the **request host** for `emailRedirectTo` so PKCE cookies match.
+4. **Auth emails via Resend SMTP (recommended for hosted Auth):**
    - Connect Resend as custom SMTP in the Supabase dashboard. Do **not** enable the Send Email hook at the same time or users can get two emails.
    - Git files in `supabase/templates/` are **not** applied to the cloud project by `git push`. `config.toml` `content_path` only applies to local `supabase start`.
    - Apply them with `npm run auth:push-templates` (`SUPABASE_ACCESS_TOKEN` from [Account → Access Tokens](https://supabase.com/dashboard/account/tokens)). That PATCHes only `mailer_subjects_*` and `mailer_templates_*` — it does not send `supabase config push`, which can overwrite SMTP and Site URL.
    - Confirm in **Authentication → Email Templates → Magic Link**: subject `Sign in to Puyer`, heading **Sign in to Puyer**, not the default “Your sign-in link”.
    - In Resend: disable **Click tracking** so Auth links are not rewritten. Do not create a Resend Dashboard template for magic links — SMTP sends the HTML Auth already rendered.
-4. **Optional Send Email hook** (only if SMTP templates are unused): `.env.local` / Vercel `RESEND_API_KEY`, `EMAIL_FROM`, `SEND_EMAIL_HOOK_SECRET`. Dashboard → **Authentication → Hooks → Send Email** → `https://<your-app>/api/auth/send-email`. Hosted Auth cannot reach `localhost`.
-5. Prisma (only needed after login, for `/dashboard`): green **Connect** at the top of the project.
+5. **Optional Send Email hook** (only if SMTP templates are unused): `.env.local` / Vercel `RESEND_API_KEY`, `EMAIL_FROM`, `SEND_EMAIL_HOOK_SECRET`. Dashboard → **Authentication → Hooks → Send Email** → `https://<your-app>/api/auth/send-email`. Hosted Auth cannot reach `localhost`.
+6. Prisma (only needed after login, for `/dashboard`): green **Connect** at the top of the project.
    Copy Transaction pooler (`:6543` + `?pgbouncer=true`) → `DATABASE_URL`, Session pooler (`:5432`) → `DIRECT_URL`.
-6. SQL Editor: run identity SQL, then [`supabase/migrations/20260828180000_invoice_domain.sql`](../supabase/migrations/20260828180000_invoice_domain.sql), then [`supabase/migrations/20260828200000_backfill_identity_workspaces.sql`](../supabase/migrations/20260828200000_backfill_identity_workspaces.sql) if any Auth user predates the trigger.
-7. `npm run dev` → open `/login` (or header Login) → email → open the magic link.
+7. SQL Editor: run identity SQL, then [`supabase/migrations/20260828180000_invoice_domain.sql`](../supabase/migrations/20260828180000_invoice_domain.sql), then [`supabase/migrations/20260828200000_backfill_identity_workspaces.sql`](../supabase/migrations/20260828200000_backfill_identity_workspaces.sql) if any Auth user predates the trigger.
+8. `npm run dev` → open `/login` (or header Login) → email → open the magic link.
 
 ## Examples
 
@@ -61,6 +68,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 - Hosted Auth email HTML is not loaded from git by itself. After changing `supabase/templates/`, run `npm run auth:push-templates` (or set `SUPABASE_ACCESS_TOKEN` as a GitHub Actions secret). Do not use `supabase config push` for this — it can reset SMTP and Site URL from local `config.toml`.
 - Resend click tracking rewrites `{{ .ConfirmationURL }}` and can consume the magic link. Keep it off for Auth mail.
 - A React overlay on `/dashboard` after the magic link was a theme bootstrap `<script>` in the root layout, not a failed session exchange. See [`theme.md`](./theme.md).
+- Production Redirect URLs must include **both** `https://www.puyer.org/auth/callback` and `https://puyer.org/auth/callback`. Site URL is the origin, not the callback path.
 
 ## Modules
 
@@ -74,7 +82,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.13 — 2026-08-29
+1.0.16 — 2026-08-29
 
 ## Changelog
 
@@ -98,4 +106,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 [2026-08-28] – Fixed: Settings no longer 500s when Connect/workspace lookup fails. Sign out is in the app shell via `POST /api/auth/signout`.
 [2026-08-28] – Fixed: Cloud Auth kept the default “Your sign-in link” mail because `config.toml` templates never reach hosted GoTrue. `npm run auth:push-templates` PATCHes mailer HTML only.
 [2026-08-29] – Changed: `/login` is a white split canvas with no theme toggle.
+[2026-08-29] – Fixed: Magic-link `emailRedirectTo` uses the request host (www vs apex) and no longer follows a leftover localhost `NEXT_PUBLIC_APP_URL`. `/` with `code` goes to `/auth/callback`; login no longer treats `/` as a valid return path.
+[2026-08-29] – Changed: Login and Auth HTML templates use the Puyer lockup image.
+[2026-08-29] – Added: Login form links to Terms of Service and Privacy Policy.
 ```

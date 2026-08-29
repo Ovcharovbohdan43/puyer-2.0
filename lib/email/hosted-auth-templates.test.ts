@@ -18,6 +18,7 @@ describe("hosted Auth email templates", () => {
     expect(keys.some((key) => key.includes("smtp"))).toBe(false);
     expect(patch.mailer_subjects_magic_link).toBe("Sign in to Puyer");
     expect(patch.mailer_templates_magic_link_content).toContain("Sign in to Puyer");
+    expect(patch.mailer_templates_magic_link_content).toContain("puyer-logo.png");
     expect(patch.mailer_templates_magic_link_content).toContain("{{ .ConfirmationURL }}");
     expect(patch.mailer_templates_magic_link_content).not.toContain("<h2>Your sign-in link</h2>");
     expect(patch.mailer_templates_magic_link_content).not.toContain(

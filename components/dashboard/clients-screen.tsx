@@ -1,82 +1,251 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { FigmaIcon } from "@/components/marketing/figma-icon";
+import { dash, clientInitials, downloadCsv } from "@/lib/dashboard/chrome";
+import {
+  computeClientKpis,
+  filterClientRows,
+  nextClientFilter,
+  presentClientRows,
+  type ClientSource,
+  type ClientStatusKind,
+} from "@/lib/clients/list-view";
 import { t } from "@/lib/i18n";
 import { useToast } from "@/components/ui/toast";
+import type { InvoiceListRow } from "@/lib/invoices/list-view";
 
-type ClientRow = { id: string; name: string; email: string; address: string };
+const PAGE_SIZE = 8;
 
-export function ClientsScreen({ clients }: { clients: ClientRow[] }) {
+function ClientStatusPill({ status }: { status: ClientStatusKind }) {
+  const copy = t("dashboard");
+  const map = {
+    ACTIVE: { label: copy.clientActive, className: "bg-[#E8F5EF] text-[#006C49]" },
+    PENDING: { label: copy.clientPending, className: "bg-[#FFF4E5] text-[#C2410C]" },
+    OVERDUE: { label: copy.clientOverdue, className: "bg-[#FEECEC] text-[#DC2626]" },
+    NONE: { label: copy.clientNone, className: "bg-[#F3F4F6] text-[#6B7280]" },
+  }[status];
+  return (
+    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${map.className}`}>{map.label}</span>
+  );
+}
+
+export function ClientsScreen({
+  clients,
+  invoices,
+}: {
+  clients: ClientSource[];
+  invoices: InvoiceListRow[];
+}) {
   const copy = t("dashboard");
   const toast = useToast();
   const router = useRouter();
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<"ALL" | ClientStatusKind>("ALL");
+  const [page, setPage] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
+
+  const presented = useMemo(() => presentClientRows(clients, invoices), [clients, invoices]);
+  const rows = useMemo(() => filterClientRows(presented, query, status), [presented, query, status]);
+  const kpis = useMemo(() => computeClientKpis(presented), [presented]);
+  const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const pageIndex = Math.min(page, pageCount - 1);
+  const paged = rows.slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE);
+  const filterLabel =
+    status === "ALL"
+      ? copy.filter
+      : {
+          ACTIVE: copy.clientActive,
+          PENDING: copy.clientPending,
+          OVERDUE: copy.clientOverdue,
+          NONE: copy.clientNone,
+        }[status];
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-16">
-      <div>
-        <h1 className="text-[24px] leading-8 font-semibold text-[#F8F9FF]">{copy.nav.clients}</h1>
-        <p className="mt-2 text-[14px] leading-5 text-[#BEC6E0]">{copy.clientsSoon}</p>
-      </div>
-      <form
-        className="flex gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (busy) {
-            return;
-          }
-          setBusy(true);
-          void fetch("/api/clients", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name }),
-          })
-            .then(async (response) => {
-              const payload = (await response.json()) as { ok?: boolean; error?: string };
-              if (!response.ok) {
-                toast(payload.error ?? copy.saveFailed);
-                return;
-              }
-              setName("");
-              router.refresh();
-            })
-            .finally(() => setBusy(false));
-        }}
-      >
-        <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder={copy.addClientName}
-          className="h-10 flex-1 rounded-lg border border-[#C6C6CD] bg-[#131B2E] px-3 text-[14px] text-[#F8F9FF]"
-        />
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-lg bg-[#6FFBBE] px-4 text-[14px] font-semibold text-[#002113] disabled:opacity-50"
-        >
-          {copy.addClientSave}
+    <main className={`${dash.page} ${dash.pagePad}`}>
+      <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <h1 className={dash.title}>{copy.nav.clients}</h1>
+        <button type="button" className={dash.btnPrimary} onClick={() => setFormOpen((open) => !open)}>
+          {copy.addClient}
         </button>
-      </form>
-      <ul className="divide-y divide-[#C6C6CD] rounded-lg border border-[#C6C6CD] bg-[#131B2E]">
-        {clients.map((client) => (
-          <li key={client.id} className="flex items-center justify-between px-4 py-3">
-            <div>
-              <p className="text-[14px] font-medium text-[#F8F9FF]">{client.name}</p>
-              <p className="text-[12px] text-[#7C839B]">{client.email || client.address}</p>
-            </div>
-            <Link
-              href={`/invoices/new?client=${encodeURIComponent(client.id)}`}
-              className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE]"
-            >
-              {copy.createInvoice}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      </header>
+
+      {formOpen ? (
+        <form
+          className={`${dash.card} flex gap-2 p-4`}
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (busy) {
+              return;
+            }
+            setBusy(true);
+            void fetch("/api/clients", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name }),
+            })
+              .then(async (response) => {
+                const payload = (await response.json()) as { ok?: boolean; error?: string };
+                if (!response.ok) {
+                  toast(payload.error ?? copy.saveFailed);
+                  return;
+                }
+                setName("");
+                setFormOpen(false);
+                router.refresh();
+              })
+              .finally(() => setBusy(false));
+          }}
+        >
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder={copy.addClientName}
+            className="h-10 flex-1 rounded-lg border border-[#E5E7EB] px-3 text-[14px] text-[#111827]"
+          />
+          <button type="submit" disabled={busy} className={`${dash.btnPrimary} disabled:opacity-50`}>
+            {copy.addClientSave}
+          </button>
+        </form>
+      ) : null}
+
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article className={dash.kpi}>
+          <p className={dash.kpiLabel}>{copy.kpiTotalClients}</p>
+          <p className={dash.kpiValue}>{kpis.total}</p>
+        </article>
+        <article className={dash.kpi}>
+          <p className={dash.kpiLabel}>{copy.kpiListOutstanding}</p>
+          <p className={dash.kpiValue}>{kpis.outstanding}</p>
+        </article>
+        <article className={dash.kpi}>
+          <p className={dash.kpiLabel}>{copy.kpiOverdue}</p>
+          <p className={`${dash.kpiValue} text-[#DC2626]`}>{kpis.overdue}</p>
+        </article>
+        <article className={dash.kpi}>
+          <p className={dash.kpiLabel}>{copy.kpiActiveClients}</p>
+          <p className={dash.kpiValue}>{kpis.paidLikeCount}</p>
+        </article>
+      </section>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <label className="relative block w-full sm:w-[280px]">
+          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2">
+            <FigmaIcon src="/app/search.svg" alt="" width={15} height={15} />
+          </span>
+          <span className="sr-only">{copy.searchClients}</span>
+          <input
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setPage(0);
+            }}
+            placeholder={copy.searchClients}
+            className={dash.input}
+          />
+        </label>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className={dash.btnSecondary}
+            onClick={() => {
+              setStatus((current) => nextClientFilter(current));
+              setPage(0);
+            }}
+          >
+            {filterLabel}
+          </button>
+          <button
+            type="button"
+            className={dash.btnSecondary}
+            onClick={() =>
+              downloadCsv("clients.csv", [
+                [copy.colClient, copy.colEmail, copy.colOutstandingAmount, copy.colLastInvoice, copy.colStatus],
+                ...rows.map((row) => [row.name, row.email, row.outstanding, row.lastInvoiceDate ?? "", row.status]),
+              ])
+            }
+          >
+            {copy.exportCsv}
+          </button>
+        </div>
+      </div>
+
+      <div className={dash.tableWrap}>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] text-left">
+            <thead className={dash.tableHead}>
+              <tr>
+                <th className="px-4 py-3">{copy.colClient}</th>
+                <th className="px-4 py-3">{copy.colEmail}</th>
+                <th className="px-4 py-3">{copy.colOutstandingAmount}</th>
+                <th className="px-4 py-3">{copy.colLastInvoice}</th>
+                <th className="px-4 py-3">{copy.colStatus}</th>
+                <th className="px-4 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {paged.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-10 text-center text-[14px] text-[#6B7280]">
+                    {copy.clientsSoon}
+                  </td>
+                </tr>
+              ) : (
+                paged.map((client) => (
+                  <tr key={client.id} className={dash.row}>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 items-center justify-center rounded-full bg-[#E8F5EF] text-[12px] font-semibold text-[#006C49]">
+                          {clientInitials(client.name)}
+                        </span>
+                        <p className="text-[14px] font-semibold text-[#111827]">{client.name}</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-[14px] text-[#6B7280]">{client.email || "—"}</td>
+                    <td className="px-4 py-4 text-[14px] font-semibold text-[#111827]">{client.outstanding}</td>
+                    <td className="px-4 py-4 text-[14px] text-[#6B7280]">{client.lastInvoiceDate ?? "—"}</td>
+                    <td className="px-4 py-4">
+                      <ClientStatusPill status={client.status} />
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <Link href={`/invoices/new?client=${encodeURIComponent(client.id)}`} className={dash.link}>
+                        {copy.createInvoice}
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3 text-[13px] text-[#6B7280]">
+          <p>
+            {copy.paginationShowing
+              .replace("{from}", String(rows.length === 0 ? 0 : pageIndex * PAGE_SIZE + 1))
+              .replace("{to}", String(Math.min(rows.length, pageIndex * PAGE_SIZE + PAGE_SIZE)))
+              .replace("{total}", String(rows.length))}
+          </p>
+          <div className="flex gap-1">
+            {Array.from({ length: pageCount }, (_, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`size-8 rounded-lg text-[13px] font-medium ${
+                  index === pageIndex ? "border border-[#006C49] text-[#006C49]" : "text-[#6B7280]"
+                }`}
+                onClick={() => setPage(index)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

@@ -42,36 +42,23 @@ export function StatusPill({ status, variant }: StatusPillProps) {
           CANCELED: copy.statusCanceled,
         }[kind];
 
-  const className =
-    variant === "list"
-      ? {
-          PAID: "border-[rgba(0,108,73,0.2)] bg-[#005236] text-[#6FFBBE]",
-          PENDING: "border-[rgba(198,198,205,0.3)] bg-[#565E74] text-[#F8F9FF]",
-          OVERDUE: "border-[rgba(186,26,26,0.3)] bg-[rgba(186,26,26,0.2)] text-[#EF4444]",
-          DRAFT: "border-[rgba(198,198,205,0.3)] bg-[#3F465C] text-[#BEC6E0]",
-          CANCELED: "border-[rgba(198,198,205,0.3)] bg-[#3F465C] text-[#7C839B]",
-        }[kind]
-      : {
-          PAID: "border-[rgba(111,251,190,0.2)] bg-[rgba(111,251,190,0.1)] text-[#6ffbbe]",
-          PENDING: "border-[rgba(245,158,11,0.2)] bg-[rgba(245,158,11,0.1)] text-[#f59e0b]",
-          OVERDUE: "border-[rgba(186,26,26,0.3)] bg-[rgba(186,26,26,0.2)] text-[#EF4444]",
-          DRAFT: "border-[rgba(198,198,205,0.3)] bg-[#3F465C] text-[#BEC6E0]",
-          CANCELED: "border-[rgba(198,198,205,0.3)] bg-[#3F465C] text-[#7C839B]",
-        }[kind];
+  const className = {
+    PAID: "bg-[#E8F5EF] text-[#006C49]",
+    PENDING: "bg-[#FFF4E5] text-[#C2410C]",
+    OVERDUE: "bg-[#FEECEC] text-[#DC2626]",
+    DRAFT: "bg-[#F3F4F6] text-[#4B5563]",
+    CANCELED: "bg-[#F3F4F6] text-[#9CA3AF]",
+  }[kind];
 
   const size =
     variant === "list"
-      ? "px-2.5 py-0.5 text-[10px] font-normal leading-5"
+      ? "px-2.5 py-0.5 text-[11px] font-semibold leading-5"
       : variant === "drawer"
-        ? "px-2 py-0.5 text-[10px] font-normal leading-[15px]"
-        : "px-[9px] py-[3px] text-[12px] font-semibold leading-4 tracking-[0.6px]";
-
-  const drawerPaid = variant === "drawer" && kind === "PAID";
+        ? "px-2 py-0.5 text-[11px] font-semibold leading-[15px]"
+        : "px-[9px] py-[3px] text-[12px] font-semibold leading-4";
 
   return (
-    <span
-      className={`inline-flex items-center justify-center rounded-full border ${size} ${drawerPaid ? "border-transparent bg-[#005236] text-[#6FFBBE]" : className}`}
-    >
+    <span className={`inline-flex items-center justify-center rounded-full ${size} ${className}`}>
       {label}
     </span>
   );

@@ -33,6 +33,25 @@ test.describe("signup → invoice → share → pay surfaces", () => {
     expect(payload).not.toContain("stripeAccount");
   });
 
+  test("legal pages and cookie window", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("dialog", { name: "Cookies on Puyer" })).toBeVisible();
+    await page.getByRole("button", { name: "Accept all" }).click();
+    await expect(page.getByRole("dialog", { name: "Cookies on Puyer" })).toHaveCount(0);
+
+    await page.goto("/privacy");
+    await expect(page.getByRole("heading", { name: "Privacy Policy" })).toBeVisible();
+    await expect(page.locator("body")).toContainText("does not hold");
+
+    await page.goto("/terms");
+    await expect(page.getByRole("heading", { name: "Terms of Service" })).toBeVisible();
+
+    await page.goto("/cookies");
+    await expect(page.getByRole("heading", { name: "Cookie Policy" })).toBeVisible();
+    await page.getByRole("button", { name: "Cookie settings" }).first().click();
+    await expect(page.getByRole("dialog", { name: "Cookies on Puyer" })).toBeVisible();
+  });
+
   test("live public invoice pay button when E2E_PUBLIC_INVOICE_ID is set", async ({ page }) => {
     const publicId = process.env.E2E_PUBLIC_INVOICE_ID;
     test.skip(!publicId, "Set E2E_PUBLIC_INVOICE_ID to exercise a real test-mode invoice.");

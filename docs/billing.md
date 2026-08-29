@@ -67,7 +67,7 @@ Browser:
 
 ## Version
 
-1.0.1 — 2026-08-28
+1.0.2 — 2026-08-29
 
 ## Changelog
 
@@ -76,4 +76,5 @@ Browser:
 [2026-08-28] – Added: Platform subscription Checkout, Customer Portal, webhook sync, entitlement matrix, Billing UI, pricing Checkout.
 [2026-08-28] – Changed: Reports are live; Billing upgrade copy no longer says base reports are pending.
 [2026-08-28] – Changed: Team invites are live for Business.
+[2026-08-29] – Changed: Public pricing UI is Phosphor cards + Monthly/Yearly segments; Checkout contract is unchanged.
 ```

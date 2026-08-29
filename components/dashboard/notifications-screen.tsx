@@ -79,34 +79,40 @@ export function NotificationsScreen({
   }
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-16">
-      <p className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE]">{dash.nav.notifications}</p>
-      <h1 className="text-[24px] leading-8 font-semibold text-[#F8F9FF]">{copy.title}</h1>
-      <p className="text-[14px] leading-5 text-[#BEC6E0]">
+    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 bg-[#F6F7F6] px-6 py-16">
+      <p className="text-[12px] font-semibold text-[#006C49]">{dash.nav.notifications}</p>
+      <h1 className="text-[24px] leading-8 font-semibold text-[#111827]">{copy.title}</h1>
+      <p className="text-[14px] leading-5 text-[#6B7280]">
         {remindersEnabled ? copy.remindersOn : copy.remindersOff}
       </p>
-      <div className="flex flex-col gap-3 rounded-xl border border-[rgba(198,198,205,0.5)] bg-[#131B2E] p-4">
-        <label className="flex items-center justify-between gap-4 text-[14px] text-[#F8F9FF]">
+      <div className="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white p-4">
+        <label className="flex items-center justify-between gap-4 text-[14px] text-[#111827]">
           <span>{copy.emailLabel}</span>
-          <input
-            type="checkbox"
-            checked={email}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={email}
             disabled={pending}
-            onChange={(event) => {
-              const value = event.target.checked;
+            className="dash-toggle"
+            data-on={email ? "true" : "false"}
+            onClick={() => {
+              const value = !email;
               setEmail(value);
               void savePrefs({ emailEnabled: value });
             }}
           />
         </label>
-        <label className="flex items-center justify-between gap-4 text-[14px] text-[#F8F9FF]">
+        <label className="flex items-center justify-between gap-4 text-[14px] text-[#111827]">
           <span>{copy.inAppLabel}</span>
-          <input
-            type="checkbox"
-            checked={inApp}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={inApp}
             disabled={pending}
-            onChange={(event) => {
-              const value = event.target.checked;
+            className="dash-toggle"
+            data-on={inApp ? "true" : "false"}
+            onClick={() => {
+              const value = !inApp;
               setInApp(value);
               void savePrefs({ inAppEnabled: value });
             }}
@@ -114,37 +120,35 @@ export function NotificationsScreen({
         </label>
       </div>
       <div className="flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-[#F8F9FF]">{copy.inbox}</h2>
+        <h2 className="text-[16px] font-semibold text-[#111827]">{copy.inbox}</h2>
         {items.some((item) => !item.readAt) ? (
           <button
             type="button"
             disabled={pending}
             onClick={() => void markRead()}
-            className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE] disabled:opacity-60"
+            className="text-[12px] font-semibold text-[#006C49] disabled:opacity-60"
           >
             {copy.markAll}
           </button>
         ) : null}
       </div>
       {items.length === 0 ? (
-        <p className="text-[14px] text-[#BEC6E0]">{copy.empty}</p>
+        <p className="text-[14px] text-[#6B7280]">{copy.empty}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {items.map((item) => (
             <li
               key={item.id}
-              className={`rounded-xl border border-[rgba(198,198,205,0.5)] p-4 ${
-                item.readAt ? "bg-[#0B1320]" : "bg-[#131B2E]"
-              }`}
+              className={`rounded-xl border border-[#E5E7EB] p-4 ${item.readAt ? "bg-[#F9FAFB]" : "bg-white"}`}
             >
-              <p className="text-[14px] font-semibold text-[#F8F9FF]">{item.title}</p>
-              <p className="mt-1 text-[14px] leading-5 text-[#BEC6E0]">{item.message}</p>
+              <p className="text-[14px] font-semibold text-[#111827]">{item.title}</p>
+              <p className="mt-1 text-[14px] leading-5 text-[#6B7280]">{item.message}</p>
               {!item.readAt ? (
                 <button
                   type="button"
                   disabled={pending}
                   onClick={() => void markRead(item.id)}
-                  className="mt-3 text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE] disabled:opacity-60"
+                  className="mt-3 text-[12px] font-semibold text-[#006C49] disabled:opacity-60"
                 >
                   {copy.markRead}
                 </button>
@@ -153,7 +157,7 @@ export function NotificationsScreen({
           ))}
         </ul>
       )}
-      {error ? <p className="text-[12px] text-[#ff8a80]">{error}</p> : null}
+      {error ? <p className="text-[12px] text-[#DC2626]">{error}</p> : null}
     </main>
   );
 }

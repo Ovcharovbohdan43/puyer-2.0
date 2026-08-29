@@ -2,22 +2,19 @@
 
 ## Purpose
 
-Signed-in app chrome: **Overview** (`/dashboard`), **Invoices** (`/invoices`) with a row detail drawer, and **Clients**. KPI numbers and invoice rows come from saved invoices. See [`invoices.md`](./invoices.md).
+Signed-in app chrome: **Home** (`/dashboard`), **Invoices** (`/invoices`) with a right-hand preview drawer, **Clients**, Payments, Reports, Settings, Team, Billing, Notifications.
 
-Sources:
-
-- Overview main content: [Figma node 22017:766](https://www.figma.com/design/gceJUMGMfVPHmmVOqAeEVx/Photo-portfolio--Copy-?node-id=22017-766)
-- Invoices + drawer + sidebar: design CSS dump + screenshot of the Invoices frame (Figma MCP sidebar node was rate-limited)
+Sources: light forest-green product frames (Clients, Reports, Payment reminders). The app is **light-only**.
 
 ## Description
 
-Dark-first shell (`#0B1320` page, `#131B2E` panels, mint `#6FFBBE`). Desktop sidebar is 280px (Overview, Invoices, Clients, Payments, Reports, Settings, New Invoice). Mobile uses a bottom tab bar (Overview, Invoices, Clients, Payments, More). More opens Reports, Settings, Team, Billing, Notifications.
+Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications.
 
-Overview matches Figma 22017:766: greeting, search, theme toggle, Create Invoice, four KPI cards, Revenue Trends placeholder, Quick Actions, Insights, Recent Invoices. Invoices matches the pasted frame: search, Filter, three KPIs, table, 400px right drawer with Download / Share / Edit, skeleton preview, timeline.
+Overview: greeting, search, Create Invoice, four KPI cards, revenue chart (Business), Quick Actions, Insights, Recent Invoices. Invoices: search, Filter, Export, three KPIs, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, a document preview card, and timeline.
 
-Clicking an invoice row sets `?invoice=` to the invoice UUID (see [`UX_FLOWS.md`](./UX_FLOWS.md)). Drawer Edit goes to `/invoices/:id/edit`. Drawer Share copies `/invoice/{publicId}`. `/invoices/new` is the authenticated builder.
+Drawer Edit goes to `/invoices/:id/edit`. Drawer Share copies `/invoice/{publicId}`. `/invoices/new` is the authenticated builder.
 
-Icons are Figma-exported SVGs in `public/app/` (overview MCP assets) plus existing `public/landing/` glyphs reused where the glyph matches (document, download, share). No generated icon set.
+There is **no** moon/sun control in the app. Visiting the dashboard forces `html[data-theme=light]`.
 
 ## How to use
 
@@ -37,7 +34,7 @@ Unauthenticated visits to `/dashboard`, `/invoices`, `/clients`, `/payments`, `/
 - Overview Connect Stripe → `/settings`
 - Overview View All or a recent row → `/invoices` or `/invoices?invoice=`
 - Invoices Filter cycles All → Pending → Paid → Overdue
-- Drawer close clears `?invoice=`
+- Click an invoice row → right preview drawer; close clears `?invoice=`
 
 ## How to test
 
@@ -47,8 +44,8 @@ npm run typecheck
 npm run lint
 ```
 
-- Sign in, confirm sidebar + Overview KPIs and recent table
-- Open `/invoices`, click a row, confirm drawer + `?invoice=` UUID, close, URL clears
+- Sign in, confirm light sidebar + Overview KPIs and recent table
+- Open `/invoices`, click a row, confirm white right drawer + `?invoice=` UUID, close, URL clears
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
 - Signed-out `/invoices` and `/clients` redirect to `/login`
 - Sign out is in the sidebar (desktop) and More sheet (mobile)
@@ -58,25 +55,26 @@ npm run lint
 
 - Revenue Trends and Insights on Overview follow the Business reports gate (live data or upgrade copy + Billing link). Paid (30d) is last 30 days, not lifetime revenue.
 - Payments lists synchronized Connect charges. Billing is live (Puyer subscription). Notifications inbox + preferences are live. Reports are live (base KPIs all plans; advanced Business). Team invites are live for Business.
-- Desktop sidebar is a fixed 280px rail (Figma). Collapse-to-icons is not in this frame; mobile hides the rail.
-- Sidebar node `22017:934` was not downloaded from Figma MCP (Starter plan limit). Nav icons reuse overview/landing exports.
-- Dashboard chrome stays dark even when the public theme toggle is light (PLAN: dark-first app). The Overview moon control still toggles `html[data-theme]` for marketing pages.
+- Desktop sidebar does not collapse to icons; mobile hides the rail.
+- Nav icons reuse overview/landing exports.
 - Mixed-currency KPI cards use the most common currency only.
+- Credit notes and a product catalog are not in v1; those mock items are not routes.
 
 ## Modules
 
 - `app/(dashboard)/*`, `components/dashboard/*`
-- `lib/dashboard/*`, `lib/auth/protected-routes.ts`, `proxy.ts`
+- `lib/dashboard/*`, `lib/clients/list-view.ts`, `lib/auth/protected-routes.ts`, `proxy.ts`
 - `messages/en.json` (`dashboard`)
 - `public/app/*.svg`
 
 ## Version
 
-1.1.8 — 2026-08-28
+1.2.0 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Light forest-green dashboard; invoice list keeps a right preview drawer.
 [2026-08-28] – Added: Dark app shell, Overview (Figma 22017:766), Invoices list + drawer, mock KPIs, protected extra routes.
 [2026-08-28] – Changed: Overview, Invoices, and Clients read persisted invoices/clients. KPIs are live.
 [2026-08-28] – Changed: Settings is Stripe Connect; Payments lists connected-account charges.
@@ -87,4 +85,6 @@ npm run lint
 [2026-08-28] – Changed: Team page is live (invites, roles, workspace switch).
 [2026-08-28] – Changed: Signed-out app routes redirect to `/login`.
 [2026-08-28] – Fixed: Settings survives a failed Stripe/workspace lookup. Sign out is in the sidebar and More sheet.
+[2026-08-29] – Changed: Overview moon no longer restyles the landing (marketing stays light).
+[2026-08-29] – Changed: Sidebar uses the Puyer lockup instead of text.
 ```

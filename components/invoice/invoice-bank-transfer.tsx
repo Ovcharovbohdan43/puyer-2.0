@@ -16,7 +16,7 @@ export function InvoiceBankTransfer({
       <p className="text-[12px] font-semibold tracking-[0.6px] text-puyer-muted">{BANK_TRANSFER_HEADING}</p>
       <dl className="mt-2 flex flex-col gap-1">
         {bankTransferRows(state).map((row) => (
-          <div key={row.label} className="grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)] gap-2 text-[14px] leading-5">
+          <div key={row.label} className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-[14px] leading-5">
             <dt className="text-puyer-muted">{row.label}</dt>
             <dd className="min-w-0 font-mono wrap-anywhere text-puyer-ink">{row.value}</dd>
           </div>

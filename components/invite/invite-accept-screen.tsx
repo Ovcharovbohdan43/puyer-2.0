@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
+import { PuyerLogo } from "@/components/brand/puyer-logo";
 import { t } from "@/lib/i18n";
 
 type InviteAcceptScreenProps = {
@@ -73,14 +74,14 @@ export function InviteAcceptScreen({ token, orgName, inviteEmail, sessionEmail }
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-4 bg-[#0B1320] px-6 py-16">
-      <p className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE]">Puyer</p>
-      <h1 className="text-[24px] leading-8 font-semibold text-[#F8F9FF]">{copy.inviteTitle}</h1>
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-4 bg-[#F6F7F6] px-6 py-16">
+      <PuyerLogo height={32} />
+      <h1 className="text-[24px] leading-8 font-semibold text-[#111827]">{copy.inviteTitle}</h1>
       {!orgName ? (
-        <p className="text-[14px] leading-5 text-[#BEC6E0]">{copy.inviteInvalid}</p>
+        <p className="text-[14px] leading-5 text-[#6B7280]">{copy.inviteInvalid}</p>
       ) : (
         <>
-          <p className="text-[14px] leading-5 text-[#BEC6E0]">
+          <p className="text-[14px] leading-5 text-[#6B7280]">
             {copy.inviteBody.replace("{org}", orgName)}
           </p>
           {!sessionEmail ? (
@@ -91,46 +92,46 @@ export function InviteAcceptScreen({ token, orgName, inviteEmail, sessionEmail }
                 void sendLink();
               }}
             >
-              <label className="text-[12px] text-[#BEC6E0]">
+              <label className="text-[12px] text-[#6B7280]">
                 {copy.inviteLabel}
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="mt-1 h-[38px] w-full rounded-lg border border-[#C6C6CD] bg-[#131B2E] px-3 text-[14px] text-[#F8F9FF]"
+                  className="mt-1 h-[38px] w-full rounded-lg border border-[#E5E7EB] bg-white px-3 text-[14px] text-[#111827]"
                 />
               </label>
               <button
                 type="submit"
                 disabled={pending}
-                className="rounded-lg bg-[#F8F9FF] px-4 py-2 text-[12px] font-semibold tracking-[0.6px] text-[#0B1C30]"
+                className="rounded-lg bg-[#006C49] px-4 py-2 text-[14px] font-semibold text-white"
               >
                 {copy.sendLink}
               </button>
-              {sent ? <p className="text-[14px] text-[#6FFBBE]">{copy.linkSent}</p> : null}
+              {sent ? <p className="text-[14px] text-[#006C49]">{copy.linkSent}</p> : null}
             </form>
           ) : emailsMatch ? (
             <button
               type="button"
               disabled={pending}
               onClick={() => void accept()}
-              className="rounded-lg bg-[#F8F9FF] px-4 py-2 text-[12px] font-semibold tracking-[0.6px] text-[#0B1C30]"
+              className="rounded-lg bg-[#006C49] px-4 py-2 text-[14px] font-semibold text-white"
             >
               {copy.accept}
             </button>
           ) : (
             <div className="flex flex-col gap-2">
-              <p className="text-[14px] leading-5 text-[#BEC6E0]">
+              <p className="text-[14px] leading-5 text-[#6B7280]">
                 {copy.wrongEmail.replace("{email}", sessionEmail).replace("{invited}", inviteEmail ?? "")}
               </p>
-              <SignOutButton className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE]" />
+              <SignOutButton className="text-[13px] font-medium text-[#6B7280]" />
             </div>
           )}
         </>
       )}
       {error ? <p className="text-[14px] text-[#ef4444]">{error}</p> : null}
-      <Link href="/" className="text-[12px] font-semibold tracking-[0.6px] text-[#6FFBBE]">
+      <Link href="/" className="text-[14px] font-semibold text-[#006C49]">
         {copy.backHome}
       </Link>
     </main>

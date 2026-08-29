@@ -22,7 +22,7 @@ export default async function EditInvoicePage({
   }
 
   return (
-    <div className="bg-[#0B1320] py-8">
+    <div className="bg-[#F6F7F6] py-8">
       <WorkspaceSession initial={invoiceToBuilderState(invoice)} invoiceId={invoice.id} publicId={invoice.publicId}>
         <InvoiceBuilder />
       </WorkspaceSession>

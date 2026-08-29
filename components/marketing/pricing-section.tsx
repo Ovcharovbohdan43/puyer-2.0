@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import type { Icon } from "@phosphor-icons/react";
+import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { LightningIcon } from "@phosphor-icons/react/dist/ssr/Lightning";
+import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
 
-import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { useBuilderSession } from "@/components/invoice-builder/builder-session";
 import { t } from "@/lib/i18n";
 
@@ -15,6 +19,8 @@ type Plan = {
   yearly: number;
   features: string[];
   cta: string;
+  Icon: Icon;
+  color: string;
   highlighted?: boolean;
 };
 
@@ -34,6 +40,8 @@ export function PricingSection() {
       yearly: 0,
       features: copy.freeFeatures,
       cta: copy.getStarted,
+      Icon: ReceiptIcon,
+      color: "#0b1c30",
     },
     {
       id: "PRO",
@@ -42,6 +50,8 @@ export function PricingSection() {
       yearly: 90,
       features: copy.proFeatures,
       cta: copy.subscribe,
+      Icon: LightningIcon,
+      color: "#006c49",
       highlighted: true,
     },
     {
@@ -51,6 +61,8 @@ export function PricingSection() {
       yearly: 290,
       features: copy.businessFeatures,
       cta: copy.subscribe,
+      Icon: BuildingsIcon,
+      color: "#2563eb",
     },
   ];
 
@@ -85,73 +97,100 @@ export function PricingSection() {
   }
 
   return (
-    <section id="pricing" className="scroll-mt-24 mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-5 py-12 sm:px-10">
-      <h2 className="text-center text-[28px] font-semibold leading-10 tracking-[-0.32px] text-black sm:text-[32px]">
-        {copy.title}
-      </h2>
-      <div className="flex items-center justify-center gap-2">
-        <span className="text-[14px] leading-5 text-[#0b1c30]">{copy.monthly}</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={yearly}
-          aria-label={yearly ? copy.yearly : copy.monthly}
-          onClick={() => setYearly((value) => !value)}
-          className={`flex h-6 w-12 items-center rounded-full bg-black p-1 ${yearly ? "justify-end" : "justify-start"}`}
+    <section id="pricing" className="pricing-section scroll-mt-24 w-full bg-[#eff4ff] px-5 py-16 sm:px-10 sm:py-20">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-8">
+        <h2 className="text-center text-[28px] font-semibold leading-10 tracking-[-0.32px] text-black sm:text-[32px]">
+          {copy.title}
+        </h2>
+        <div
+          className="pricing-interval inline-flex rounded-full border border-[#e2e8f0] bg-white p-1 shadow-[0px_1px_2px_rgba(15,23,42,0.06)]"
+          role="group"
+          aria-label={`${copy.monthly}, ${copy.yearly}`}
         >
-          <span className="theme-knob size-4 rounded-full bg-white" />
-        </button>
-        <span className="text-[14px] leading-5 text-[#0b1c30]">{copy.yearly}</span>
-      </div>
-      {error ? (
-        <p className="text-center text-[14px] leading-5 text-[#b42318]" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <div className="flex flex-col items-stretch justify-center gap-6 pt-4 lg:flex-row">
-        {plans.map((plan) => {
-          const price = yearly ? plan.yearly : plan.monthly;
-          const suffix = yearly ? copy.perYear : copy.perMonth;
-          return (
-            <article
-              key={plan.id}
-              className={`relative flex flex-1 flex-col gap-1 rounded-xl bg-white p-[25px] ${
-                plan.highlighted ? "border-2 border-black p-[26px]" : "border border-[#e2e8f0]"
-              }`}
-            >
-              {plan.highlighted ? (
-                <span className="absolute left-1/2 top-[-12px] -translate-x-1/2 rounded-full bg-black px-2 py-1 text-[10px] leading-[15px] tracking-normal text-white">
-                  {copy.popular}
-                </span>
-              ) : null}
-              <h3 className="text-[24px] font-semibold leading-8 text-black">{plan.name}</h3>
-              <p className="flex h-14 items-end gap-1 tracking-[-0.96px]">
-                <span className="text-[48px] font-bold leading-[56px] text-black">${price}</span>
-                <span className="mb-2 text-[16px] leading-6 text-[#45464d]">{suffix}</span>
-              </p>
-              <ul className="flex flex-col gap-[7.5px] pb-5 pt-3">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-1 text-[14px] leading-5 text-[#0b1c30]">
-                    <FigmaIcon src="/landing/plan-check.svg" alt="" width={11} height={8} />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                disabled={pending !== null}
-                onClick={() => void subscribe(plan.id)}
-                className={`mt-auto flex w-full items-center justify-center rounded py-[9px] text-[12px] font-semibold tracking-[0.6px] disabled:opacity-60 ${
+          <button
+            type="button"
+            className={`landing-btn landing-btn--nav rounded-full px-5 py-2 text-[12px] font-semibold tracking-[0.6px] ${
+              yearly ? "text-[#45464d]" : "bg-[#0b1c30] text-white"
+            }`}
+            aria-pressed={!yearly}
+            onClick={() => setYearly(false)}
+          >
+            {copy.monthly}
+          </button>
+          <button
+            type="button"
+            className={`landing-btn landing-btn--nav rounded-full px-5 py-2 text-[12px] font-semibold tracking-[0.6px] ${
+              yearly ? "bg-[#0b1c30] text-white" : "text-[#45464d]"
+            }`}
+            aria-pressed={yearly}
+            onClick={() => setYearly(true)}
+          >
+            {copy.yearly}
+          </button>
+        </div>
+        {error ? (
+          <p className="text-center text-[14px] leading-5 text-[#b42318]" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <div className="grid w-full grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+          {plans.map((plan) => {
+            const price = yearly ? plan.yearly : plan.monthly;
+            const suffix = yearly ? copy.perYear : copy.perMonth;
+            return (
+              <article
+                key={plan.id}
+                className={`pricing-card relative flex h-full flex-col gap-4 rounded-2xl border bg-white p-6 sm:p-7 ${
                   plan.highlighted
-                    ? "bg-black py-2 text-white"
-                    : "border border-black text-black"
+                    ? "pricing-card--featured border-[#006c49] shadow-[0px_16px_40px_-24px_rgba(0,108,73,0.55)]"
+                    : "border-[#e2e8f0] shadow-[0px_1px_2px_rgba(15,23,42,0.06)]"
                 }`}
               >
-                {pending === plan.id ? billing.redirecting : plan.cta}
-              </button>
-            </article>
-          );
-        })}
+                {plan.highlighted ? (
+                  <span className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#6cf8bb] px-3 py-1 text-[10px] font-semibold tracking-[0.08em] text-[#006c49]">
+                    {copy.popular}
+                  </span>
+                ) : null}
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex size-12 items-center justify-center rounded-full border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_rgba(15,23,42,0.06)]">
+                    <plan.Icon size={24} weight="duotone" color={plan.color} aria-hidden />
+                  </span>
+                  <h3 className="text-[20px] font-semibold leading-7 tracking-[0.04em] text-black">{plan.name}</h3>
+                </div>
+                <p className="flex items-end gap-1 tracking-[-0.96px]">
+                  <span className="text-[48px] font-bold leading-[56px] text-black">${price}</span>
+                  <span className="mb-2 text-[16px] leading-6 text-[#45464d]">{suffix}</span>
+                </p>
+                <ul className="flex flex-1 flex-col gap-2.5 pb-2">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2 text-[14px] leading-5 text-[#0b1c30]">
+                      <CheckCircleIcon
+                        size={18}
+                        weight="duotone"
+                        color={plan.highlighted ? "#006c49" : "#64748b"}
+                        className="mt-0.5 shrink-0"
+                        aria-hidden
+                      />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  disabled={pending !== null}
+                  onClick={() => void subscribe(plan.id)}
+                  className={`landing-btn mt-auto flex w-full items-center justify-center rounded-full py-3 text-[12px] font-semibold tracking-[0.6px] disabled:opacity-60 ${
+                    plan.highlighted
+                      ? "landing-btn--green bg-[#006c49] text-white shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)]"
+                      : "landing-btn--ghost border border-[#e2e8f0] text-black"
+                  }`}
+                >
+                  {pending === plan.id ? billing.redirecting : plan.cta}
+                </button>
+              </article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

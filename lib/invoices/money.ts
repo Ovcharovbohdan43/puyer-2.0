@@ -60,6 +60,14 @@ export function formatMoney(minor: bigint, symbol: string, exponent: number): st
   return `${sign}${symbol}${withGroups}.${fraction}`;
 }
 
+export function formatMajorMoney(input: string, symbol: string, exponent: number): string {
+  try {
+    return formatMoney(parseMajorToMinor(input || "0", exponent), symbol, exponent);
+  } catch {
+    return formatMoney(0n, symbol, exponent);
+  }
+}
+
 /** qty (4 dp) × unit price (currency exponent), rounded half-up to currency exponent. */
 export function lineAmountMinor(quantityInput: string, unitPriceInput: string, exponent: number): bigint {
   const qty = parseQuantity(quantityInput);

@@ -28,7 +28,7 @@ export default async function NewInvoicePage({
   }
 
   return (
-    <div className="bg-[#0B1320] py-8">
+    <div className="bg-[#F6F7F6] py-8">
       <WorkspaceSession initial={initial}>
         <InvoiceBuilder />
       </WorkspaceSession>
