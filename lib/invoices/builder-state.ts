@@ -1,5 +1,6 @@
 import type { InvoiceItem, InvoiceTemplate } from "@prisma/client";
 
+import { emptyBankTransfer, hasBankTransfer, splitPaymentDetails } from "@/lib/invoices/bank-transfer";
 import type { BuilderState } from "@/components/invoice-builder/types";
 import { getCurrency } from "@/lib/invoices/currencies";
 import { quantityToInput, unitPriceToInput } from "@/lib/invoices/compute";
@@ -26,6 +27,7 @@ type InvoiceLike = {
 
 export function invoiceToBuilderState(invoice: InvoiceLike): BuilderState {
   const currency = getCurrency(invoice.currency);
+  const { bank, extra } = splitPaymentDetails(invoice.paymentDetails);
   return {
     invoiceNumber: invoice.invoiceNumber,
     currency: currency.code,
@@ -37,7 +39,9 @@ export function invoiceToBuilderState(invoice: InvoiceLike): BuilderState {
     discountValue: invoice.discountValue,
     taxRate: invoice.taxRate,
     notes: invoice.notes,
-    paymentDetails: invoice.paymentDetails,
+    paymentDetails: extra,
+    storeBankDetailsConsent: hasBankTransfer(bank),
+    ...bank,
     template: invoice.template,
     accentColor: invoice.accentColor,
     issueDate: invoice.issueDate.toISOString().slice(0, 10),
@@ -74,6 +78,8 @@ export function emptyWorkspaceBuilderState(input: {
     taxRate: input.taxRate || "0",
     notes: "",
     paymentDetails: "",
+    storeBankDetailsConsent: false,
+    ...emptyBankTransfer(),
     template: "PROFESSIONAL",
     accentColor: "#000000",
     issueDate: today.toISOString().slice(0, 10),

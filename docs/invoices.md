@@ -8,6 +8,10 @@ Persist invoices, clients, line items, and per-organization numbering. Server-si
 
 Money is stored as `bigint` minor units. Totals are recomputed on the server from builder fields (`lib/invoices/compute.ts`). Client-supplied totals are ignored.
 
+Every invoice prints a small platform disclaimer under Notes (`lib/invoices/disclaimer.ts`). It is not stored in `Invoice.notes` and issuers cannot remove it. Copy follows PLAN: Puyer is invoicing software, not a party to the transaction, and does not claim “never legally responsible for anything.”
+
+Issuers may add **bank transfer** details (outside Stripe). Those fields are stored on the invoice only when `storeBankDetailsConsent` is true. The server strips IBAN/account fields without that flag (`paymentDetailsForStorage`). Without consent they appear only in the live preview and must be re-entered later. Puyer does not confirm bank payments.
+
 Invoice numbers come from `InvoiceSequence` with `SELECT … FOR UPDATE` inside a Repeatable Read transaction. The format is `INV-{year}-{pad4}`. Public links use a 16-byte `base64url` `publicId`, not the invoice number.
 
 Status: `DRAFT → READY → SENT → VIEWED → …`. Create saves as `READY`. Sharing a public link marks `SENT` when that transition is allowed. Opening the public page marks `VIEWED` when that transition is allowed. `OVERDUE` is a display overlay for unpaid invoices past due; it is not written on create.
@@ -67,7 +71,7 @@ Browser:
 
 ## Version
 
-1.0.7 — 2026-08-28
+1.0.9 — 2026-08-29
 
 ## Changelog
 
@@ -80,4 +84,6 @@ Browser:
 [2026-08-28] – Fixed: Long addresses wrap on the public invoice page.
 [2026-08-28] – Fixed: Builder save highlights invalid fields; blank extra line items are dropped.
 [2026-08-28] – Fixed: Public payer portal contrast in dark theme (token colors).
+[2026-08-29] – Added: Platform disclaimer under Notes on every invoice (HTML, PDF, public page).
+[2026-08-29] – Added: Bank transfer details on invoices; stored only with explicit storage consent.
 ```

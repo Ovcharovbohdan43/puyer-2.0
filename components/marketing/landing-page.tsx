@@ -3,6 +3,7 @@ import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { PricingSection } from "@/components/marketing/pricing-section";
 import { PublicChrome } from "@/components/marketing/public-chrome";
 import { CreateInvoiceButton, OpenAuthButton, UseTemplateButton } from "@/components/marketing/public-ctas";
+import { TemplateInvoiceMockup } from "@/components/marketing/template-invoice-mockup";
 import { UiMockup } from "@/components/marketing/ui-mockup";
 import { InvoiceBuilder } from "@/components/invoice-builder/invoice-builder";
 import { t } from "@/lib/i18n";
@@ -53,9 +54,9 @@ export function LandingPage() {
   ];
 
   const templateCards = [
-    { preview: templates.minimalPreview, name: templates.minimal, id: "MINIMAL" as const },
-    { preview: templates.professionalPreview, name: templates.professional, id: "PROFESSIONAL" as const },
-    { preview: templates.premiumPreview, name: templates.premium, id: "PREMIUM" as const },
+    { name: templates.minimal, id: "MINIMAL" as const, previewLabel: templates.minimalPreview },
+    { name: templates.professional, id: "PROFESSIONAL" as const, previewLabel: templates.professionalPreview },
+    { name: templates.premium, id: "PREMIUM" as const, previewLabel: templates.premiumPreview },
   ];
 
   const whyLeft = why.items.slice(0, 5);
@@ -78,7 +79,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <InvoiceBuilder />
+      <InvoiceBuilder paged />
 
       <section id="features" className="scroll-mt-24 flex w-full max-w-[1280px] flex-col gap-8 px-5 pb-12 pt-24 sm:px-10">
         <h2 className="text-center text-[28px] font-semibold leading-10 tracking-[-0.32px] sm:text-[32px]">
@@ -150,11 +151,9 @@ export function LandingPage() {
             {templateCards.map((card) => (
               <article
                 key={card.name}
-                className="flex h-auto flex-col rounded-xl border border-[#e2e8f0] bg-white p-4 shadow-[0px_1px_1px_rgba(0,0,0,0.05)]"
+                className="group flex h-auto flex-col rounded-xl border border-[#e2e8f0] bg-white p-4 shadow-[0px_1px_1px_rgba(0,0,0,0.05)]"
               >
-                <div className="flex h-64 items-center justify-center rounded bg-[#eff4ff] text-[16px] leading-6 text-[#0b1c30]">
-                  {card.preview}
-                </div>
+                <TemplateInvoiceMockup template={card.id} label={card.previewLabel} />
                 <h3 className="pt-[10px] text-center text-[24px] font-semibold leading-8">{card.name}</h3>
                 <span className="mx-auto mt-2 rounded bg-[#6cf8bb] px-2 py-1 text-[12px] font-semibold tracking-[0.6px] text-[#006c49]">
                   {templates.free}

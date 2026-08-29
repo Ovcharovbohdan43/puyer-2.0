@@ -1,4 +1,4 @@
-const SECRET_KEYS = /token|secret|authorization|password|cookie|signature|apikey|api_key/i;
+const SECRET_KEYS = /token|secret|authorization|password|cookie|signature|apikey|api_key|iban|swift|bic|bankiban|bankaccount/i;
 const SECRET_VALUES = /^(?:sk|pk|rk|whsec)_[A-Za-z0-9]+|^Bearer\s+/i;
 
 function redactString(value: string): string {

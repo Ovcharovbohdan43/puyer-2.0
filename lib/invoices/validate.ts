@@ -1,3 +1,4 @@
+import { bankTransferFromState, emptyBankTransfer } from "@/lib/invoices/bank-transfer";
 import type { BuilderLine, BuilderState } from "@/components/invoice-builder/types";
 import { parseMajorToMinor, parseQuantity } from "@/lib/invoices/money";
 import { getCurrency } from "@/lib/invoices/currencies";
@@ -64,8 +65,11 @@ export function isBlankBuilderLine(item: BuilderLine): boolean {
 
 export function prepareBuilderState(state: BuilderState): BuilderState {
   const items = state.items.filter((item) => !isBlankBuilderLine(item));
+  const bank = bankTransferFromState(state);
+  const consented = state.storeBankDetailsConsent === true;
   return {
     ...state,
+    ...(consented ? bank : emptyBankTransfer()),
     businessName: state.businessName.trim(),
     clientName: state.clientName.trim(),
     taxRate: normalizePercentInput(state.taxRate || "0"),
@@ -73,6 +77,9 @@ export function prepareBuilderState(state: BuilderState): BuilderState {
       state.discountType === "PERCENT"
         ? normalizePercentInput(state.discountValue || "0")
         : state.discountValue.trim(),
+    notes: state.notes.trim(),
+    paymentDetails: state.paymentDetails.trim(),
+    storeBankDetailsConsent: consented,
     items: items.length > 0 ? items : state.items,
   };
 }

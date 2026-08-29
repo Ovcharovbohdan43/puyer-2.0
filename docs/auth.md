@@ -6,7 +6,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 
 ## Description
 
-- Public login is `/login`: split layout, email magic link (Sign in / Create account). The right panel is `public/auth/login-hero.png`. Download/Share on the landing builder still use a modal.
+- Public login is `/login`: split layout, email magic link (Sign in / Create account). Both columns use a white canvas. There is no theme toggle on this page. The right panel is `public/auth/login-hero.png`. Download/Share on the landing builder still use a modal.
 - Sign out is in the app sidebar, mobile More sheet, Settings, and the dashboard error boundary. It `POST`s `/api/auth/signout` so `@supabase/ssr` can clear httpOnly cookies, then sends the browser to `/login`.
 - `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Hosted Auth renders the Magic Link mailer template and sends it over Resend SMTP. HTML in git is applied with `npm run auth:push-templates`, not by committing `config.toml`. The optional Send Email hook is an alternative, not a second path.
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
@@ -74,7 +74,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.12 — 2026-08-28
+1.0.13 — 2026-08-29
 
 ## Changelog
 
@@ -97,4 +97,5 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 [2026-08-28] – Changed: `/login` hero is `public/auth/login-hero.png` (invoice + card illustration).
 [2026-08-28] – Fixed: Settings no longer 500s when Connect/workspace lookup fails. Sign out is in the app shell via `POST /api/auth/signout`.
 [2026-08-28] – Fixed: Cloud Auth kept the default “Your sign-in link” mail because `config.toml` templates never reach hosted GoTrue. `npm run auth:push-templates` PATCHes mailer HTML only.
+[2026-08-29] – Changed: `/login` is a white split canvas with no theme toggle.
 ```

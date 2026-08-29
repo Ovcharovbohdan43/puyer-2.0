@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createDefaultBuilderState } from "@/components/invoice-builder/types";
-import { hasBuilderErrors, isValidEmail, validateBuilder } from "@/lib/invoices/validate";
+import { hasBuilderErrors, isValidEmail, prepareBuilderState, validateBuilder } from "@/lib/invoices/validate";
 
 describe("validateBuilder", () => {
   it("accepts the default preview invoice", () => {
@@ -43,6 +43,15 @@ describe("validateBuilder", () => {
     const state = createDefaultBuilderState();
     state.taxRate = "abc";
     expect(validateBuilder(state).tax).toBe("tax");
+  });
+
+  it("strips bank details from the payload when storage consent is off", () => {
+    const state = createDefaultBuilderState();
+    state.bankIban = "DE89370400440532013000";
+    state.storeBankDetailsConsent = false;
+    const prepared = prepareBuilderState(state);
+    expect(prepared.bankIban).toBe("");
+    expect(prepared.storeBankDetailsConsent).toBe(false);
   });
 });
 

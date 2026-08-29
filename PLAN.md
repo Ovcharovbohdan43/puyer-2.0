@@ -61,6 +61,8 @@ Puyer **MUST NOT**:
 
 Do **not** hard-code claims like “Puyer is never legally responsible for anything.”
 
+Every issued invoice (preview, PDF, public page) prints a small Notes disclaimer: created with Puyer; Puyer is software only and does not control how users apply it; the issuer is responsible for the document. That is product copy, not a legal conclusion. It is separate from the optional “Made with Puyer” footer.
+
 ---
 
 ## 2. Non-negotiables (stop and reconsider)
@@ -1198,6 +1200,30 @@ Until `docs/` exists, keep the changelog in this file.
 [2026-08-28] – Fixed: Hosted Auth still sent the default magic-link HTML.
   `npm run auth:push-templates` PATCHes mailer templates only (not full config push).
   Docs: docs/auth.md.
+
+[2026-08-29] – Changed: `/login` white canvas, no theme toggle.
+  Docs: docs/auth.md, docs/theme.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Landing template cards render live invoice layouts.
+  Docs: docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Fixed: Template previews scale from top-left so they stay in the card.
+  Docs: docs/landing.md.
+
+[2026-08-29] – Added: Hover zoom on landing template invoice previews.
+  Docs: docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Invoice templates are visually distinct; PDF cache `layout: 4`.
+  Docs: docs/pdf.md, docs/invoice-builder.md.
+
+[2026-08-29] – Added: Platform disclaimer under Notes on every invoice (not the “Made with Puyer” footer).
+  Docs: docs/invoices.md, docs/pdf.md, docs/invoice-builder.md.
+
+[2026-08-29] – Added: Optional bank transfer details; stored only with explicit issuer consent.
+  Docs: docs/invoices.md, docs/invoice-builder.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Landing Invoice Builder is two steps so the preview column stays compact.
+  Docs: docs/landing.md, docs/invoice-builder.md, docs/UX_FLOWS.md.
 ```
 
 ---

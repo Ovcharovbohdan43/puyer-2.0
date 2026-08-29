@@ -18,6 +18,7 @@ import { isValidEmail, prepareBuilderState } from "@/lib/invoices/validate";
 import { notifyOrganizationMembers } from "@/lib/notifications";
 import { assertTransition, canTransition, displayInvoiceStatus, isEditableStatus } from "@/lib/invoices/status";
 import { ValidationError, NotFoundError } from "@/lib/errors";
+import { paymentDetailsForStorage } from "@/lib/invoices/bank-transfer";
 import type { BuilderState } from "@/components/invoice-builder/types";
 import { logger } from "@/lib/observability/logger";
 
@@ -64,7 +65,7 @@ export async function createInvoiceFromBuilder(user: SessionUser, state: Builder
         discountValue: prepared.discountType === "NONE" ? "0" : prepared.discountValue,
         taxRate: prepared.taxRate || "0",
         notes: prepared.notes,
-        paymentDetails: prepared.paymentDetails,
+        paymentDetails: paymentDetailsForStorage(prepared),
         template: prepared.template,
         accentColor: prepared.accentColor,
         subtotalMinor: computed.subtotalMinor,
@@ -126,7 +127,7 @@ export async function updateInvoiceFromBuilder(user: SessionUser, invoiceId: str
         discountValue: prepared.discountType === "NONE" ? "0" : prepared.discountValue,
         taxRate: prepared.taxRate || "0",
         notes: prepared.notes,
-        paymentDetails: prepared.paymentDetails,
+        paymentDetails: paymentDetailsForStorage(prepared),
         template: prepared.template,
         accentColor: prepared.accentColor,
         subtotalMinor: computed.subtotalMinor,

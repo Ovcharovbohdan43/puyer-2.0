@@ -1,9 +1,12 @@
 import Link from "next/link";
 
+import { InvoiceBankTransfer } from "@/components/invoice/invoice-bank-transfer";
+import { InvoicePlatformDisclaimer } from "@/components/invoice/invoice-platform-disclaimer";
 import { PublicPayPanel } from "@/components/invoice/public-pay-panel";
 import type { BuilderState } from "@/components/invoice-builder/types";
 import type { InvoiceTotals } from "@/lib/invoices/calculate";
 import type { Currency } from "@/lib/invoices/currencies";
+import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
 import { formatInvoiceDate } from "@/lib/invoices/dates";
 import { formatMoney, parseMajorToMinor } from "@/lib/invoices/money";
 import type { PublicPayBadge } from "@/lib/invoices/status";
@@ -173,14 +176,16 @@ export function PublicInvoiceScreen({
             </div>
           </div>
 
-          {notes ? (
-            <div className="border-t border-puyer-border pt-8">
-              <p className="text-[12px] leading-4 font-semibold tracking-[0.6px] text-puyer-muted uppercase">
-                {pay.notesTerms}
-              </p>
+          <div className="border-t border-puyer-border pt-8">
+            <p className="text-[12px] leading-4 font-semibold tracking-[0.6px] text-puyer-muted uppercase">
+              {pay.notesTerms}
+            </p>
+            <InvoiceBankTransfer state={state} className="mt-2" />
+            {notes ? (
               <p className="mt-2 whitespace-pre-wrap wrap-anywhere text-[14px] leading-5 text-puyer-muted">{notes}</p>
-            </div>
-          ) : null}
+            ) : null}
+            <InvoicePlatformDisclaimer />
+          </div>
         </article>
 
         <PublicPayPanel
@@ -191,6 +196,7 @@ export function PublicInvoiceScreen({
           payable={payable}
           connected={connected}
           paid={paid}
+          hasBankTransfer={hasBankTransfer(state)}
           checkout={checkout}
         />
       </div>

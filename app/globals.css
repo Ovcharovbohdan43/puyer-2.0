@@ -72,6 +72,63 @@ body {
   overflow-wrap: anywhere;
 }
 
+.preview-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.preview-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.builder-cta {
+  cursor: pointer;
+  box-shadow: 0 6px 14px -4px rgb(0 108 73 / 0.45);
+  transition:
+    filter 150ms ease-out,
+    box-shadow 150ms ease-out,
+    transform 150ms ease-out,
+    background-color 150ms ease-out;
+}
+
+.builder-cta:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 10px 20px -6px rgb(0 108 73 / 0.55);
+}
+
+.builder-cta:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.95);
+}
+
+.builder-cta img {
+  filter: brightness(0) invert(1);
+}
+
+/* /login stays a light canvas even if html[data-theme=dark] is set from another page. */
+.login-shell,
+.template-mockup {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #000000;
+  --puyer-ink: #0b1c30;
+  --puyer-muted: #45464d;
+  --puyer-card: #ffffff;
+  --puyer-border: #e2e8f0;
+  --puyer-soft: #eff4ff;
+  --invoice-accent: #000000;
+}
+
+.login-shell {
+  background-color: #ffffff;
+}
+
+.template-mockup .invoice-platform-disclaimer {
+  display: none;
+}
+
 html[data-theme="dark"] {
   color-scheme: dark;
   --background: #0b1017;
@@ -103,6 +160,14 @@ html[data-theme="dark"] ::placeholder {
   opacity: 1;
 }
 
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="image"]),
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  background-color: var(--puyer-card);
+  color: var(--foreground);
+  color-scheme: dark;
+}
+
 html[data-theme="dark"] input:-webkit-autofill,
 html[data-theme="dark"] textarea:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px var(--puyer-card) inset;
@@ -127,6 +192,16 @@ html[data-theme="dark"] *::-webkit-scrollbar-thumb {
 
 html[data-theme="dark"] *::-webkit-scrollbar-track {
   background: transparent;
+}
+
+html[data-theme="dark"] .preview-scroll {
+  scrollbar-width: none;
+}
+
+html[data-theme="dark"] .preview-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 html[data-theme="dark"] .bg-\[\#f1f5f9\] {
@@ -163,7 +238,10 @@ html[data-theme="dark"] .border-\[\#e2e8f0\] {
 
 html[data-theme="dark"] .bg-\[\#eff4ff\],
 html[data-theme="dark"] .bg-\[\#f8f9ff\],
-html[data-theme="dark"] .bg-\[\#ebf1fa\] {
+html[data-theme="dark"] .bg-\[\#ebf1fa\],
+html[data-theme="dark"] .bg-\[\#F8FAFC\],
+html[data-theme="dark"] .bg-\[\#f8fafc\],
+html[data-theme="dark"] .even\:bg-\[\#F8FAFC\]:nth-child(even) {
   background-color: var(--puyer-soft);
 }
 
@@ -176,7 +254,8 @@ html[data-theme="dark"] .hover\:bg-\[\#eff4ff\]:hover {
 }
 
 html[data-theme="dark"] .text-\[\#45464d\],
-html[data-theme="dark"] .text-\[\#0b1c30\] {
+html[data-theme="dark"] .text-\[\#0b1c30\],
+html[data-theme="dark"] .text-\[\#0B1C30\] {
   color: var(--puyer-muted);
 }
 
@@ -231,6 +310,11 @@ html[data-theme="dark"] img[src$="/landing/builder-preview.svg"],
 html[data-theme="dark"] img[src$="/landing/arrow.svg"] {
   filter: brightness(0) invert(1);
   opacity: 0.88;
+}
+
+html[data-theme="dark"] .builder-cta img {
+  filter: brightness(0) invert(1);
+  opacity: 1;
 }
 
 .app-shell {

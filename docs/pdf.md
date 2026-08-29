@@ -6,9 +6,15 @@ Generate invoice PDFs on the server, cache them in private Supabase Storage, and
 
 ## Description
 
-PDFs use `@react-pdf/renderer` (no Chromium). Three visual templates match the builder: Minimal, Professional, Premium. Page size is A4 by default or US Letter via `?paper=letter`.
+PDFs use `@react-pdf/renderer` (no Chromium). Three visual templates match the builder:
 
-Minimal (and Free-plan non-Premium invoices) show a subtle “Made with Puyer” footer. Premium never shows Puyer branding.
+- **Minimal** — sparse type, gray rules, ink totals, no logo mark.
+- **Professional** — accent title, circular mark, accent table rule, colored total.
+- **Premium** — navy full-bleed header, accent table header, navy totals panel. Never shows Puyer branding.
+
+Page size is A4 by default or US Letter via `?paper=letter`.
+
+Minimal (and Free-plan non-Premium invoices) show a subtle “Made with Puyer” footer. Every invoice also prints a small platform disclaimer under Notes (`lib/invoices/disclaimer.ts`). That is not marketing branding and is not omitted on Premium.
 
 The file is hashed from invoice content + paper + branding. The object path is `{invoiceId}/{paper}/{hash}.pdf` in the private `invoice-pdfs` bucket — no organization id in the path. If `SUPABASE_SERVICE_ROLE_KEY` is missing, the PDF is still generated and streamed; it is just not cached.
 
@@ -47,7 +53,7 @@ Browser:
 - Public page Download PDF works signed out
 - A very long address without spaces stays inside the page **in both the HTML preview and the downloaded PDF**
 - Cyrillic (and other Noto-covered scripts) render as real letters in the PDF, not `?`
-- After a renderer change, download again — Storage cache keys include `layout: 3`
+- After a renderer change, download again — Storage cache keys include `layout: 6`
 - View-source / network on the public page has no `organizationId`
 
 ## Limitations
@@ -70,7 +76,7 @@ Browser:
 
 ## Version
 
-1.0.3 — 2026-08-28
+1.0.6 — 2026-08-29
 
 ## Changelog
 
@@ -79,4 +85,7 @@ Browser:
 [2026-08-28] – Changed: Public HTML is the payer document + sidebar, not the builder preview.
 [2026-08-28] – Fixed: Long unbreakable address strings wrap in the HTML preview.
 [2026-08-28] – Fixed: Downloaded PDF wraps long tokens (flexBasis 0 + character hyphenation) and embeds Noto Sans so Cyrillic is not `?`. Cache key `layout: 3`.
+[2026-08-29] – Changed: Minimal / Professional / Premium layouts are distinct (Premium navy band + totals). Cache key `layout: 4`.
+[2026-08-29] – Added: Platform disclaimer under Notes on every PDF. Cache key `layout: 5`.
+[2026-08-29] – Added: Bank transfer block on the PDF when the issuer consented to store it. Cache key `layout: 6`.
 ```

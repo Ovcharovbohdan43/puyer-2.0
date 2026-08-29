@@ -41,7 +41,7 @@ export function SelectMenu({ valueLabel, ariaLabel, closeLabel, children }: Sele
       ) : null}
       <button
         type="button"
-        className="relative z-20 flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded border border-[#e2e8f0] bg-white px-[9px] text-left text-[16px] leading-none text-[#0b1c30] outline-none focus-visible:border-[#0b1c30]"
+        className="relative z-20 flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded border border-[#e2e8f0] bg-puyer-card px-[9px] text-left text-[16px] leading-none text-puyer-ink outline-none focus-visible:border-[#0b1c30]"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel ?? valueLabel}
@@ -53,7 +53,7 @@ export function SelectMenu({ valueLabel, ariaLabel, closeLabel, children }: Sele
         </span>
       </button>
       {open ? (
-        <div className="absolute z-20 mt-1 w-full rounded border border-[#e2e8f0] bg-white p-2 shadow-lg">
+        <div className="absolute z-20 mt-1 w-full rounded border border-[#e2e8f0] bg-puyer-card p-2 shadow-lg">
           {children(close)}
         </div>
       ) : null}

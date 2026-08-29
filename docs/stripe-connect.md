@@ -57,7 +57,7 @@ Browser:
 
 ## Limitations
 
-- Connect onboarding requires entitlement `STRIPE_PAYMENTS` (Pro/Business). Public Pay stays generic “unavailable” on Free.
+- Connect onboarding requires entitlement `STRIPE_PAYMENTS` (Pro/Business). Public Pay stays generic “unavailable” on Free unless the invoice includes consented bank-transfer details (informational only; Puyer does not process the transfer).
 - No refunds API. Customer Portal and platform subscriptions live in Domain A ([`billing.md`](./billing.md)).
 - WebhookEvent has RLS enabled and **no** authenticated policies on purpose (server-only; Prisma `puyer_prisma` has grants + BYPASSRLS). The linter INFO `rls_enabled_no_policy` is expected.
 - Identity country defaults to `US` on onboard; Stripe onboarding collects the rest.
@@ -72,7 +72,7 @@ Browser:
 
 ## Version
 
-1.0.4 — 2026-08-28
+1.0.5 — 2026-08-29
 
 ## Changelog
 
@@ -83,4 +83,5 @@ Browser:
 [2026-08-28] – Changed: §17 checklist mapped; webhook IP rate limit (Phase 9).
 [2026-08-28] – Changed: Public payer page uses document + pay sidebar.
 [2026-08-28] – Fixed: Settings Stripe lookup failures no longer crash the page.
+[2026-08-29] – Changed: Public pay sidebar explains bank transfer when Stripe Pay is unavailable.
 ```

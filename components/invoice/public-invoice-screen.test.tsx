@@ -39,6 +39,7 @@ describe("public payer screen", () => {
     expect(html).toContain("Pay Invoice");
     expect(html).toContain("Download PDF");
     expect(html).toContain("Securely processed by Stripe");
+    expect(html).toContain("created with Puyer");
     expect(html).toContain("/api/public/invoices/abcdefghijklmnopqrstuv/pdf");
     expect(html).not.toContain("organizationId");
     expect(html).not.toContain("clientId");

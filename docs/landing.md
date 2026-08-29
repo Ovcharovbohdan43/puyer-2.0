@@ -10,7 +10,7 @@ Source: [Puyer landing mockup](https://www.figma.com/design/gceJUMGMfVPHmmVOqAeE
 
 Pixel-faithful marketing page using Figma colors, type (Inter + JetBrains Mono), spacing, and **exported Figma icons only**. No generated/AI icons, no Lucide/Heroicons substitutions.
 
-Placeholder blocks labeled “UI Mockup” are intentional: they exist in the Figma file until product screens are designed.
+Placeholder blocks labeled “UI Mockup” remain on How / tracking / reminders. The Templates grid (`#templates`) shows live Mini / Professional / Premium invoice previews from the same `InvoicePreview` as the builder. Platform disclaimer copy is hidden on those cards so the layout stays readable.
 
 The Invoice Builder on this page is interactive (see [`invoice-builder.md`](./invoice-builder.md)).
 
@@ -28,14 +28,14 @@ Strings live in `messages/en.json`. Icons live in `public/landing/` (Figma MCP a
 
 ## How to test
 
-- Desktop: header + hero + 50/50 builder + preview, 4-up feature grid, 3-up templates/pricing
+- Desktop: header + hero + 50/50 builder + preview (landing form is two steps), 4-up feature grid, 3-up templates/pricing
 - Tablet: grids collapse to 2 columns
 - Mobile: header Menu sheet; builder Edit/Preview tabs; FAQ accordion opens
 - Header Create Invoice / Login / Pricing match UX_FLOWS.md
 - Theme moon/sun restyles the full landing, including builder preview and solid actions
 - Pricing toggle switches monthly/yearly
 - FAQ answers expand without page navigation
-- No AI-style illustrations; mockup placeholders remain as in Figma
+- No AI-style illustrations on feature cards. Template cards render the real invoice layouts. Hovering a card zooms the invoice preview.
 
 ## Limitations
 
@@ -47,14 +47,15 @@ Strings live in `messages/en.json`. Icons live in `public/landing/` (Figma MCP a
 
 - `app/(marketing)/page.tsx`, `app/layout.tsx`, `app/globals.css`, `app/(marketing)/pricing/page.tsx`
 - `docs/theme.md`
-- `components/marketing/*`
+- `components/marketing/*` (`template-invoice-mockup.tsx` for `#templates`)
+- `lib/invoices/template-demo.ts`
 - `components/invoice-builder/*`
 - `messages/en.json`
 - `public/landing/*`
 
 ## Version
 
-1.2.3 — 2026-08-28
+1.2.10 — 2026-08-29
 
 ## Changelog
 
@@ -65,4 +66,11 @@ Strings live in `messages/en.json`. Icons live in `public/landing/` (Figma MCP a
 [2026-08-27] – Changed: Remaining light leftovers (preview, Download PDF, icons) follow dark theme.
 [2026-08-28] – Changed: Marketing routes live in `app/(marketing)`; magic link is Phase 1.
 [2026-08-28] – Changed: Header Login navigates to `/login`.
+[2026-08-29] – Changed: Templates section shows live Minimal / Professional / Premium invoice previews.
+[2026-08-29] – Fixed: Template card previews scale from the top-left so invoices are not clipped to the right.
+[2026-08-29] – Added: Hover zoom on landing template invoice previews.
+[2026-08-29] – Changed: Template cards show three distinct invoice layouts (Premium navy header).
+[2026-08-29] – Changed: Template mockups hide the invoice platform disclaimer.
+[2026-08-29] – Changed: Landing invoice builder is two steps so the hero/preview stay compact.
+[2026-08-29] – Changed: Landing builder shows Next first; Download PDF and Share on step 2. Preview scrollbar hidden.
 ```

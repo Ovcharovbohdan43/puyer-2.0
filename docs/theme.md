@@ -14,7 +14,7 @@ The current approach (Tailwind CSS v4):
 2. **`@custom-variant dark`** keyed to `[data-theme=dark]`, not `prefers-color-scheme`. First visit stays light, matching [`UX_FLOWS.md`](./UX_FLOWS.md).
 3. **Blocking bootstrap** via `InlineScript` in `app/layout.tsx` (`THEME_BOOTSTRAP_SCRIPT`). SSR emits `type="text/javascript"` so it runs before paint. After hydration it becomes `type="text/plain"` so React 19 does not warn about a live `<script>` on client navigations (including the magic-link redirect).
 4. **Compatibility remaps** under `html[data-theme="dark"]` so existing Figma hex classes invert without a full class rewrite. New UI should prefer tokens (`bg-background`, `text-foreground`, `border-puyer-border`, `dark:`).
-5. **Invoice preview follows the theme.** `.invoice-paper` uses the same card tokens. Black accent `#000000` maps to `--invoice-accent` so totals stay visible. PDF export remains a light document.
+5. **Invoice preview follows the theme.** `.invoice-paper` uses the same card tokens. Soft panels use `bg-puyer-soft` (not `#F8FAFC`). Black accent `#000000` maps to `--invoice-accent` so totals stay visible. Form fields use `bg-puyer-card` plus `color-scheme: dark` so native date/text inputs do not stay white. PDF export remains a light document. Landing `.template-mockup` still forces light paper.
 6. **Public payer portal (`/invoice/[publicId]`)** uses tokens (`bg-puyer-card`, `text-puyer-ink`, `text-puyer-muted`, `border-puyer-border`), not Figma uppercase hex. `bg-white` remaps in dark mode, but `text-[#0B1C30]` does not — that mix made invoice text invisible.
 
 The header control is a moon icon in light mode and a sun icon in dark mode (inline geometric SVG, `currentColor`). Labels live in `aria-label`.
@@ -70,17 +70,22 @@ Browser:
 - `components/ui/inline-script.tsx`, `components/ui/inline-script.test.ts`
 - `components/ui/theme.tsx`, `components/ui/theme-toggle.tsx`
 - `components/marketing/public-header.tsx`
+- `components/auth/login-page.tsx`
 - `components/invoice-builder/invoice-preview.tsx`
 - `components/invoice/public-invoice-screen.tsx`, `components/invoice/public-pay-panel.tsx`
 - `messages/en.json` (`header.themeLight`, `header.themeDark`)
 
 ## Version
 
-1.0.3 — 2026-08-28
+1.0.6 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Invoice preview scrollbar is hidden (scroll still works).
+[2026-08-29] – Fixed: Dark theme no longer paints builder fields and Premium
+  invoice panels white (tokens + native input color-scheme).
+[2026-08-29] – Changed: `/login` has no moon/sun control and keeps a white canvas.
 [2026-08-28] – Fixed: Public payer portal uses theme tokens so dark mode is not dark-on-dark.
 [2026-08-28] – Fixed: Theme bootstrap no longer renders a live `<script>`
   during client React work (magic-link / dashboard hydration overlay).

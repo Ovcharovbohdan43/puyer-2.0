@@ -12,6 +12,7 @@ type PublicPayPanelProps = {
   payable: boolean;
   connected: boolean;
   paid: boolean;
+  hasBankTransfer?: boolean;
   checkout?: string | null;
 };
 
@@ -23,6 +24,7 @@ export function PublicPayPanel({
   payable,
   connected,
   paid,
+  hasBankTransfer = false,
   checkout,
 }: PublicPayPanelProps) {
   const pay = t("pay");
@@ -87,7 +89,9 @@ export function PublicPayPanel({
               {pending ? connect.paying : pay.payInvoice}
               {pending ? null : <ArrowIcon />}
             </button>
-          ) : paid ? null : (
+          ) : paid ? null : hasBankTransfer ? (
+            <p className="text-[14px] leading-5 text-puyer-muted">{pay.bankTransferHint}</p>
+          ) : (
             <p className="text-[14px] leading-5 text-puyer-muted">{connect.payUnavailable}</p>
           )}
           <a
@@ -100,10 +104,12 @@ export function PublicPayPanel({
           {error ? <p className="text-[12px] leading-4 text-[#B42318]">{error}</p> : null}
         </div>
       </div>
+      {canPay ? (
       <p className="flex items-center justify-center gap-1 px-0 py-2 text-[14px] leading-5 text-puyer-muted opacity-80">
         <LockIcon />
         {pay.stripeTrust}
       </p>
+      ) : null}
     </aside>
   );
 }

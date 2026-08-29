@@ -27,5 +27,25 @@ describe("InvoicePreview", () => {
     expect(html).toContain("wrap-anywhere");
     expect(html).toContain("overflow-hidden");
     expect(html).toContain("max-w-[700px]");
+    expect(html).toContain("created with Puyer");
+  });
+
+  it("uses theme tokens for Premium panels instead of hardcoded white", () => {
+    const state = createDefaultBuilderState();
+    state.template = "PREMIUM";
+    const currency = getCurrency(state.currency);
+    const totals = totalsForInvoice(
+      state.items,
+      currency.exponent,
+      state.discountType,
+      state.discountValue,
+      state.taxRate,
+    );
+    const html = renderToStaticMarkup(
+      <InvoicePreview state={state} currency={currency} totals={totals} zoom={1} />,
+    );
+
+    expect(html).toContain("bg-puyer-soft");
+    expect(html).not.toContain("F8FAFC");
   });
 });

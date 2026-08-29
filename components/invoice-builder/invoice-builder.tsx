@@ -13,12 +13,14 @@ import { useToast } from "@/components/ui/toast";
 import { totalsForInvoice, type DiscountType } from "@/lib/invoices/calculate";
 import { getCurrency, type Currency } from "@/lib/invoices/currencies";
 import { formatMoney } from "@/lib/invoices/money";
+import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
 import { hasBuilderErrors, validateBuilder, type BuilderErrors } from "@/lib/invoices/validate";
 import { downloadPdfResponse } from "@/lib/pdf/browser-download";
 import { t } from "@/lib/i18n";
 
 type MobileTab = "edit" | "preview";
 type BusyState = null | "preparing" | "ready";
+type LandingFormStep = 1 | 2;
 
 const TEMPLATES: { id: InvoiceTemplate; icon: string; width: number; height: number }[] = [
   { id: "MINIMAL", icon: "/landing/builder-doc.svg", width: 13, height: 17 },
@@ -26,7 +28,7 @@ const TEMPLATES: { id: InvoiceTemplate; icon: string; width: number; height: num
   { id: "PREMIUM", icon: "/landing/builder-preview.svg", width: 17, height: 16 },
 ];
 
-export function InvoiceBuilder() {
+export function InvoiceBuilder({ paged = false }: { paged?: boolean }) {
   const copy = t("builder");
   const toast = useToast();
   const { state, setState, authenticated, openAuth, persist, persisting, publicUrl, invoiceId, onCopyPublicLink } =
@@ -39,6 +41,7 @@ export function InvoiceBuilder() {
   const [busy, setBusy] = useState<BusyState>(null);
   const [pendingCurrency, setPendingCurrency] = useState<Currency | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [landingStep, setLandingStep] = useState<LandingFormStep>(1);
 
   const currency = getCurrency(state.currency);
   const totals = useMemo(
@@ -64,6 +67,9 @@ export function InvoiceBuilder() {
 
   const showErrors = (next: BuilderErrors) => {
     setErrors(next);
+    if (paged) {
+      setLandingStep(1);
+    }
     setErrorTick((tick) => tick + 1);
     toast(copy.errors.summary);
   };
@@ -129,16 +135,16 @@ export function InvoiceBuilder() {
     }
   };
 
-  const inputClass = "rounded border border-[#e2e8f0] bg-white px-[9px] py-[11px] text-[16px] text-[#0b1c30]";
+  const inputClass = "rounded border border-[#e2e8f0] bg-puyer-card px-[9px] py-[11px] text-[16px] text-puyer-ink";
   const fieldClass =
-    "h-11 w-full rounded border border-[#e2e8f0] bg-white px-[9px] text-[16px] leading-none text-[#0b1c30] outline-none focus-visible:border-[#0b1c30]";
+    "h-11 w-full rounded border border-[#e2e8f0] bg-puyer-card px-[9px] text-[16px] leading-none text-puyer-ink outline-none focus-visible:border-[#0b1c30]";
   const textareaClass = `${inputClass} min-h-[70px] min-w-0 resize-none overflow-y-auto wrap-anywhere`;
   const labelClass = "text-[16px] font-bold leading-6 text-[#0b1c30]";
   const errorClass = "text-[12px] text-[#b91c1c]";
   const invalidClass = "border-[#b91c1c] bg-[#fef2f2]";
   const mark = (base: string, invalid?: boolean) => (invalid ? `${base} ${invalidClass}` : base);
 
-  const form = (
+  const formDetails = (
     <div className="flex min-w-0 flex-col gap-6">
       <div className="grid grid-cols-2 items-end gap-4">
         <label className="flex min-w-0 flex-col gap-1">
@@ -365,6 +371,49 @@ export function InvoiceBuilder() {
           {errors.tax ? <span className={errorClass}>{copy.errors.tax}</span> : null}
         </label>
       </div>
+    </div>
+  );
+
+  const formPayment = (
+    <div className="flex min-w-0 flex-col gap-6">
+      <div className="flex flex-col gap-3">
+        <span className={labelClass}>{copy.bankSection}</span>
+        <p className="text-[12px] leading-4 text-[#45464d]">{copy.bankSectionHint}</p>
+        {(
+          [
+            ["bankAccountHolder", copy.bankAccountHolder],
+            ["bankName", copy.bankName],
+            ["bankIban", copy.bankIban],
+            ["bankBic", copy.bankBic],
+            ["bankAccountNumber", copy.bankAccountNumber],
+            ["bankRoutingNumber", copy.bankRoutingNumber],
+            ["bankPaymentReference", copy.bankPaymentReference],
+          ] as const
+        ).map(([key, label]) => (
+          <label key={key} className="flex flex-col gap-1">
+            <span className="text-[14px] leading-5 text-[#45464d]">{label}</span>
+            <input
+              value={state[key]}
+              onChange={(event) => setState({ ...state, [key]: event.target.value })}
+              className={fieldClass}
+              autoComplete="off"
+            />
+          </label>
+        ))}
+        <label className="flex items-start gap-2 pt-1">
+          <input
+            type="checkbox"
+            className="mt-1 size-4 shrink-0"
+            checked={state.storeBankDetailsConsent}
+            disabled={!hasBankTransfer(state)}
+            onChange={(event) => setState({ ...state, storeBankDetailsConsent: event.target.checked })}
+          />
+          <span className="text-[12px] leading-4 text-[#0b1c30]">{copy.bankStorageConsent}</span>
+        </label>
+        {hasBankTransfer(state) && !state.storeBankDetailsConsent ? (
+          <p className="text-[12px] leading-4 text-[#b45309]">{copy.bankStorageDeclined}</p>
+        ) : null}
+      </div>
 
       <label className="flex flex-col gap-1">
         <span className={labelClass}>{copy.paymentDetails}</span>
@@ -384,6 +433,7 @@ export function InvoiceBuilder() {
           className={textareaClass}
           rows={3}
         />
+        <span className="text-[10px] leading-4 text-[#45464d]">{copy.notesDisclaimerLocked}</span>
       </label>
 
       <div className="flex flex-col gap-2">
@@ -405,7 +455,11 @@ export function InvoiceBuilder() {
   );
 
   const previewPane = (
-    <div className="relative flex min-h-[600px] flex-col items-center overflow-auto rounded-xl bg-[#e5eeff] p-4 sm:p-8">
+    <div
+      className={`preview-scroll relative flex min-h-[600px] flex-col items-center overflow-auto rounded-xl bg-[#e5eeff] p-4 sm:p-8 ${
+        paged ? "lg:max-h-[calc(100dvh-8rem)]" : ""
+      }`}
+    >
       <div className="preview-glow pointer-events-none absolute inset-0 opacity-50" />
       <div className="relative z-[1] mb-4 flex gap-2">
         <button
@@ -442,7 +496,7 @@ export function InvoiceBuilder() {
         <button
           type="button"
           disabled={Boolean(busy) || persisting}
-          className="flex flex-1 items-center justify-center gap-1 rounded bg-[#006c49] py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
+          className="builder-cta flex flex-1 items-center justify-center gap-1 rounded bg-puyer-green py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => void persistIfValid()}
         >
           {persisting ? copy.saving : copy.save}
@@ -451,7 +505,7 @@ export function InvoiceBuilder() {
       <button
         type="button"
         disabled={Boolean(busy)}
-        className="flex flex-1 items-center justify-center gap-1 rounded bg-black py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
+        className="builder-cta flex flex-1 cursor-pointer items-center justify-center gap-1 rounded bg-puyer-green py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:cursor-not-allowed disabled:opacity-50"
         onClick={() => void runDownloadOrShare("download")}
       >
         <FigmaIcon src="/landing/download.svg" alt="" width={12} height={12} />
@@ -462,7 +516,7 @@ export function InvoiceBuilder() {
           type="button"
           disabled={Boolean(busy)}
           aria-label={copy.share}
-          className="flex items-center justify-center rounded border border-[#e2e8f0] px-[17px] py-[15px] disabled:opacity-50"
+          className="builder-cta flex cursor-pointer items-center justify-center rounded bg-puyer-green px-[17px] py-[15px] text-white disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => void runDownloadOrShare("share")}
         >
           <FigmaIcon src="/landing/share.svg" alt="" width={15} height={17} />
@@ -556,7 +610,7 @@ export function InvoiceBuilder() {
         </button>
       </div>
 
-      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-12">
+      <div className="grid min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-12">
         <div
           className={`flex min-w-0 flex-col gap-4 overflow-x-hidden rounded-xl border border-[#e2e8f0] bg-white p-[25px] lg:col-span-5 ${
             mobileTab === "preview" ? "hidden md:flex" : "flex"
@@ -583,16 +637,57 @@ export function InvoiceBuilder() {
               ))}
             </div>
           </div>
-          {form}
-          {actions}
+          {paged ? (
+            <>
+              <p className="text-[12px] font-semibold tracking-[0.6px] text-[#45464d]">
+                {copy.stepProgress.replace("{current}", String(landingStep))}
+                {" · "}
+                {landingStep === 1 ? copy.stepDetails : copy.stepPayment}
+              </p>
+              {landingStep === 1 ? formDetails : formPayment}
+              <div className="flex gap-2">
+                {landingStep === 2 ? (
+                  <button
+                    type="button"
+                    className="flex-1 cursor-pointer rounded border border-[#e2e8f0] py-3 text-[12px] font-semibold tracking-[0.6px] transition duration-150 hover:bg-[#eff4ff] active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b1c30]"
+                    onClick={() => setLandingStep(1)}
+                  >
+                    {copy.backStep}
+                  </button>
+                ) : null}
+                {landingStep === 1 ? (
+                  <button
+                    type="button"
+                    className="builder-cta flex flex-1 cursor-pointer items-center justify-center rounded bg-puyer-green py-4 text-[12px] font-semibold tracking-[0.6px] text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-puyer-green"
+                    onClick={() => {
+                      setLandingStep(2);
+                      document.getElementById("builder")?.scrollIntoView({ block: "start", behavior: "smooth" });
+                    }}
+                  >
+                    {copy.nextStep}
+                  </button>
+                ) : null}
+              </div>
+            </>
+          ) : (
+            <>
+              {formDetails}
+              {formPayment}
+            </>
+          )}
+          {!paged || landingStep === 2 ? actions : null}
         </div>
 
-        <div className={`min-w-0 lg:col-span-7 ${mobileTab === "edit" ? "hidden md:block" : "block"}`}>
+        <div
+          className={`min-w-0 lg:col-span-7 ${mobileTab === "edit" ? "hidden md:block" : "block"} ${
+            paged ? "lg:sticky lg:top-24" : ""
+          }`}
+        >
           {previewPane}
         </div>
       </div>
 
-      {mobileTab === "preview" ? <div className="mt-4 md:hidden">{actions}</div> : null}
+      {mobileTab === "preview" && (!paged || landingStep === 2) ? <div className="mt-4 md:hidden">{actions}</div> : null}
 
       <Modal
         open={pendingCurrency !== null}
@@ -624,7 +719,7 @@ export function InvoiceBuilder() {
       </Modal>
 
       {fullscreen ? (
-        <div className="fixed inset-0 z-50 overflow-auto bg-[#e5eeff] p-4 sm:p-10">
+        <div className="fixed inset-0 z-50 overflow-auto bg-[#e5eeff] p-4 sm:p-10 preview-scroll">
           <div className="mx-auto mb-4 flex max-w-[900px] gap-2">
             <button
               type="button"

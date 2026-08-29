@@ -14,6 +14,7 @@ import {
 } from "@/components/invoice-builder/types";
 import { useToast } from "@/components/ui/toast";
 import { t } from "@/lib/i18n";
+import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
 import { prepareBuilderState } from "@/lib/invoices/validate";
 
 type WorkspaceSessionProps = {
@@ -64,7 +65,11 @@ export function WorkspaceSession({ initial, invoiceId, publicId, children }: Wor
       setSavedPublicId(payload.invoice.publicId);
       setStateRaw(next);
       setBaseline(next);
-      toast(copy.saved);
+      toast(
+        hasBankTransfer(state) && state.storeBankDetailsConsent !== true
+          ? copy.savedWithoutBankStorage
+          : copy.saved,
+      );
       if (!invoiceId) {
         router.replace(`/invoices/${payload.invoice.id}/edit`);
         router.refresh();
@@ -76,7 +81,7 @@ export function WorkspaceSession({ initial, invoiceId, publicId, children }: Wor
     } finally {
       setPersisting(false);
     }
-  }, [copy.saveFailed, copy.saved, invoiceId, persistedId, persisting, router, state, toast]);
+  }, [copy.saveFailed, copy.saved, copy.savedWithoutBankStorage, invoiceId, persistedId, persisting, router, state, toast]);
 
   const onCopyPublicLink = useCallback(() => {
     if (!persistedId) {

@@ -1,4 +1,5 @@
 import type { DiscountType } from "@/lib/invoices/calculate";
+import { emptyBankTransfer, type BankTransferDetails } from "@/lib/invoices/bank-transfer";
 
 export type InvoiceTemplate = "MINIMAL" | "PROFESSIONAL" | "PREMIUM";
 
@@ -22,11 +23,12 @@ export type BuilderState = {
   taxRate: string;
   notes: string;
   paymentDetails: string;
+  storeBankDetailsConsent: boolean;
   template: InvoiceTemplate;
   accentColor: string;
   issueDate: string;
   dueDate: string;
-};
+} & BankTransferDetails;
 
 export const ACCENT_COLORS = ["#000000", "#006c49", "#0070f3", "#7c3aed", "#b45309"] as const;
 
@@ -47,6 +49,8 @@ export function createDefaultBuilderState(): BuilderState {
     taxRate: "0",
     notes: "Thank you for your business.",
     paymentDetails: "Payment due within 30 days.",
+    storeBankDetailsConsent: false,
+    ...emptyBankTransfer(),
     template: "PROFESSIONAL",
     accentColor: "#000000",
     issueDate: "2026-08-27",

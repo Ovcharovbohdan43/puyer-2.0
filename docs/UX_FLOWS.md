@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.7 — 2026-08-28
+> **Version:** 1.0.12 — 2026-08-29
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -101,7 +101,7 @@ Landing → click Create Invoice → authenticated
 
 ### Features / FAQ / Templates (on `/`)
 
-In-page smooth scroll. **Use this template** → apply template on current builder (unauth) or `/invoices/new?template=` (if navigating away). Keep data. Do not register.
+In-page smooth scroll. **Use this template** → apply template on current builder (unauth) or `/invoices/new?template=` (if navigating away). Cards show live invoice previews; hover zooms the preview. Keep data. Do not register.
 
 Pricing link in header → `/pricing`. In-page pricing section remains for marketing; header Pricing always goes to `/pricing`.
 
@@ -114,7 +114,7 @@ Pricing link in header → `/pricing`. In-page pricing section remains for marke
 ```
 Any public page → Login
 → TARGET: /login
-→ UI: split page — email Sign in / Create account (magic link, no password) on the left; invoice payment illustration (`/auth/login-hero.png`) on the right
+→ UI: split page — email Sign in / Create account (magic link, no password) on the left; invoice payment illustration (`/auth/login-hero.png`) on the right. White canvas, no theme toggle.
 → SERVER: send magic link (rate limited)
 → SUCCESS: “Check your inbox” + Change email + Resend (cooldown)
 → ERROR: safe message, no stack traces
@@ -158,16 +158,21 @@ Temporary number e.g. `INV-2026-001` is **preview only**. Server issues the real
 | Qty / price / tax | input | Recalculate line, subtotal, discount, tax, total. Preview live |
 | Discount type/value | change | Custom list (None / Percentage / Fixed). Closes on outside click, Escape, or choice. Recalculate. Inline error if invalid |
 | Tax % | change | Recalculate tax + total |
-| Template icons | click | Keep data, switch visual only. All templates free |
+| Bank transfer | type | Optional IBAN / account fields. Preview updates. Not saved unless the storage-consent checkbox is checked |
+| Bank storage consent | checkbox | Required to send/store bank details. Unchecked: on-screen only; saved invoice/PDF omit them; no reuse on reload |
+| Notes | type | Issuer notes only. A small Puyer platform disclaimer is always printed under Notes and cannot be edited or removed |
+| Template icons | click | Keep data, switch visual only. All templates free. Minimal = sparse; Professional = accent; Premium = navy header + totals panel |
 | Accent color | click | Preview color only |
 | Zoom + / − | click | Session-only preview zoom, not browser zoom |
 | Fullscreen | click | Desktop: modal. Mobile: full screen. Close returns to builder |
 
 Every form change updates preview. No Save/Refresh required.
 
+On the public landing only, the editor is two steps so the form stays near preview height: **Invoice details** then **Payment & notes**. Step 1 shows **Next** only. **Download PDF** and **Share** appear on step 2. `/invoices/new` and invoice edit keep one scrolling form. Invalid Download/Share jumps back to step 1. The preview pane still scrolls; the scrollbar is hidden.
+
 ### Mobile builder
 
-Tabs: **Edit** | **Preview**. Switching does not reload. Download/Share stay visible.
+Tabs: **Edit** | **Preview**. Switching does not reload. Download/Share appear after **Next** (step 2) on the landing builder.
 
 ### Validation (before download/share)
 
@@ -322,4 +327,13 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-28] – Changed: Header Login opens `/login` (split magic-link page). Download/Share stay modal.
 [2026-08-28] – Added: Sign out in the app shell (sidebar + More). Settings no longer 500s if Connect lookup fails.
 [2026-08-28] – Changed: `/login` right panel uses the invoice payment illustration PNG.
+[2026-08-29] – Changed: `/login` uses a white canvas and does not show the theme toggle.
+[2026-08-29] – Changed: Landing `#templates` cards show live invoice previews.
+[2026-08-29] – Fixed: Template invoice previews stay aligned in the card (scale from top-left).
+[2026-08-29] – Added: Hovering a template card zooms the invoice preview.
+[2026-08-29] – Changed: Minimal / Professional / Premium invoice layouts are distinct.
+[2026-08-29] – Added: Notes always includes a small non-editable Puyer platform disclaimer.
+[2026-08-29] – Added: Bank transfer details require a storage-consent checkbox before they are saved.
+[2026-08-29] – Changed: Landing builder fills invoice data in two steps (details, then payment).
+[2026-08-29] – Changed: Landing step 1 is Next only; Download PDF and Share appear on step 2. Preview scrollbar is hidden.
 ```

@@ -384,7 +384,7 @@ export function PublicSession({ children }: { children: React.ReactNode }) {
                   setEmail(event.target.value);
                   setEmailError(null);
                 }}
-                className="rounded border border-[#e2e8f0] bg-white px-[9px] py-[11px] text-[16px] text-black"
+                className="rounded border border-[#e2e8f0] bg-puyer-card px-[9px] py-[11px] text-[16px] text-puyer-ink"
                 placeholder={copy.emailPlaceholder}
               />
               {emailError ? <span className="text-[12px] text-[#b91c1c]">{emailError}</span> : null}

@@ -16,7 +16,21 @@ test("download with a missing client name highlights the field", async ({ page }
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/#builder");
   await page.getByPlaceholder("Client Name").fill("");
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("button", { name: "Download PDF" }).click();
   await expect(page.getByText("Enter a client name.")).toBeVisible();
   await expect(page.locator("[data-invalid='true']").first()).toBeVisible();
+});
+
+test("landing builder payment fields are on step two", async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.goto("/#builder");
+  await expect(page.getByRole("button", { name: "Download PDF" })).toHaveCount(0);
+  await expect(page.getByText("Bank transfer (outside Stripe)")).toHaveCount(0);
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("button", { name: "Download PDF" })).toBeVisible();
+  await expect(page.getByText("Bank transfer (outside Stripe)")).toBeVisible();
+  await page.getByRole("button", { name: "Back" }).click();
+  await expect(page.getByPlaceholder("Client Name")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Download PDF" })).toHaveCount(0);
 });
