@@ -47,14 +47,23 @@ export function magicLinkRedirectOrigin(request: Request): string {
 }
 
 export function magicLinkEmailRedirectTo(request: Request): string {
-  return `${magicLinkRedirectOrigin(request)}/auth/callback`;
+  return `${magicLinkRedirectOrigin(request)}/auth/confirm`;
 }
 
 export function homeHasAuthCallbackParams(pathname: string, searchParams: URLSearchParams): boolean {
   if (pathname !== "/") {
     return false;
   }
-  return Boolean(searchParams.get("code") || searchParams.get("token_hash"));
+  return Boolean(searchParams.get("code") || searchParams.get("token_hash") || searchParams.get("token"));
+}
+
+export function magicLinkConfirmUrl(request: Request): URL {
+  const url = new URL(request.url);
+  const dest = new URL("/auth/confirm", requestPublicOrigin(request));
+  url.searchParams.forEach((value, key) => {
+    dest.searchParams.set(key, value);
+  });
+  return dest;
 }
 
 export function shouldOpenDashboardAfterImplicitMagicLink(

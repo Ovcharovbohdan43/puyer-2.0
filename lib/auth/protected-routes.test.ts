@@ -25,6 +25,8 @@ describe("isProtectedPath", () => {
     expect(isProtectedPath("/login")).toBe(false);
     expect(isProtectedPath("/invoice/pub_123")).toBe(false);
     expect(isProtectedPath("/auth/callback")).toBe(false);
+    expect(isProtectedPath("/auth/confirm")).toBe(false);
+    expect(isProtectedPath("/verify")).toBe(false);
     expect(isProtectedPath("/invite/" + "ab".repeat(32))).toBe(false);
   });
 });

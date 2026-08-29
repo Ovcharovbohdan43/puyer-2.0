@@ -59,7 +59,7 @@ export async function handleSendEmailHook(request: Request): Promise<Response> {
   const action = verified.email_data?.email_action_type?.trim() ?? "magiclink";
   const token = verified.email_data?.token ?? "";
   const tokenHash = verified.email_data?.token_hash ?? "";
-  const redirectTo = verified.email_data?.redirect_to?.trim() || `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/callback`;
+  const redirectTo = verified.email_data?.redirect_to?.trim() || `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/confirm`;
   if (!to || !tokenHash) {
     return jsonError(400, "Invalid email payload.");
   }

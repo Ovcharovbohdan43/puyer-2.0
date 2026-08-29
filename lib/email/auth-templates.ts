@@ -82,13 +82,21 @@ export function authVerifyUrl(input: {
   action: string;
   redirectTo: string;
 }): string {
-  const base = input.supabaseUrl.replace(/\/$/, "");
   const params = new URLSearchParams({
-    token: input.tokenHash,
-    type: input.action,
-    redirect_to: input.redirectTo,
+    token_hash: input.tokenHash,
+    type: input.action || "magiclink",
   });
-  return `${base}/auth/v1/verify?${params.toString()}`;
+  try {
+    const origin = new URL(input.redirectTo).origin;
+    return `${origin}/auth/confirm?${params.toString()}`;
+  } catch {
+    const base = input.supabaseUrl.replace(/\/$/, "");
+    return `${base}/auth/v1/verify?${new URLSearchParams({
+      token: input.tokenHash,
+      type: input.action,
+      redirect_to: input.redirectTo,
+    }).toString()}`;
+  }
 }
 
 export function authEmailMessage(input: AuthEmailInput): OutboundEmail {

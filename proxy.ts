@@ -11,7 +11,7 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (request.method === "GET" && homeHasAuthCallbackParams(path, request.nextUrl.searchParams)) {
     const dest = request.nextUrl.clone();
-    dest.pathname = "/auth/callback";
+    dest.pathname = "/auth/confirm";
     return NextResponse.redirect(dest);
   }
   if (request.method === "GET" && path === "/" && request.nextUrl.searchParams.get("login") === "1") {

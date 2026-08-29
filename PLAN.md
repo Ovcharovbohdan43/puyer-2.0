@@ -429,8 +429,9 @@ Local subscription fields:
 - `subscriptionStatus`: `trialing | active | past_due | unpaid | canceled | incomplete | incomplete_expired`
 - `currentPeriodStart`, `currentPeriodEnd`
 - `cancelAtPeriodEnd`
+- `Organization.plan` (`FREE` / `PRO` / `BUSINESS`), `Organization.planSource` (`STRIPE` | `MANUAL`), `Organization.subscriptionStatus`
 
-Webhooks (platform endpoint) are the source of truth. Checkout success redirect is not.
+Webhooks (platform endpoint) are the source of truth for `STRIPE` workspaces. Checkout success redirect is not. `MANUAL` Table Editor grants are not overwritten by webhooks.
 
 Use Stripe Customer Portal for plan changes/cancel (`createCustomerPortalSession` lives in **platform** module only).
 
@@ -1107,6 +1108,12 @@ Until `docs/` exists, keep the changelog in this file.
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Magic links confirm on click-through `/auth/confirm` so GET prefetch does not expire the token.
+  Docs: docs/auth.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Added: Organization.planSource and subscriptionStatus for Table Editor plan grants.
+  Docs: docs/billing.md.
+
 [2026-08-29] – Changed: Revenue Trends fills the card with an SVG gradient; Paid invoices show Payment Received on the timeline.
   Docs: docs/dashboard.md, docs/reports.md, docs/invoices.md, docs/UX_FLOWS.md.
 

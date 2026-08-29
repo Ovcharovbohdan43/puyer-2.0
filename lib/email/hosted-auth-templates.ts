@@ -22,7 +22,11 @@ export function hostedAuthTemplatePatch(cwd = process.cwd()): Record<string, str
   const body: Record<string, string> = {};
   for (const spec of HOSTED_AUTH_TEMPLATES) {
     const html = readFileSync(join(dir, spec.file), "utf8");
-    if (!html.includes("{{ .ConfirmationURL }}")) {
+    if (spec.file === "magic_link.html") {
+      if (!html.includes("{{ .TokenHash }}") || !html.includes("/auth/confirm")) {
+        throw new Error(`${spec.file} must link to /auth/confirm with {{ .TokenHash }}`);
+      }
+    } else if (!html.includes("{{ .ConfirmationURL }}")) {
       throw new Error(`${spec.file} is missing {{ .ConfirmationURL }}`);
     }
     body[spec.subjectKey] = spec.subject;

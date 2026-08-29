@@ -151,10 +151,10 @@ Header, pricing subscribe (unauth), and gated app routes all open `/login`. Down
 
 Cancel on `/login` is the Puyer logo → `/`.
 
-### Magic link `/auth/callback` (or `/auth/verify`)
+### Magic link `/auth/confirm` (via `/auth/callback` or `/verify`)
 
 ```
-Email → click link → validate token → session
+Email → open link (GET does not consume token) → Continue to Puyer → session
 → Restore `authReturnTo` context (never stay on `/` after a successful login):
 
 A login          → /dashboard
@@ -380,6 +380,8 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Landing trust bar is Phosphor chips (not clickable); copy unchanged.
 [2026-08-29] – Changed: Landing FAQ covers live product questions (no guest PDF download).
 [2026-08-29] – Changed: Dashboard sidebar and mobile tabs use Phosphor nav icons.
+[2026-08-29] – Fixed: Magic-link GET no longer consumes the one-time token; user confirms on `/auth/confirm`.
+[2026-08-29] – Added: Table Editor can set Organization plan type (`plan`) and billing status (`planSource=MANUAL`).
 [2026-08-29] – Changed: Overview/Reports trend chart fills the card; Paid invoices show Payment Received on the timeline.
 [2026-08-29] – Added: Invoice drawer manual reminder (editable) and status change; animated timeline.
 [2026-08-29] – Changed: Dashboard KPI sparks fade without a stroke; long names stay inside the rail and drawers.

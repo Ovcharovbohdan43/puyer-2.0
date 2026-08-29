@@ -4,6 +4,7 @@ import { supabaseAuthCookieOptions } from "@/lib/auth/supabase-cookies";
 import {
   homeHasAuthCallbackParams,
   isLocalOrigin,
+  magicLinkConfirmUrl,
   magicLinkEmailRedirectTo,
   magicLinkRedirectOrigin,
   requestPublicOrigin,
@@ -16,7 +17,7 @@ describe("magic link redirect origin", () => {
       headers: { "x-forwarded-host": "puyer.org", "x-forwarded-proto": "https" },
     });
     expect(requestPublicOrigin(request)).toBe("https://puyer.org");
-    expect(magicLinkEmailRedirectTo(request)).toBe("https://puyer.org/auth/callback");
+    expect(magicLinkEmailRedirectTo(request)).toBe("https://puyer.org/auth/confirm");
   });
 
   it("ignores localhost APP_URL on a public host", () => {
@@ -34,9 +35,16 @@ describe("magic link redirect origin", () => {
 describe("auth landing fallbacks", () => {
   it("forwards homepage PKCE or token_hash to the callback", () => {
     expect(homeHasAuthCallbackParams("/", new URLSearchParams("code=abc"))).toBe(true);
-    expect(homeHasAuthCallbackParams("/", new URLSearchParams("token_hash=x&type=magiclink"))).toBe(true);
+    expect(homeHasAuthCallbackParams("/", new URLSearchParams("token=hashed&type=magiclink"))).toBe(true);
     expect(homeHasAuthCallbackParams("/", new URLSearchParams())).toBe(false);
     expect(homeHasAuthCallbackParams("/login", new URLSearchParams("code=abc"))).toBe(false);
+  });
+
+  it("moves callback query params onto /auth/confirm without consuming the token", () => {
+    const request = new Request("https://www.puyer.org/auth/callback?token=hashed&type=magiclink");
+    expect(magicLinkConfirmUrl(request).toString()).toBe(
+      "https://www.puyer.org/auth/confirm?token=hashed&type=magiclink",
+    );
   });
 
   it("sends implicit hash sessions on / to the dashboard", () => {

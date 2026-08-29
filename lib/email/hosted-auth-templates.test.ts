@@ -19,7 +19,8 @@ describe("hosted Auth email templates", () => {
     expect(patch.mailer_subjects_magic_link).toBe("Sign in to Puyer");
     expect(patch.mailer_templates_magic_link_content).toContain("Sign in to Puyer");
     expect(patch.mailer_templates_magic_link_content).toContain("puyer-logo.png");
-    expect(patch.mailer_templates_magic_link_content).toContain("{{ .ConfirmationURL }}");
+    expect(patch.mailer_templates_magic_link_content).toContain("{{ .TokenHash }}");
+    expect(patch.mailer_templates_magic_link_content).toContain("/auth/confirm");
     expect(patch.mailer_templates_magic_link_content).not.toContain("<h2>Your sign-in link</h2>");
     expect(patch.mailer_templates_magic_link_content).not.toContain(
       "Follow the link below to sign in. This link expires shortly and can only be used once.",
@@ -30,7 +31,12 @@ describe("hosted Auth email templates", () => {
     const dir = join(process.cwd(), "supabase", "templates");
     for (const spec of HOSTED_AUTH_TEMPLATES) {
       const html = readFileSync(join(dir, spec.file), "utf8");
-      expect(html, spec.file).toContain("{{ .ConfirmationURL }}");
+      if (spec.file === "magic_link.html") {
+        expect(html, spec.file).toContain("{{ .TokenHash }}");
+        expect(html, spec.file).toContain("/auth/confirm");
+      } else {
+        expect(html, spec.file).toContain("{{ .ConfirmationURL }}");
+      }
       expect(html, spec.file).not.toContain("{{{");
     }
   });

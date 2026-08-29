@@ -56,6 +56,7 @@ describe("auth email templates", () => {
       action: "magiclink",
       redirectTo: "http://localhost:3000/auth/callback",
     });
+    expect(verifyUrl).toBe("http://localhost:3000/auth/confirm?token_hash=abc123hash&type=magiclink");
     expect(message.text).toContain(verifyUrl);
     expect(message.html).toContain("abc123hash");
   });
@@ -66,7 +67,8 @@ describe("auth email templates", () => {
     expect(html).toContain('charset=UTF-8');
     expect(html).toContain('width="600"');
     expect(html).toContain('bgcolor="#006C49"');
-    expect(html).toContain("{{ .ConfirmationURL }}");
+    expect(html).toContain("{{ .TokenHash }}");
+    expect(html).toContain("/auth/confirm");
     expect(html).toContain("{{ .Token }}");
     expect(html).not.toContain("{{{");
   });
@@ -112,5 +114,6 @@ describe("send email hook", () => {
     const sent = vi.mocked(deliverEmail).mock.calls[0]?.[0];
     expect(sent?.to).toBe("ada@puyer.org");
     expect(sent?.subject).toBe("Sign in to Puyer");
+    expect(sent?.html).toContain("/auth/confirm");
   });
 });

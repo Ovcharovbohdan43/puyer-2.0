@@ -10,7 +10,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 - Sign out is in the app sidebar, mobile More sheet, Settings, and the dashboard error boundary. It `POST`s `/api/auth/signout` so `@supabase/ssr` can clear httpOnly cookies, then sends the browser to `/login`.
 - `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Hosted Auth renders the Magic Link mailer template and sends it over Resend SMTP. HTML in git is applied with `npm run auth:push-templates`, not by committing `config.toml`. The optional Send Email hook is an alternative, not a second path.
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
-- `GET /auth/callback` exchanges a PKCE `code` or `token_hash` and redirects using `puyer-auth-return` (login → `/dashboard`). If Auth falls back to Site URL, `/?code=` is forwarded to the callback, and an implicit `#access_token` on `/` continues to `/dashboard`.
+- `GET /auth/callback` and `GET /verify` copy query params to `/auth/confirm` and **do not** consume the token. The user clicks **Continue to Puyer**, which `POST`s `/auth/confirm/complete` (`token` / `token_hash` / PKCE `code`). Email scanners that only GET the link no longer burn it. GoTrue’s `token=` query is accepted (not only `token_hash`).
 - Public Supabase helpers live in `utils/supabase/*`. `lib/auth/browser.ts` and `lib/auth/server.ts` wrap them so marketing still loads when keys are missing (`trySupabasePublicEnv()`).
 - Next.js 16 request gate is [`proxy.ts`](../proxy.ts) (`getClaims()` before the response is committed). `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, and `/notifications` require a session; otherwise redirect to `/login`. `/?login=1` also redirects to `/login`.
 - Prisma uses the server connection **and** `requireSession` / `requireOrganization` / `requireOrgRole`. RLS in [`supabase/migrations/20260828120000_identity_rls_and_trigger.sql`](../supabase/migrations/20260828120000_identity_rls_and_trigger.sql) is defense in depth.
@@ -24,10 +24,13 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
    - **Site URL:** canonical origin only, e.g. `https://www.puyer.org` (not `/auth/callback`). Local: `http://localhost:3000`.
    - **Redirect URLs** (exact match; add **both** www and apex in production):
      - `https://www.puyer.org/auth/callback`
+     - `https://www.puyer.org/auth/confirm`
      - `https://puyer.org/auth/callback`
+     - `https://puyer.org/auth/confirm`
      - `http://localhost:3000/auth/callback`
+     - `http://localhost:3000/auth/confirm`
    If only www is allow-listed and the user opens `https://puyer.org/login`, the magic link is rejected and Auth sends them to Site URL (the landing page). They can look signed in (header **Dashboard**) without ever hitting `/dashboard`.
-3. Vercel `NEXT_PUBLIC_APP_URL` must be the production origin (`https://www.puyer.org` or `https://puyer.org`), not `http://localhost:3000`. OTP still uses the **request host** for `emailRedirectTo` so PKCE cookies match.
+3. Vercel `NEXT_PUBLIC_APP_URL` must be the production origin (`https://www.puyer.org` or `https://puyer.org`), not `http://localhost:3000`. OTP still uses the **request host** for `emailRedirectTo` (`/auth/confirm`) so cookies match.
 4. **Auth emails via Resend SMTP (recommended for hosted Auth):**
    - Connect Resend as custom SMTP in the Supabase dashboard. Do **not** enable the Send Email hook at the same time or users can get two emails.
    - Git files in `supabase/templates/` are **not** applied to the cloud project by `git push`. `config.toml` `content_path` only applies to local `supabase start`.
@@ -66,15 +69,15 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 - Overview and Invoices read live invoice data (Phase 2). A signed-in user without a workspace is provisioned on first `requireOrganization`, not shown as 404.
 - Service role is not used by the browser. Do not expose `SUPABASE_SERVICE_ROLE_KEY`.
 - Hosted Auth email HTML is not loaded from git by itself. After changing `supabase/templates/`, run `npm run auth:push-templates` (or set `SUPABASE_ACCESS_TOKEN` as a GitHub Actions secret). Do not use `supabase config push` for this — it can reset SMTP and Site URL from local `config.toml`.
-- Resend click tracking rewrites `{{ .ConfirmationURL }}` and can consume the magic link. Keep it off for Auth mail.
+- Resend click tracking rewrites Auth links and can consume the magic link. Keep it off for Auth mail. Magic Link HTML uses `{{ .TokenHash }}` on `/auth/confirm` so scanners that GET the URL do not finish sign-in until the user clicks Continue.
 - A React overlay on `/dashboard` after the magic link was a theme bootstrap `<script>` in the root layout, not a failed session exchange. See [`theme.md`](./theme.md).
-- Production Redirect URLs must include **both** `https://www.puyer.org/auth/callback` and `https://puyer.org/auth/callback`. Site URL is the origin, not the callback path.
+- Production Redirect URLs must include **both** hosts and `/auth/callback` plus `/auth/confirm`. Site URL is the origin, not the callback path.
 
 ## Modules
 
 - `prisma/schema.prisma`, `lib/db/prisma.ts`
 - `utils/supabase/*`, `lib/auth/*`, `lib/authorization/*`, `lib/identity/*`, `lib/errors`, `lib/observability`, `lib/audit`
-- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`, `app/api/auth/signout/route.ts`
+- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/auth/confirm/page.tsx`, `app/(auth)/verify/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`, `app/api/auth/signout/route.ts`
 - `lib/email/auth-templates.ts`, `lib/email/layout.ts`, `lib/email/hosted-auth-templates.ts`, `lib/email/send-email-hook.ts`, `lib/auth/login-path.ts`, `supabase/templates/*`, `scripts/push-auth-email-templates.mjs`
 - `components/auth/*`
 - `app/(dashboard)/*`, `components/dashboard/*`
@@ -82,11 +85,12 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.17 — 2026-08-29
+1.0.18 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Magic links confirm on a click-through page; GoTrue `token=` is verified; scanners no longer burn the one-time code on GET.
 [2026-08-28] – Added: Magic-link auth, identity schema, proxy session refresh,
   OTP API, callback, minimal /dashboard.
 [2026-08-28] – Changed: Cloud project public keys verified; CLI `config.toml` added.
@@ -106,7 +110,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 [2026-08-28] – Fixed: Settings no longer 500s when Connect/workspace lookup fails. Sign out is in the app shell via `POST /api/auth/signout`.
 [2026-08-28] – Fixed: Cloud Auth kept the default “Your sign-in link” mail because `config.toml` templates never reach hosted GoTrue. `npm run auth:push-templates` PATCHes mailer HTML only.
 [2026-08-29] – Changed: `/login` is a white split canvas with no theme toggle.
-[2026-08-29] – Fixed: Magic-link `emailRedirectTo` uses the request host (www vs apex) and no longer follows a leftover localhost `NEXT_PUBLIC_APP_URL`. `/` with `code` goes to `/auth/callback`; login no longer treats `/` as a valid return path.
+[2026-08-29] – Fixed: Magic-link `emailRedirectTo` uses the request host (www vs apex) and no longer follows a leftover localhost `NEXT_PUBLIC_APP_URL`. `/` with `code` or `token` goes to `/auth/confirm`; login no longer treats `/` as a valid return path.
 [2026-08-29] – Changed: Login and Auth HTML templates use the Puyer lockup image.
 [2026-08-29] – Added: Login form links to Terms of Service and Privacy Policy.
 [2026-08-29] – Fixed: Prisma Client uses PgBouncer flags so layout + page queries do not hit `42P05`.
