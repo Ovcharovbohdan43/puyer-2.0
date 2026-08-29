@@ -20,23 +20,25 @@ export function TrendBars({ points, empty }: { points: PresentedTrend[]; empty: 
 
   const width = 960;
   const height = 360;
-  const padX = 8;
-  const padY = 12;
+  const padX = 28;
+  const padTop = 24;
+  const padBottom = 40;
   const innerW = width - padX * 2;
-  const innerH = height - padY * 2;
+  const innerH = height - padTop - padBottom;
+  const plotBottom = padTop + innerH;
   const coords = points.map((point, index) => {
     const x = padX + (points.length === 1 ? innerW / 2 : (index / (points.length - 1)) * innerW);
-    const y = padY + innerH - (Math.max(point.heightPct, 2) / 100) * innerH;
+    const y = padTop + innerH - (Math.max(point.heightPct, 2) / 100) * innerH;
     return { x, y, point };
   });
-  const line = smoothTrendLine(coords);
-  const area = trendAreaPath(line, coords, height);
+  const line = smoothTrendLine(coords, { minY: padTop, maxY: plotBottom });
+  const area = trendAreaPath(line, coords, plotBottom);
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="min-h-[240px] w-full flex-1"
+        className="min-h-[240px] w-full flex-1 overflow-hidden"
         preserveAspectRatio="none"
         role="img"
       >
@@ -52,8 +54,18 @@ export function TrendBars({ points, empty }: { points: PresentedTrend[]; empty: 
             <stop offset="100%" stopColor="#6CF8BB" />
           </linearGradient>
         </defs>
-        <path d={area} fill={`url(#${fillId})`} />
-        <path d={line} fill="none" stroke={`url(#${strokeId})`} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+        <path className="chart-fill-in" d={area} fill={`url(#${fillId})`} />
+        <path
+          className="chart-line-draw"
+          d={line}
+          fill="none"
+          stroke={`url(#${strokeId})`}
+          strokeWidth="3"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          pathLength={1}
+        />
       </svg>
       <div className="flex justify-between px-4 pb-3 pt-1">
         {points.map((point) => (

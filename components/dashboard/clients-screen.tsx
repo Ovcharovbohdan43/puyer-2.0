@@ -149,7 +149,7 @@ export function ClientsScreen({
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <article className={`${dash.kpi} min-h-[148px]`}>
-          <KpiSparkline id="clients-total" values={sparks.revenue.values} tone={sparks.revenue.tone} />
+          <KpiSparkline id="clients-total" values={sparks.revenue.values} tone={sparks.revenue.tone} delayMs={0} />
           <div className="relative z-[1] flex items-start justify-between">
             <p className={dash.kpiLabel}>{copy.kpiTotalClients}</p>
             <span className={dash.iconMint}>
@@ -159,7 +159,7 @@ export function ClientsScreen({
           <p className={`relative z-[1] ${dash.kpiValue}`}>{kpis.total}</p>
         </article>
         <article className={`${dash.kpi} min-h-[148px]`}>
-          <KpiSparkline id="clients-outstanding" values={sparks.outstanding.values} tone={sparks.outstanding.tone} />
+          <KpiSparkline id="clients-outstanding" values={sparks.outstanding.values} tone={sparks.outstanding.tone} delayMs={80} />
           <div className="relative z-[1] flex items-start justify-between">
             <p className={dash.kpiLabel}>{copy.kpiListOutstanding}</p>
             <span className={dash.iconWarn}>
@@ -169,7 +169,7 @@ export function ClientsScreen({
           <p className={`relative z-[1] ${dash.kpiValue}`}>{kpis.outstanding}</p>
         </article>
         <article className={`${dash.kpi} min-h-[148px]`}>
-          <KpiSparkline id="clients-overdue" values={sparks.overdue.values} tone={sparks.overdue.tone} />
+          <KpiSparkline id="clients-overdue" values={sparks.overdue.values} tone={sparks.overdue.tone} delayMs={160} />
           <div className="relative z-[1] flex items-start justify-between">
             <p className={dash.kpiLabel}>{copy.kpiOverdue}</p>
             <span className={dash.iconBad}>
@@ -179,7 +179,7 @@ export function ClientsScreen({
           <p className={`relative z-[1] ${dash.kpiValue} text-[#DC2626]`}>{kpis.overdue}</p>
         </article>
         <article className={`${dash.kpi} min-h-[148px]`}>
-          <KpiSparkline id="clients-active" values={sparks.paid.values} tone={sparks.paid.tone} />
+          <KpiSparkline id="clients-active" values={sparks.paid.values} tone={sparks.paid.tone} delayMs={240} />
           <div className="relative z-[1] flex items-start justify-between">
             <p className={dash.kpiLabel}>{copy.kpiActiveClients}</p>
             <span className={dash.iconMint}>

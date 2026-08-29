@@ -23,7 +23,7 @@ Re-checked Context7 `/vercel/next.js/v16.2.9` (`connection()` for runtime `proce
 ## Examples
 
 - Guest GET `/api/help` → `{ keyPresent, namedChars, startsWithRe, resendNames, linuxEnvKeys, commit }` (no secrets).
-- Guest POST with a valid form → 200, inbox + ack emails when Resend is configured.
+- Guest POST with a valid form → 200, inbox + ack emails when Resend is configured. Ack includes reference, topic, and reply instructions.
 - Sixth POST from the same IP in 15 minutes → 429.
 - POST without Resend → 400 (`Your request could not be sent…`).
 - Signed-out `/help` stays on `/help` (not `/login`).
@@ -54,11 +54,12 @@ Playwright `e2e/pay-path.spec.ts` loads `/help` as a public page.
 
 ## Version
 
-1.0.7 — 2026-08-29
+1.0.8 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Help confirmation email and `/help` success state include reference, topic, and next steps.
 [2026-08-29] – Changed: GET `/api/help` reports `namedChars` / `startsWithRe` when `RESEND_API_KEY` exists but is not a `re_` key.
 [2026-08-29] – Added: GET `/api/help` reports whether a Resend key is visible (no secret values).
 [2026-08-29] – Fixed: Resend key is read from `/proc/self/environ` on Vercel so Next cannot empty `process.env.RESEND_API_KEY`.

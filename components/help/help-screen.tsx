@@ -35,7 +35,9 @@ export function HelpScreen({ signedIn, email, name, tickets }: HelpScreenProps) 
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<{ id: string; email: string; topic: (typeof HELP_TOPICS)[number] } | null>(
+    null,
+  );
 
   const visible = useMemo(() => {
     const searched = filterHelpArticles(articles, query);
@@ -60,12 +62,16 @@ export function HelpScreen({ signedIn, email, name, tickets }: HelpScreenProps) 
           message,
         }),
       });
-      const body = (await response.json()) as { ok?: boolean; error?: string };
+      const body = (await response.json()) as { ok?: boolean; error?: string; id?: string };
       if (!response.ok) {
         setError(body.error || copy.sendFailed);
         return;
       }
-      setSent(true);
+      setSent({
+        id: body.id || "",
+        email: formEmail,
+        topic,
+      });
       setMessage("");
       router.refresh();
     } catch {
@@ -132,7 +138,31 @@ export function HelpScreen({ signedIn, email, name, tickets }: HelpScreenProps) 
               <h2 className="text-[16px] leading-6 font-semibold text-[#111827]">{copy.contactTitle}</h2>
               <p className="mt-2 text-[14px] leading-5 text-[#6B7280]">{copy.contactBody}</p>
               {sent ? (
-                <p className="mt-4 text-[14px] leading-5 text-[#006C49]">{copy.sent}</p>
+                <div className="mt-4 flex flex-col gap-3">
+                  <h3 className="text-[16px] leading-6 font-semibold text-[#111827]">{copy.sentTitle}</h3>
+                  <p className="text-[14px] leading-5 text-[#374151]">
+                    {copy.sentLead.replace("{email}", sent.email)}
+                  </p>
+                  {sent.id ? (
+                    <p className="text-[13px] leading-5 text-[#111827]">
+                      <span className="text-[#6B7280]">{copy.sentRef}: </span>
+                      <span className="font-mono break-all">{sent.id}</span>
+                    </p>
+                  ) : null}
+                  <p className="text-[13px] leading-5 text-[#111827]">
+                    <span className="text-[#6B7280]">{copy.sentTopic}: </span>
+                    {copy.topics[sent.topic]}
+                  </p>
+                  <p className="text-[14px] leading-5 text-[#6B7280]">{copy.sentNext}</p>
+                  {signedIn ? <p className="text-[14px] leading-5 text-[#6B7280]">{copy.sentTicketsHint}</p> : null}
+                  <button
+                    type="button"
+                    className="mt-1 self-start rounded-lg border border-[#E5E7EB] px-4 py-2 text-[12px] font-semibold text-[#111827]"
+                    onClick={() => setSent(null)}
+                  >
+                    {copy.sentAgain}
+                  </button>
+                </div>
               ) : (
                 <form className="mt-4 flex flex-col gap-3" onSubmit={(event) => void onSubmit(event)}>
                   <label className="flex flex-col gap-1 text-[12px] text-[#6B7280]">

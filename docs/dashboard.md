@@ -10,7 +10,7 @@ Sources: light forest-green product frames (Clients, Reports, Payment reminders)
 
 Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications, Help). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications, Help.
 
-Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines, no stroke), a full-bleed Revenue Trends SVG (smooth path, vertical forest→mint gradient, `preserveAspectRatio="none"`), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
+Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines with a short rise-in animation), a full-bleed Revenue Trends SVG (smooth path clamped inside the plot so a sharp dip cannot fall under the month labels, vertical forest→mint gradient, `preserveAspectRatio="none"`, line draw + fill fade on load), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
 
 Clients: search, Filter, Export, four KPI cards with the same fade sparklines as Home, paginated table. **Add Client** collects name, email (required for reminders), and optional phone. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer. Long client names and addresses truncate or wrap; they do not stretch the left rail or the right drawer. On a narrow screen the invoice and client tables scroll horizontally (`table-auto`); amount and status cells do not wrap, so badges cannot cover figures.
 
@@ -80,11 +80,12 @@ npm run lint
 
 ## Version
 
-1.2.13 — 2026-08-29
+1.2.14 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Revenue Trends curve stays inside the card; KPI and trend charts animate in (reduced-motion off).
 [2026-08-29] – Added: Sidebar, More sheet, and Help Center (`/help`) for support requests.
 [2026-08-29] – Changed: Payments rows open a Stripe-not-Puyer drawer; tables scroll on mobile.
 [2026-08-29] – Fixed: Mobile invoice and client tables scroll; status pills no longer cover amounts.

@@ -85,6 +85,7 @@ export async function submitHelpRequest(input: {
       requestId: created.id,
       name: input.name,
       email: input.email,
+      topic: input.topic,
     });
     if (ack.skipped) {
       logger.warn("help_ack_email_skipped");

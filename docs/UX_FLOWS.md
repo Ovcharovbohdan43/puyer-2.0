@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.31 — 2026-08-29
+> **Version:** 1.0.33 — 2026-08-29
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -91,7 +91,7 @@ Header Help | Footer Help | Sidebar Help | More Help
 → SERVER: POST /api/help (origin check, 5/15m per IP and email)
 → DB: SupportRequest OPEN (userId/organizationId when signed in)
 → EXTERNAL: Resend to HELP_INBOX from help@puyer.org (replyTo = submitter) + ack to submitter
-→ SUCCESS: confirmation on the form; signed-in users see recent tickets
+→ SUCCESS: form shows reference, topic, and next steps; ack email includes the same; signed-in users see recent tickets
 → ERROR: validation 400, rate limit 429, Resend skipped/failed 400
 ```
 
@@ -352,6 +352,8 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Overview/Reports trend line stays in the card; charts ease in on load.
+[2026-08-29] – Changed: Help request confirmation (page + ack email) includes reference, topic, and next steps.
 [2026-08-27] – Added: Complete interaction contract for Puyer.
 [2026-08-27] – Added: Public header + working landing Invoice Builder implemented against this file.
 [2026-08-27] – Changed: Theme toggle is a moon/sun icon; dark theme covers the full public UI including invoice preview.

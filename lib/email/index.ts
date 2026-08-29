@@ -1,10 +1,12 @@
 import "server-only";
 
-import { escapeHtml, type OutboundEmail } from "@/lib/email/types";
+import type { OutboundEmail } from "@/lib/email/types";
 import { puyerEmailHtml, puyerParagraph } from "@/lib/email/layout";
 import { deliverEmail } from "@/lib/email/resend";
 import { ValidationError } from "@/lib/errors";
+import { helpAckHtmlParagraphs, helpAckText, helpCenterUrl } from "@/lib/help/ack";
 import { helpFromAddress, helpInboxAddress } from "@/lib/help/from";
+import type { HelpTopic } from "@/lib/help/input";
 import { logger } from "@/lib/observability/logger";
 import { appBaseUrl } from "@/lib/stripe/client";
 import type { ReminderKind } from "@/lib/reminders/evaluate";
@@ -182,17 +184,25 @@ export async function sendHelpInboxEmail(input: {
   });
 }
 
-export async function sendHelpAckEmail(input: { requestId: string; name: string; email: string }) {
-  const greeting = input.name.trim() || "there";
+export async function sendHelpAckEmail(input: {
+  requestId: string;
+  name: string;
+  email: string;
+  topic: HelpTopic;
+}) {
   return deliverEmail({
     to: input.email,
     from: helpFromAddress(),
-    subject: "We received your Puyer help request",
-    text: `Hi ${greeting},\n\nWe received your request (${input.requestId}). Our team will reply to this email.\n\n— Puyer Help`,
+    subject: `We received your Puyer help request (${input.requestId.slice(0, 8)})`,
+    text: helpAckText(input),
     html: puyerEmailHtml({
-      preview: "We received your help request",
-      heading: "We got your request",
-      bodyHtml: puyerParagraph(`Hi ${escapeHtml(greeting)},`) + puyerParagraph("Thanks for writing in. Our team will reply to this email."),
+      preview: "We received your help request and will reply by email",
+      heading: "We received your request",
+      bodyHtml: helpAckHtmlParagraphs(input)
+        .map((line) => puyerParagraph(line))
+        .join(""),
+      ctaLabel: "Open Help Center",
+      ctaUrl: helpCenterUrl(),
     }),
     idempotencyKey: `help-ack:${input.requestId}`,
   });

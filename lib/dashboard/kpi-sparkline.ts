@@ -86,7 +86,7 @@ export function sparkMonthlyFromInvoices(invoices: InvoiceListRow[], now = new D
 
 export function sparklinePath(values: number[], width: number, height: number): { line: string; area: string } {
   const padX = 0;
-  const padY = 6;
+  const padY = 10;
   const innerW = width - padX * 2;
   const innerH = height - padY * 2;
   const max = Math.max(...values, 1);

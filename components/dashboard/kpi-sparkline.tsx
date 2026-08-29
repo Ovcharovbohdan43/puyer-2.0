@@ -10,10 +10,12 @@ export function KpiSparkline({
   values,
   tone,
   id,
+  delayMs = 0,
 }: {
   values: number[];
   tone: KpiSparkTone;
   id: string;
+  delayMs?: number;
 }) {
   const width = 280;
   const height = 72;
@@ -24,9 +26,10 @@ export function KpiSparkline({
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] w-full"
+      className="kpi-spark-enter pointer-events-none absolute inset-x-0 bottom-0 h-[52%] w-full overflow-hidden"
       aria-hidden
       preserveAspectRatio="none"
+      style={{ animationDelay: `${delayMs}ms` }}
     >
       <defs>
         <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">

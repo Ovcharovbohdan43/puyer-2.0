@@ -126,7 +126,7 @@ export function OverviewScreen({
       <div className="flex max-w-[1440px] flex-col gap-6 p-6">
         <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <article className={dash.kpi}>
-            <KpiSparkline id="kpi-revenue" values={sparks.revenue.values} tone={sparks.revenue.tone} />
+            <KpiSparkline id="kpi-revenue" values={sparks.revenue.values} tone={sparks.revenue.tone} delayMs={0} />
             <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiTotalRevenue}</p>
               <span className={dash.iconMint}>
@@ -137,7 +137,7 @@ export function OverviewScreen({
             <p className={`relative z-[1] ${dash.kpiMetaGood}`}>{copy.kpiFromWorkspace}</p>
           </article>
           <article className={dash.kpi}>
-            <KpiSparkline id="kpi-paid" values={sparks.paid.values} tone={sparks.paid.tone} />
+            <KpiSparkline id="kpi-paid" values={sparks.paid.values} tone={sparks.paid.tone} delayMs={80} />
             <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiPaid30}</p>
               <span className={dash.iconMint}>
@@ -148,7 +148,7 @@ export function OverviewScreen({
             <p className={`relative z-[1] ${dash.kpiMeta}`}>{copy.kpiPaidCount.replace("{count}", String(kpis.paid30Count))}</p>
           </article>
           <article className={dash.kpi}>
-            <KpiSparkline id="kpi-outstanding" values={sparks.outstanding.values} tone={sparks.outstanding.tone} />
+            <KpiSparkline id="kpi-outstanding" values={sparks.outstanding.values} tone={sparks.outstanding.tone} delayMs={160} />
             <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiOutstanding}</p>
               <span className={dash.iconWarn}>
@@ -159,7 +159,7 @@ export function OverviewScreen({
             <p className={`relative z-[1] ${dash.kpiMeta}`}>{copy.kpiOutstandingCount.replace("{count}", String(kpis.outstandingCount))}</p>
           </article>
           <article className={dash.kpi}>
-            <KpiSparkline id="kpi-overdue" values={sparks.overdue.values} tone={sparks.overdue.tone} />
+            <KpiSparkline id="kpi-overdue" values={sparks.overdue.values} tone={sparks.overdue.tone} delayMs={240} />
             <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiOverdue}</p>
               <span className={dash.iconBad}>
