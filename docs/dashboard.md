@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Signed-in app chrome: **Home** (`/dashboard`), **Invoices** (`/invoices`) with a right-hand preview drawer, **Clients**, Payments, Reports, Settings, Team, Billing, Notifications.
+Signed-in app chrome: **Home** (`/dashboard`), **Invoices** (`/invoices`) with a right-hand preview drawer, **Clients** (`/clients`) with a right-hand client drawer, Payments, Reports, Settings, Team, Billing, Notifications.
 
 Sources: light forest-green product frames (Clients, Reports, Payment reminders). The app is **light-only**.
 
@@ -10,7 +10,9 @@ Sources: light forest-green product frames (Clients, Reports, Payment reminders)
 
 Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications.
 
-Overview: greeting, search, Create Invoice, four KPI cards, revenue chart (Business), Quick Actions, Insights, Recent Invoices. Invoices: search, Filter, Export, three KPIs, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, a document preview card, and timeline.
+Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + sparkline), revenue chart for every plan, Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, a document preview card, and timeline.
+
+Clients: search, Filter, Export, four KPIs, paginated table. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer.
 
 Drawer Edit goes to `/invoices/:id/edit`. Drawer Share copies `/invoice/{publicId}`. `/invoices/new` is the authenticated builder.
 
@@ -44,8 +46,10 @@ npm run typecheck
 npm run lint
 ```
 
-- Sign in, confirm light sidebar + Overview KPIs and recent table
-- Open `/invoices`, click a row, confirm white right drawer + `?invoice=` UUID, close, URL clears
+- Sign in, confirm light sidebar + Overview KPIs with sparklines, Revenue Trends (no Business wall), and readable Quick Actions
+- Click an invoice row → right preview drawer + `?invoice=` UUID, close, URL clears
+- Open `/clients`, click a row, confirm white right drawer + `?client=` UUID, close, URL clears
+- Client drawer lists invoices; Create Invoice / Edit / Delete work (delete blocked if invoices exist)
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
 - Sidebar icons stay readable when idle (not faint mixed-color SVGs)
 - Signed-out `/invoices` and `/clients` redirect to `/login`
@@ -54,10 +58,10 @@ npm run lint
 
 ## Limitations
 
-- Revenue Trends and Insights on Overview follow the Business reports gate (live data or upgrade copy + Billing link). Paid (30d) is last 30 days, not lifetime revenue.
+- Revenue Trends on Overview is the last 6 months of paid totals for every plan (empty state if none). Insights stay on the Business reports gate. Paid (30d) is last 30 days, not lifetime revenue.
 - Payments lists synchronized Connect charges. Billing is live (Puyer subscription). Notifications inbox + preferences are live. Reports are live (base KPIs all plans; advanced Business). Team invites are live for Business.
 - Desktop sidebar does not collapse to icons; mobile hides the rail.
-- Sidebar and mobile tabs use Phosphor duotone icons (same family as marketing). KPI/action icons on Overview still use `public/app` SVGs.
+- Sidebar and mobile tabs use Phosphor duotone icons (same family as marketing). Overview KPI and Quick Action icons are Phosphor too.
 - Dashboard routes other than Overview used to hit the page error UI when Prisma/PgBouncer returned `42P05`; Overview swallowed the same failure. Runtime Prisma now forces pooler-safe flags, and list pages render empty instead of `error.tsx`.
 - Credit notes and a product catalog are not in v1; those mock items are not routes.
 
@@ -70,11 +74,12 @@ npm run lint
 
 ## Version
 
-1.2.3 — 2026-08-29
+1.2.5 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Added: Clients row opens a 400px right drawer (`?client=`) with preview, history, edit, and delete.
 [2026-08-29] – Changed: Light forest-green dashboard; invoice list keeps a right preview drawer.
 [2026-08-28] – Added: Dark app shell, Overview (Figma 22017:766), Invoices list + drawer, mock KPIs, protected extra routes.
 [2026-08-28] – Changed: Overview, Invoices, and Clients read persisted invoices/clients. KPIs are live.
@@ -91,4 +96,5 @@ npm run lint
 [2026-08-29] – Changed: Sidebar and mobile nav use Phosphor icons (House, Users, Receipt, card, chart, gear, bell).
 [2026-08-29] – Fixed: Dashboard and cookie icons load via Phosphor `dist/csr` in client components.
 [2026-08-29] – Fixed: Invoices/Clients/Payments/Reports/Team/Notifications/Billing survive Prisma pooler `42P05` instead of the page error boundary.
+[2026-08-29] – Changed: Overview KPIs use Phosphor icons and sparklines; Revenue Trends is ungated; Quick Actions have contrast.
 ```

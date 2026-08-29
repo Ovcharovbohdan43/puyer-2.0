@@ -8,6 +8,10 @@ export type ClientListRow = {
   name: string;
   email: string;
   address: string;
+  phone: string;
+  taxNumber: string;
+  notes: string;
+  createdAt: string;
   outstanding: string;
   outstandingMinor: string;
   lastInvoiceDate: string | null;
@@ -20,6 +24,10 @@ export type ClientSource = {
   name: string;
   email: string;
   address: string;
+  phone: string;
+  taxNumber: string;
+  notes: string;
+  createdAt: string;
 };
 
 function isOpen(status: InvoiceListRow["displayStatus"]): boolean {
@@ -56,6 +64,10 @@ export function presentClientRows(clients: ClientSource[], invoices: InvoiceList
       name: client.name,
       email: client.email,
       address: client.address,
+      phone: client.phone,
+      taxNumber: client.taxNumber,
+      notes: client.notes,
+      createdAt: client.createdAt,
       outstanding: formatUsdLike(outstandingMinor, currency),
       outstandingMinor: outstandingMinor.toString(),
       lastInvoiceDate: last ?? null,
@@ -81,9 +93,18 @@ export function filterClientRows(
     return (
       row.name.toLowerCase().includes(needle) ||
       row.email.toLowerCase().includes(needle) ||
-      row.address.toLowerCase().includes(needle)
+      row.address.toLowerCase().includes(needle) ||
+      row.phone.toLowerCase().includes(needle) ||
+      row.taxNumber.toLowerCase().includes(needle)
     );
   });
+}
+
+export function invoicesForClient(invoices: InvoiceListRow[], clientId: string): InvoiceListRow[] {
+  return invoices
+    .filter((invoice) => invoice.clientId === clientId)
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date) || b.invoiceNumber.localeCompare(a.invoiceNumber));
 }
 
 export function nextClientFilter(current: "ALL" | ClientStatusKind): "ALL" | ClientStatusKind {

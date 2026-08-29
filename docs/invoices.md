@@ -27,7 +27,7 @@ PDF generation lives in Phase 3 — see [`pdf.md`](./pdf.md). Stripe Checkout is
 1. Sign in (magic link).
 2. `/invoices/new` — fill the builder, **Save invoice**.
 3. `/invoices` — list, filter, drawer. Share copies `/invoice/{publicId}` and may mark sent.
-4. `/clients` — add a client, **Create Invoice** (`?client=`).
+4. `/clients` — add a client, row drawer (`?client=`), **Create Invoice** (`/invoices/new?client=`).
 5. Open the public URL while signed out. The payer sees the invoice document and a **Pay Invoice** sidebar when Stripe is connected.
 
 SQL (already applied remotely in this project): [`supabase/migrations/20260828180000_invoice_domain.sql`](../supabase/migrations/20260828180000_invoice_domain.sql). After `npx prisma generate`, restart `npm run dev` if the Prisma engine was locked.
@@ -54,6 +54,7 @@ Browser:
 - Copy public link → `/invoice/{publicId}` shows the payer layout (document + pay sidebar).
 - With the site in dark mode, invoice and pay-card text stay light on the dark cards.
 - Client create + New Invoice with `?client=` prefills the name.
+- Clients list row → drawer with history; PATCH/DELETE `/api/clients/[id]`.
 
 ## Limitations
 
@@ -71,11 +72,12 @@ Browser:
 
 ## Version
 
-1.0.10 — 2026-08-29
+1.0.11 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Added: Client drawer on `/clients` (`?client=`), PATCH/DELETE `/api/clients/[id]`.
 [2026-08-28] – Added: Invoice domain persist, numbering, publicId, authenticated builder, public page (no pay).
 [2026-08-28] – Changed: PDF download and public rate limits moved to docs/pdf.md (Phase 3).
 [2026-08-28] – Changed: Public Pay via connected-account Checkout (Phase 4).

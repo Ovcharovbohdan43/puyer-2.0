@@ -6,7 +6,7 @@ export const dash = {
   title: "text-[32px] leading-10 font-semibold tracking-[-0.4px] text-[#111827]",
   subtitle: "mt-1 text-[14px] leading-5 text-[#6B7280]",
   card: "rounded-xl border border-[#E5E7EB] bg-white",
-  kpi: "flex flex-col gap-2 rounded-xl border border-[#E5E7EB] bg-white p-5",
+  kpi: "relative overflow-hidden flex flex-col gap-2 rounded-xl border border-[#E5E7EB] bg-white p-5",
   kpiLabel: "text-[13px] leading-5 font-medium text-[#6B7280]",
   kpiValue: "text-[28px] leading-8 font-semibold tracking-[-0.4px] text-[#111827]",
   kpiMeta: "text-[13px] leading-5 text-[#6B7280]",

@@ -28,6 +28,7 @@ Set Upstash env vars in production so limits share across serverless instances.
 
 - 21st public pay POST in one minute → 429.
 - POST `/api/clients` with `Origin: https://evil.example` → 403.
+- PATCH/DELETE `/api/clients/[id]` use the same origin check and `client-write` rate limit.
 - `logger.info("x", { key: "sk_test_…" })` writes `[redacted]`.
 
 ## How to test
@@ -51,11 +52,12 @@ E2E: `npm run test:e2e`. Magic-link completion needs a real inbox; CI does not s
 
 ## Version
 
-1.0.3 — 2026-08-29
+1.0.4 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Client PATCH/DELETE share origin and `client-write` limits.
 [2026-08-28] – Added: Shared rate-limit policies (Upstash optional), origin check, upload validation, log redaction, load indexes, Playwright pay-path smoke.
 [2026-08-28] – Changed: Optional E2E_PUBLIC_INVOICE_ID also asserts dark-theme contrast on the payer portal.
 [2026-08-28] – Changed: Playwright login smoke expects `/login` instead of `/?login=1`.

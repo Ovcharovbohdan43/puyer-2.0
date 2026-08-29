@@ -1107,6 +1107,9 @@ Until `docs/` exists, keep the changelog in this file.
 ## Changelog
 
 ```
+[2026-08-29] – Added: Clients row opens a right drawer (`?client=`) with preview, invoice history, edit, and delete.
+  Docs: docs/dashboard.md, docs/invoices.md, docs/UX_FLOWS.md, docs/hardening.md.
+
 [2026-08-27] – Added: Master architecture and implementation plan for Puyer.org.
   Stack locked: Next.js + Supabase + Prisma + Vercel + Inngest.
   Stripe: Accounts v2 + direct charges, no application fees, isolated platform billing.
@@ -1270,6 +1273,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Changed: Dashboard sidebar and mobile tabs use Phosphor nav icons.
   Docs: docs/dashboard.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Overview KPIs have Phosphor + sparklines; six-month trends are ungated.
+  Docs: docs/dashboard.md, docs/reports.md, docs/UX_FLOWS.md.
 ```
 
 ---

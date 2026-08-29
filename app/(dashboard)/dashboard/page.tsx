@@ -25,7 +25,7 @@ export default async function DashboardPage() {
     recent = listRows.slice(0, 5);
     kpis = toWorkspaceKpis(report.base);
     const presented = presentReport(report, snapshot);
-    monthly = presented.advanced?.monthly ?? [];
+    monthly = presented.monthly;
     insights = presented.advanced?.insights ?? null;
   } catch {
     name = null;
@@ -38,7 +38,6 @@ export default async function DashboardPage() {
       remindersEnabled={can({ plan }, "AUTOMATIC_REMINDERS")}
       recent={recent}
       kpis={kpis}
-      advancedReports={can({ plan }, "ADVANCED_REPORTS")}
       monthly={monthly}
       insights={insights}
     />

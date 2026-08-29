@@ -1,13 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BellIcon } from "@phosphor-icons/react/dist/csr/Bell";
+import { ChartLineUpIcon } from "@phosphor-icons/react/dist/csr/ChartLineUp";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/csr/CheckCircle";
+import { CreditCardIcon } from "@phosphor-icons/react/dist/csr/CreditCard";
+import { LightbulbIcon } from "@phosphor-icons/react/dist/csr/Lightbulb";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
+import { UsersIcon } from "@phosphor-icons/react/dist/csr/Users";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/csr/WarningCircle";
+import { HourglassIcon } from "@phosphor-icons/react/dist/csr/Hourglass";
 
-import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { StatusPill } from "@/components/dashboard/status-pill";
+import { KpiSparkline } from "@/components/dashboard/kpi-sparkline";
 import { Modal } from "@/components/ui/modal";
 import { dash } from "@/lib/dashboard/chrome";
+import { kpiSparkSpecs } from "@/lib/dashboard/kpi-sparkline";
 import { t } from "@/lib/i18n";
 import { displayFirstName, greetingPeriod, splitMoneyDisplay } from "@/lib/dashboard/greeting";
 import type { InvoiceListRow, WorkspaceKpis } from "@/lib/invoices/list-view";
@@ -22,7 +32,6 @@ type OverviewScreenProps = {
   remindersEnabled: boolean;
   recent: InvoiceListRow[];
   kpis: WorkspaceKpis;
-  advancedReports: boolean;
   monthly: PresentedTrend[];
   insights: PaymentInsight | null;
 };
@@ -30,10 +39,31 @@ type OverviewScreenProps = {
 function KpiMoney({ value, accent }: { value: string; accent?: boolean }) {
   const { major, cents } = splitMoneyDisplay(value);
   return (
-    <p className={`flex items-end tracking-[-0.4px] ${accent ? "text-[#DC2626]" : "text-[#111827]"}`}>
+    <p className={`relative z-[1] flex items-end tracking-[-0.4px] ${accent ? "text-[#DC2626]" : "text-[#111827]"}`}>
       <span className="text-[32px] leading-10 font-semibold lg:text-[36px] lg:leading-[44px]">{major}</span>
       {cents ? <span className={`pb-1 text-[18px] leading-7 ${accent ? "opacity-70" : "text-[#6B7280]"}`}>{cents}</span> : null}
     </p>
+  );
+}
+
+function QuickAction({
+  children,
+  label,
+  onClick,
+}: {
+  children: ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="flex flex-col items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3 py-4 shadow-[0px_1px_2px_rgba(15,23,42,0.06)] transition-colors hover:border-[#006C49]/35 hover:bg-[#F6FBF8]"
+      onClick={onClick}
+    >
+      <span className="flex size-10 items-center justify-center rounded-full bg-[#E8F5EF] text-[#006C49]">{children}</span>
+      <span className="text-[12px] font-semibold text-[#111827]">{label}</span>
+    </button>
   );
 }
 
@@ -43,7 +73,6 @@ export function OverviewScreen({
   remindersEnabled,
   recent,
   kpis,
-  advancedReports,
   monthly,
   insights,
 }: OverviewScreenProps) {
@@ -61,6 +90,7 @@ export function OverviewScreen({
   const greetingKey =
     period === "morning" ? "greetingMorning" : period === "afternoon" ? "greetingAfternoon" : "greetingEvening";
   const rows = useMemo(() => filterInvoiceRows(recent, query, "ALL"), [query, recent]);
+  const sparks = useMemo(() => kpiSparkSpecs(monthly, kpis), [monthly, kpis]);
 
   return (
     <div className={dash.page}>
@@ -71,8 +101,8 @@ export function OverviewScreen({
         </div>
         <div className="flex items-center gap-3">
           <label className="relative hidden w-[256px] sm:block">
-            <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2">
-              <FigmaIcon src="/app/search.svg" alt="" width={14} height={14} />
+            <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[#6B7280]">
+              <MagnifyingGlassIcon size={16} weight="bold" aria-hidden />
             </span>
             <span className="sr-only">{copy.searchOverview}</span>
             <input
@@ -91,44 +121,48 @@ export function OverviewScreen({
       <div className="flex max-w-[1440px] flex-col gap-6 p-6">
         <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <article className={dash.kpi}>
-            <div className="flex items-start justify-between">
+            <KpiSparkline id="kpi-revenue" values={sparks.revenue.values} tone={sparks.revenue.tone} />
+            <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiTotalRevenue}</p>
               <span className={dash.iconMint}>
-                <FigmaIcon src="/app/kpi-revenue.svg" alt="" width={15} height={9} />
+                <ChartLineUpIcon size={18} weight="duotone" color="#006C49" aria-hidden />
               </span>
             </div>
             <KpiMoney value={kpis.revenue} />
-            <p className={dash.kpiMetaGood}>{copy.kpiFromWorkspace}</p>
+            <p className={`relative z-[1] ${dash.kpiMetaGood}`}>{copy.kpiFromWorkspace}</p>
           </article>
           <article className={dash.kpi}>
-            <div className="flex items-start justify-between">
+            <KpiSparkline id="kpi-paid" values={sparks.paid.values} tone={sparks.paid.tone} />
+            <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiPaid30}</p>
               <span className={dash.iconMint}>
-                <FigmaIcon src="/app/kpi-paid.svg" alt="" width={15} height={15} />
+                <CheckCircleIcon size={18} weight="duotone" color="#006C49" aria-hidden />
               </span>
             </div>
             <KpiMoney value={kpis.paid30} />
-            <p className={dash.kpiMeta}>{copy.kpiPaidCount.replace("{count}", String(kpis.paid30Count))}</p>
+            <p className={`relative z-[1] ${dash.kpiMeta}`}>{copy.kpiPaidCount.replace("{count}", String(kpis.paid30Count))}</p>
           </article>
           <article className={dash.kpi}>
-            <div className="flex items-start justify-between">
+            <KpiSparkline id="kpi-outstanding" values={sparks.outstanding.values} tone={sparks.outstanding.tone} />
+            <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiOutstanding}</p>
               <span className={dash.iconWarn}>
-                <FigmaIcon src="/app/kpi-outstanding.svg" alt="" width={15} height={15} />
+                <HourglassIcon size={18} weight="duotone" color="#C27803" aria-hidden />
               </span>
             </div>
             <KpiMoney value={kpis.outstanding} />
-            <p className={dash.kpiMeta}>{copy.kpiOutstandingCount.replace("{count}", String(kpis.outstandingCount))}</p>
+            <p className={`relative z-[1] ${dash.kpiMeta}`}>{copy.kpiOutstandingCount.replace("{count}", String(kpis.outstandingCount))}</p>
           </article>
           <article className={dash.kpi}>
-            <div className="flex items-start justify-between">
+            <KpiSparkline id="kpi-overdue" values={sparks.overdue.values} tone={sparks.overdue.tone} />
+            <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiOverdue}</p>
               <span className={dash.iconBad}>
-                <FigmaIcon src="/app/kpi-overdue.svg" alt="" width={15} height={15} />
+                <WarningCircleIcon size={18} weight="duotone" color="#DC2626" aria-hidden />
               </span>
             </div>
             <KpiMoney value={kpis.overdue} accent />
-            <p className={dash.kpiMetaBad}>{copy.kpiOverdueCount.replace("{count}", String(kpis.overdueCount))}</p>
+            <p className={`relative z-[1] ${dash.kpiMetaBad}`}>{copy.kpiOverdueCount.replace("{count}", String(kpis.overdueCount))}</p>
           </article>
         </section>
 
@@ -138,39 +172,33 @@ export function OverviewScreen({
               <h2 className="text-[20px] font-semibold text-[#111827]">{copy.revenueTrends}</h2>
               <p className="text-[14px] text-[#6B7280]">{copy.last6Months}</p>
             </div>
-            {advancedReports ? (
-              <TrendBars points={monthly} empty={reports.trendsEmpty} />
-            ) : (
-              <div className="flex min-h-[220px] flex-1 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-[#E5E7EB] bg-[#F9FAFB] px-4">
-                <p className="text-center text-[14px] text-[#6B7280]">{reports.trendsUpgrade}</p>
-                <Link href="/billing" className={dash.link}>
-                  {billing.upgradeToBusiness}
-                </Link>
-              </div>
-            )}
+            <TrendBars points={monthly} empty={reports.trendsEmpty} />
           </article>
           <div className="flex flex-col gap-4">
             <article className={`${dash.card} flex flex-col gap-4 p-5`}>
               <h2 className="text-[20px] font-semibold text-[#111827]">{copy.quickActions}</h2>
-              <div className="grid grid-cols-2 gap-2">
-                <button type="button" className="flex flex-col items-center justify-center gap-2 rounded-lg bg-[#F3F4F6] px-3 py-3" onClick={() => setClientOpen(true)}>
-                  <FigmaIcon src="/app/action-client.svg" alt="" width={22} height={16} />
-                  <span className="text-[12px] font-semibold text-[#111827]">{copy.addClient}</span>
-                </button>
-                <button type="button" className="flex flex-col items-center justify-center gap-2 rounded-lg bg-[#F3F4F6] px-3 py-3" onClick={() => setReminderOpen(true)}>
-                  <FigmaIcon src="/app/action-reminder.svg" alt="" width={19} height={16} />
-                  <span className="text-[12px] font-semibold text-[#111827]">{copy.reminder}</span>
-                </button>
-                <Link href="/settings" className="col-span-2 flex items-center justify-center gap-2 rounded-lg border border-[#E5E7EB] py-3">
-                  <FigmaIcon src="/app/action-stripe.svg" alt="" width={15} height={8} />
-                  <span className="text-[12px] font-semibold text-[#111827]">{copy.connectStripe}</span>
+              <div className="grid grid-cols-2 gap-3">
+                <QuickAction label={copy.addClient} onClick={() => setClientOpen(true)}>
+                  <UsersIcon size={20} weight="duotone" color="#006C49" aria-hidden />
+                </QuickAction>
+                <QuickAction label={copy.reminder} onClick={() => setReminderOpen(true)}>
+                  <BellIcon size={20} weight="duotone" color="#006C49" aria-hidden />
+                </QuickAction>
+                <Link
+                  href="/settings"
+                  className="col-span-2 flex items-center justify-center gap-2 rounded-xl border border-[#006C49]/20 bg-[#F6FBF8] py-3 text-[#006C49] transition-colors hover:border-[#006C49]/40 hover:bg-[#E8F5EF]"
+                >
+                  <CreditCardIcon size={20} weight="duotone" color="#006C49" aria-hidden />
+                  <span className="text-[12px] font-semibold">{copy.connectStripe}</span>
                 </Link>
               </div>
             </article>
             <article className={`${dash.card} flex flex-col gap-2 p-5`}>
               <h2 className="text-[20px] font-semibold text-[#111827]">{copy.insights}</h2>
-              <div className="flex gap-2 rounded-lg bg-[#E8F5EF] p-3">
-                <FigmaIcon src="/app/insight.svg" alt="" width={13} height={17} />
+              <div className="flex gap-3 rounded-xl border border-[#D1EDE0] bg-[#F3FAF6] p-3">
+                <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#006C49]">
+                  <LightbulbIcon size={16} weight="duotone" color="#006C49" aria-hidden />
+                </span>
                 <div className="flex flex-col gap-2">
                   <p className="text-[14px] leading-5 text-[#374151]">
                     {insights
@@ -193,6 +221,7 @@ export function OverviewScreen({
             </article>
           </div>
         </section>
+
 
         <section className={dash.tableWrap}>
           <div className="flex items-center justify-between border-b border-[#E5E7EB] px-4 py-4">

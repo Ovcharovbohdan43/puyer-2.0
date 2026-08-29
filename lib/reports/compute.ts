@@ -95,6 +95,7 @@ export type AdvancedReport = {
 export type WorkspaceReport = {
   organizationId: string;
   base: BaseReport;
+  monthly: MonthlyPoint[];
   advanced: AdvancedReport | null;
 };
 
@@ -454,12 +455,12 @@ export function computeWorkspaceReport(
   const scopedInvoices = scopeToOrganization(invoices, organizationId);
   const scopedPayments = scopeToOrganization(payments, organizationId);
   const base = computeBaseReport(scopedInvoices, scopedPayments, now);
+  const advanced = computeAdvancedReport(scopedInvoices, scopedPayments, base.currency, now);
   return {
     organizationId,
     base,
-    advanced: can({ plan }, "ADVANCED_REPORTS")
-      ? computeAdvancedReport(scopedInvoices, scopedPayments, base.currency, now)
-      : null,
+    monthly: advanced.monthly,
+    advanced: can({ plan }, "ADVANCED_REPORTS") ? advanced : null,
   };
 }
 
@@ -468,14 +469,16 @@ export function computeFullReport(
   invoices: readonly ReportInvoice[],
   payments: readonly ReportPayment[],
   now = new Date(),
-): { organizationId: string; base: BaseReport; advanced: AdvancedReport } {
+): { organizationId: string; base: BaseReport; monthly: MonthlyPoint[]; advanced: AdvancedReport } {
   const scopedInvoices = scopeToOrganization(invoices, organizationId);
   const scopedPayments = scopeToOrganization(payments, organizationId);
   const base = computeBaseReport(scopedInvoices, scopedPayments, now);
+  const advanced = computeAdvancedReport(scopedInvoices, scopedPayments, base.currency, now);
   return {
     organizationId,
     base,
-    advanced: computeAdvancedReport(scopedInvoices, scopedPayments, base.currency, now),
+    monthly: advanced.monthly,
+    advanced,
   };
 }
 

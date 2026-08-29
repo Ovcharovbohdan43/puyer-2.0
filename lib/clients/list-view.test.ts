@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { computeClientKpis, filterClientRows, nextClientFilter, presentClientRows } from "@/lib/clients/list-view";
+import {
+  computeClientKpis,
+  filterClientRows,
+  invoicesForClient,
+  nextClientFilter,
+  presentClientRows,
+} from "@/lib/clients/list-view";
 import { clientInitials } from "@/lib/dashboard/chrome";
 import type { InvoiceListRow } from "@/lib/invoices/list-view";
 
@@ -33,7 +39,7 @@ describe("clientInitials", () => {
 describe("presentClientRows", () => {
   it("marks overdue when any related invoice is overdue", () => {
     const rows = presentClientRows(
-      [{ id: "c1", name: "Acme", email: "a@x.test", address: "" }],
+      [{ id: "c1", name: "Acme", email: "a@x.test", address: "", phone: "", taxNumber: "", notes: "", createdAt: "2026-01-01" }],
       [
         invoice({ id: "i1", clientId: "c1", displayStatus: "OVERDUE", totalMinor: "5000" }),
         invoice({ id: "i2", clientId: "c1", displayStatus: "PAID", totalMinor: "1000" }),
@@ -45,7 +51,7 @@ describe("presentClientRows", () => {
 
   it("marks active when invoices exist and none are open", () => {
     const rows = presentClientRows(
-      [{ id: "c1", name: "Acme", email: "", address: "" }],
+      [{ id: "c1", name: "Acme", email: "", address: "", phone: "", taxNumber: "", notes: "", createdAt: "2026-01-01" }],
       [invoice({ id: "i1", clientId: "c1", displayStatus: "PAID" })],
     );
     expect(rows[0]?.status).toBe("ACTIVE");
@@ -57,13 +63,21 @@ describe("filterClientRows and nextClientFilter", () => {
   it("filters by name and status", () => {
     const rows = presentClientRows(
       [
-        { id: "c1", name: "Acme", email: "a@x.test", address: "" },
-        { id: "c2", name: "Beta", email: "", address: "" },
+        { id: "c1", name: "Acme", email: "a@x.test", address: "", phone: "", taxNumber: "", notes: "", createdAt: "2026-01-01" },
+        { id: "c2", name: "Beta", email: "", address: "", phone: "", taxNumber: "", notes: "", createdAt: "2026-01-01" },
       ],
       [],
     );
     expect(filterClientRows(rows, "acme", "ALL")).toHaveLength(1);
     expect(filterClientRows(rows, "", "NONE")).toHaveLength(2);
+  });
+
+  it("filters by phone", () => {
+    const rows = presentClientRows(
+      [{ id: "c1", name: "Acme", email: "", address: "", phone: "555-0100", taxNumber: "", notes: "", createdAt: "2026-01-01" }],
+      [],
+    );
+    expect(filterClientRows(rows, "555-0100", "ALL")).toHaveLength(1);
   });
 
   it("cycles the status filter", () => {
@@ -80,6 +94,10 @@ describe("computeClientKpis", () => {
         name: "A",
         email: "",
         address: "",
+        phone: "",
+        taxNumber: "",
+        notes: "",
+        createdAt: "2026-01-01",
         outstanding: "$10.00",
         outstandingMinor: "1000",
         lastInvoiceDate: null,
@@ -89,5 +107,19 @@ describe("computeClientKpis", () => {
     ]);
     expect(kpis.total).toBe(1);
     expect(kpis.outstanding).toBe("$10.00");
+  });
+});
+
+describe("invoicesForClient", () => {
+  it("returns newest invoices for one client", () => {
+    const history = invoicesForClient(
+      [
+        invoice({ id: "i1", clientId: "c1", displayStatus: "PAID", date: "2026-01-01", invoiceNumber: "INV-1" }),
+        invoice({ id: "i2", clientId: "c1", displayStatus: "SENT", date: "2026-08-01", invoiceNumber: "INV-2" }),
+        invoice({ id: "i3", clientId: "c2", displayStatus: "PAID", date: "2026-08-02", invoiceNumber: "INV-3" }),
+      ],
+      "c1",
+    );
+    expect(history.map((row) => row.id)).toEqual(["i2", "i1"]);
   });
 });

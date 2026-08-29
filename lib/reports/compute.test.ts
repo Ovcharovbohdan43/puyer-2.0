@@ -101,6 +101,7 @@ describe("report entitlements and advanced metrics", () => {
   it("hides advanced payload on Free and Pro", () => {
     const invoices = [invoice({ id: "paid", organizationId: orgA, status: "PAID" })];
     expect(computeWorkspaceReport(orgA, invoices, [], "FREE", now).advanced).toBeNull();
+    expect(computeWorkspaceReport(orgA, invoices, [], "FREE", now).monthly.some((row) => row.paidMinor > 0n)).toBe(true);
     expect(computeWorkspaceReport(orgA, invoices, [], "PRO", now).advanced).toBeNull();
     expect(can({ plan: "PRO" }, "ADVANCED_REPORTS")).toBe(false);
     expect(computeWorkspaceReport(orgA, invoices, [], "BUSINESS", now).advanced).not.toBeNull();

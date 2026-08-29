@@ -1,5 +1,5 @@
 import { formatUsdLike, type WorkspaceKpis } from "@/lib/invoices/list-view";
-import type { AdvancedReport, BaseReport, PaymentInsight, SnapshotMetrics, WorkspaceReport } from "@/lib/reports/compute";
+import type { BaseReport, MonthlyPoint, PaymentInsight, SnapshotMetrics, WorkspaceReport } from "@/lib/reports/compute";
 import { mergeLiveMonthlyWithSnapshot, monthLabel, utcMonthKey } from "@/lib/reports/compute";
 
 export type InsightCopy = {
@@ -50,6 +50,7 @@ export type PresentedReport = {
   snapshotAt: string | null;
   snapshotPeriod: string | null;
   base: PresentedBase;
+  monthly: PresentedTrend[];
   advanced: {
     monthly: PresentedTrend[];
     overdueRate: string;
@@ -87,9 +88,9 @@ export function presentBase(base: BaseReport): PresentedBase {
   };
 }
 
-export function presentTrends(advanced: AdvancedReport): PresentedTrend[] {
-  const max = advanced.monthly.reduce((highest, row) => (row.paidMinor > highest ? row.paidMinor : highest), 0n);
-  return advanced.monthly.map((row) => ({
+export function presentTrends(monthly: MonthlyPoint[]): PresentedTrend[] {
+  const max = monthly.reduce((highest, row) => (row.paidMinor > highest ? row.paidMinor : highest), 0n);
+  return monthly.map((row) => ({
     period: row.period,
     label: monthLabel(row.period),
     paid: formatUsdLike(row.paidMinor, row.currency),
@@ -105,8 +106,9 @@ export function presentReport(
   const base = presentBase(report.base);
   const snapshotAt = snapshot?.generatedAt ?? null;
   const snapshotPeriod = snapshot?.period ?? null;
+  const monthly = presentTrends(mergeLiveMonthlyWithSnapshot(report.monthly, snapshot, utcMonthKey(now)));
   if (!report.advanced) {
-    return { organizationId: report.organizationId, snapshotAt, snapshotPeriod, base, advanced: null };
+    return { organizationId: report.organizationId, snapshotAt, snapshotPeriod, base, monthly, advanced: null };
   }
   const advanced = {
     ...report.advanced,
@@ -118,8 +120,9 @@ export function presentReport(
     snapshotAt,
     snapshotPeriod,
     base,
+    monthly,
     advanced: {
-      monthly: presentTrends(advanced),
+      monthly: presentTrends(advanced.monthly),
       overdueRate: `${overduePct}%`,
       avgPaymentDays: advanced.avgPaymentDays === null ? null : String(advanced.avgPaymentDays),
       clients: advanced.clients.map((row) => ({

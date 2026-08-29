@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
+import { ClientDrawer } from "@/components/dashboard/client-drawer";
 import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { dash, clientInitials, downloadCsv } from "@/lib/dashboard/chrome";
 import {
@@ -43,6 +44,8 @@ export function ClientsScreen({
   const copy = t("dashboard");
   const toast = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedId = searchParams.get("client");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
@@ -51,6 +54,7 @@ export function ClientsScreen({
   const [formOpen, setFormOpen] = useState(false);
 
   const presented = useMemo(() => presentClientRows(clients, invoices), [clients, invoices]);
+  const selected = presented.find((client) => client.id === selectedId) ?? null;
   const rows = useMemo(() => filterClientRows(presented, query, status), [presented, query, status]);
   const kpis = useMemo(() => computeClientKpis(presented), [presented]);
   const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
@@ -66,8 +70,17 @@ export function ClientsScreen({
           NONE: copy.clientNone,
         }[status];
 
+  function openClient(id: string) {
+    router.replace(`/clients?client=${encodeURIComponent(id)}`, { scroll: false });
+  }
+
+  function closeDrawer() {
+    router.replace("/clients", { scroll: false });
+  }
+
   return (
-    <main className={`${dash.page} ${dash.pagePad}`}>
+    <div className={`relative ${dash.page} ${selected ? "lg:pr-[400px]" : ""}`}>
+      <div className={dash.pagePad}>
       <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <h1 className={dash.title}>{copy.nav.clients}</h1>
         <button type="button" className={dash.btnPrimary} onClick={() => setFormOpen((open) => !open)}>
@@ -196,29 +209,49 @@ export function ClientsScreen({
                   </td>
                 </tr>
               ) : (
-                paged.map((client) => (
-                  <tr key={client.id} className={dash.row}>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <span className="flex size-9 items-center justify-center rounded-full bg-[#E8F5EF] text-[12px] font-semibold text-[#006C49]">
-                          {clientInitials(client.name)}
-                        </span>
-                        <p className="text-[14px] font-semibold text-[#111827]">{client.name}</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-[14px] text-[#6B7280]">{client.email || "—"}</td>
-                    <td className="px-4 py-4 text-[14px] font-semibold text-[#111827]">{client.outstanding}</td>
-                    <td className="px-4 py-4 text-[14px] text-[#6B7280]">{client.lastInvoiceDate ?? "—"}</td>
-                    <td className="px-4 py-4">
-                      <ClientStatusPill status={client.status} />
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <Link href={`/invoices/new?client=${encodeURIComponent(client.id)}`} className={dash.link}>
-                        {copy.createInvoice}
-                      </Link>
-                    </td>
-                  </tr>
-                ))
+                paged.map((client) => {
+                  const active = selected?.id === client.id;
+                  return (
+                    <tr
+                      key={client.id}
+                      className={`cursor-pointer ${dash.row} ${active ? dash.rowActive : "hover:bg-[#F9FAFB]"}`}
+                      tabIndex={0}
+                      onClick={() => openClient(client.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          openClient(client.id);
+                        }
+                      }}
+                    >
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <span className="flex size-9 items-center justify-center rounded-full bg-[#E8F5EF] text-[12px] font-semibold text-[#006C49]">
+                            {clientInitials(client.name)}
+                          </span>
+                          <p className={`text-[14px] font-semibold ${active ? "text-[#006C49]" : "text-[#111827]"}`}>
+                            {client.name}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-[14px] text-[#6B7280]">{client.email || "—"}</td>
+                      <td className="px-4 py-4 text-[14px] font-semibold text-[#111827]">{client.outstanding}</td>
+                      <td className="px-4 py-4 text-[14px] text-[#6B7280]">{client.lastInvoiceDate ?? "—"}</td>
+                      <td className="px-4 py-4">
+                        <ClientStatusPill status={client.status} />
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <Link
+                          href={`/invoices/new?client=${encodeURIComponent(client.id)}`}
+                          className={dash.link}
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          {copy.createInvoice}
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -246,6 +279,8 @@ export function ClientsScreen({
           </div>
         </div>
       </div>
-    </main>
+      </div>
+      {selected ? <ClientDrawer key={selected.id} client={selected} invoices={invoices} onClose={closeDrawer} /> : null}
+    </div>
   );
 }

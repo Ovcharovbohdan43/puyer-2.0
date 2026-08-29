@@ -25,7 +25,7 @@ Re-checked Context7 `/prisma/web` (Json + composite unique upsert) and `/website
 
 - Two USD invoices (one overdue $100, one open $25) plus a EUR open invoice → outstanding `$125.00`, overdue `$100.00`. EUR is listed only in the currency table on Business.
 - Paid $300 / $600 / $900 in May–July UTC → August forecast `$600.00`.
-- Free `computeWorkspaceReport(..., "FREE")` returns `advanced: null` even if the engine could compute it.
+- Free `computeWorkspaceReport(..., "FREE")` returns `advanced: null` and still fills `monthly` (six paid-total points) for Overview.
 
 ## How to test
 
@@ -39,7 +39,7 @@ Browser:
 
 - `/reports` while signed in shows live KPIs from this workspace.
 - Free/Pro: upgrade CTA to `/billing`. Business: trends and tables without the CTA.
-- Overview Revenue Trends / Insights follow the same Business gate (no fake 14-day copy).
+- Overview Revenue Trends shows last-6-month paid totals on every plan. Insights stay behind the Business gate (no fake 14-day copy).
 
 ## Limitations
 
@@ -57,7 +57,7 @@ Browser:
 
 ## Version
 
-1.0.2 — 2026-08-29
+1.0.3 — 2026-08-29
 
 ## Changelog
 
@@ -65,4 +65,5 @@ Browser:
 [2026-08-28] – Added: Base reports for all plans, Business analytics, monthly ReportSnapshot job, tenant isolation tests.
 [2026-08-28] – Changed: Paid (30d) is a real window; snapshots feed completed months; Overview no longer duplicates revenue or shows a fake chart.
 [2026-08-29] – Fixed: Missing `InvoicePayment` / pooler errors no longer blank `/reports`; payments load is isolated.
+[2026-08-29] – Changed: Overview six-month paid trend is available on every plan; Insights stay Business.
 ```
