@@ -16,7 +16,7 @@ describe("envString", () => {
 });
 
 describe("findResendApiKey", () => {
-  it("finds a re_ value on any RESEND_* name without a static env lookup", () => {
+  it("finds a re_ value on RESEND_API_KEY including wrapping quotes", () => {
     const previous = process.env.RESEND_API_KEY;
     process.env.RESEND_API_KEY = '"re_test_from_quotes"';
     expect(findResendApiKey()).toBe("re_test_from_quotes");
@@ -24,6 +24,24 @@ describe("findResendApiKey", () => {
       delete process.env.RESEND_API_KEY;
     } else {
       process.env.RESEND_API_KEY = previous;
+    }
+  });
+
+  it("finds a re_ value even when the env name is not RESEND_API_KEY", () => {
+    const previousKey = process.env.RESEND_API_KEY;
+    const previousMail = process.env.MAIL_PROVIDER_KEY;
+    delete process.env.RESEND_API_KEY;
+    process.env.MAIL_PROVIDER_KEY = "re_abcdefghijklmnop";
+    expect(findResendApiKey()).toBe("re_abcdefghijklmnop");
+    if (previousKey === undefined) {
+      delete process.env.RESEND_API_KEY;
+    } else {
+      process.env.RESEND_API_KEY = previousKey;
+    }
+    if (previousMail === undefined) {
+      delete process.env.MAIL_PROVIDER_KEY;
+    } else {
+      process.env.MAIL_PROVIDER_KEY = previousMail;
     }
   });
 });

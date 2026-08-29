@@ -3,7 +3,7 @@ import "server-only";
 import { connection } from "next/server";
 import { Resend } from "resend";
 
-import { envString, findResendApiKey, listResendEnvNames } from "@/lib/email/env";
+import { envString, findResendApiKey, linuxEnvironSize, listResendEnvNames } from "@/lib/email/env";
 import type { EmailSendResult, OutboundEmail } from "@/lib/email/types";
 import { logger } from "@/lib/observability/logger";
 
@@ -24,6 +24,7 @@ export async function deliverEmail(message: OutboundEmail): Promise<EmailSendRes
       keyPresent: Boolean(apiKey),
       fromPresent: from.includes("@"),
       resendNames: listResendEnvNames(),
+      linuxEnvKeys: linuxEnvironSize(),
     });
     return { skipped: true, providerMessageId: null };
   }
