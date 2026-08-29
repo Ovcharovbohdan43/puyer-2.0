@@ -83,7 +83,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 
 ## Version
 
-1.2.16 — 2026-08-29
+1.2.17 — 2026-08-29
 
 ## Changelog
 
@@ -117,4 +117,5 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 [2026-08-29] – Changed: All templates share one Figma invoice skeleton (table + Total due + payment/terms).
 [2026-08-29] – Changed: Invoice preview drops Terms & conditions so bank details use full width.
 [2026-08-29] – Changed: Filled Total due uses the selected accent color (preview and PDF).
+[2026-08-29] – Changed: Dashboard `/invoices/{id}/edit` stays available after send/view.
 ```

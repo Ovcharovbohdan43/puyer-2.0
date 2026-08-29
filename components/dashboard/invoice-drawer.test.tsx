@@ -37,6 +37,7 @@ describe("InvoiceDrawer", () => {
     expect(html).toContain("puyer-timeline-stem");
     expect(html).toContain("Invoice Created");
     expect(html).toContain("Invoice Sent");
+    expect(html).toContain("/invoices/i1/edit");
   });
 
   it("adds Payment Received when the invoice is paid", () => {
@@ -49,5 +50,6 @@ describe("InvoiceDrawer", () => {
     );
     expect(html).toContain("Payment Received");
     expect(html).toContain("2026-08-28");
+    expect(html).not.toContain("/invoices/i1/edit");
   });
 });

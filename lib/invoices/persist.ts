@@ -118,7 +118,7 @@ export async function createInvoiceFromBuilder(user: SessionUser, state: Builder
 export async function updateInvoiceFromBuilder(user: SessionUser, invoiceId: string, state: BuilderState) {
   const { membership, invoice } = await requireInvoiceAccess(user, invoiceId);
   if (!isEditableStatus(invoice.status)) {
-    throw new ValidationError("This invoice can no longer be edited.");
+    throw new ValidationError("Paid, partially paid, and canceled invoices cannot be edited.");
   }
   const prepared = prepareBuilderState(state);
   const computed = computeInvoiceFromBuilder(prepared);

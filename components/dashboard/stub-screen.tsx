@@ -10,13 +10,21 @@ type StubScreenProps = {
   showSignOut?: boolean;
   ctaHref?: string;
   ctaLabel?: string;
+  showPhaseLabel?: boolean;
 };
 
-export function StubScreen({ title, body, showSignOut = false, ctaHref, ctaLabel }: StubScreenProps) {
+export function StubScreen({
+  title,
+  body,
+  showSignOut = false,
+  ctaHref,
+  ctaLabel,
+  showPhaseLabel = true,
+}: StubScreenProps) {
   const copy = t("dashboard");
   return (
     <main className={`${dash.page} mx-auto flex max-w-lg flex-col gap-4 px-6 py-16`}>
-      <p className="text-[12px] font-semibold text-[#006C49]">{copy.phaseSoonTitle}</p>
+      {showPhaseLabel ? <p className="text-[12px] font-semibold text-[#006C49]">{copy.phaseSoonTitle}</p> : null}
       <h1 className="text-[24px] leading-8 font-semibold text-[#111827]">{title}</h1>
       <p className="text-[14px] leading-5 text-[#6B7280]">{body}</p>
       {ctaHref && ctaLabel ? (

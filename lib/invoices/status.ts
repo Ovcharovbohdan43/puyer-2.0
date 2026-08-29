@@ -8,7 +8,13 @@ const UNPAID: ReadonlySet<InvoiceStatus> = new Set([
   "OVERDUE",
 ]);
 
-const EDITABLE: ReadonlySet<InvoiceStatus> = new Set(["DRAFT", "READY"]);
+const EDITABLE: ReadonlySet<InvoiceStatus> = new Set([
+  "DRAFT",
+  "READY",
+  "SENT",
+  "VIEWED",
+  "OVERDUE",
+]);
 
 export const STATUS_TRANSITIONS: Record<InvoiceStatus, readonly InvoiceStatus[]> = {
   DRAFT: ["READY", "CANCELED"],

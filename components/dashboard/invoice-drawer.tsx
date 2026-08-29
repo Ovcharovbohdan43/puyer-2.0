@@ -15,7 +15,7 @@ import { Modal } from "@/components/ui/modal";
 import { dash } from "@/lib/dashboard/chrome";
 import { t } from "@/lib/i18n";
 import type { InvoiceListRow } from "@/lib/invoices/list-view";
-import { canTransition, manualStatusOptions } from "@/lib/invoices/status";
+import { canTransition, isEditableStatus, manualStatusOptions } from "@/lib/invoices/status";
 import type { InvoiceStatus } from "@prisma/client";
 import { downloadPdfResponse } from "@/lib/pdf/browser-download";
 import { useToast } from "@/components/ui/toast";
@@ -176,9 +176,11 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
           >
             {copy.share}
           </button>
-          <Link href={`/invoices/${encodeURIComponent(invoice.id)}/edit`} className={`${dash.btnSecondary} size-10 px-0`} aria-label={copy.edit}>
-            <PencilSimpleIcon size={16} weight="bold" />
-          </Link>
+          {isEditableStatus(invoice.status) ? (
+            <Link href={`/invoices/${encodeURIComponent(invoice.id)}/edit`} className={`${dash.btnSecondary} size-10 px-0`} aria-label={copy.edit}>
+              <PencilSimpleIcon size={16} weight="bold" />
+            </Link>
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-3">

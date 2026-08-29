@@ -1298,6 +1298,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Fixed: Team invite emails use `invites@puyer.org` and the request host; skipped Resend is a 400.
   Docs: docs/team.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Fixed: Sent and viewed invoices stay editable in the builder; paid stay locked.
+  Docs: docs/invoices.md, docs/dashboard.md, docs/UX_FLOWS.md.
 ```
 
 ---

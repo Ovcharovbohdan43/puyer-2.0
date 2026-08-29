@@ -18,7 +18,15 @@ export default async function EditInvoicePage({
   const copy = t("dashboard");
 
   if (!isEditableStatus(invoice.status)) {
-    return <StubScreen title={copy.editSoonTitle} body={copy.editSoonBody} />;
+    return (
+      <StubScreen
+        showPhaseLabel={false}
+        title={copy.editSoonTitle}
+        body={copy.editSoonBody}
+        ctaHref={`/invoices?invoice=${encodeURIComponent(id)}`}
+        ctaLabel={copy.backToInvoices}
+      />
+    );
   }
 
   return (

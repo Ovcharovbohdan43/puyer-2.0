@@ -16,6 +16,8 @@ Invoice numbers come from `InvoiceSequence` with `SELECT … FOR UPDATE` inside 
 
 Status: `DRAFT → READY → SENT → VIEWED → …`. Create saves as `READY`. Sharing a public link marks `SENT` when that transition is allowed. Opening the public page marks `VIEWED` when that transition is allowed. `OVERDUE` is a display overlay for unpaid invoices past due; it is not written on create.
 
+Unpaid invoices (`DRAFT`, `READY`, `SENT`, `VIEWED`, stored `OVERDUE`) stay editable in `/invoices/{id}/edit`. `PAID`, `PARTIALLY_PAID`, and `CANCELED` are locked (no “Coming next” placeholder).
+
 Cross-tenant reads return **404**, not 403.
 
 Products exist in the schema for later catalog UI. Line items in this phase are free-text.
@@ -50,6 +52,7 @@ npm run lint
 Browser:
 
 - Save from `/invoices/new` → lands on `/invoices/{id}/edit` with a real number.
+- Drawer Edit on a sent/viewed invoice opens the same builder; paid invoices hide Edit.
 - List/drawer/Overview KPIs use saved invoices, not mock figures.
 - Copy public link → `/invoice/{publicId}` shows the payer layout (document + pay sidebar).
 - With the site in dark mode, invoice and pay-card text stay light on the dark cards.
@@ -72,11 +75,12 @@ Browser:
 
 ## Version
 
-1.0.15 — 2026-08-29
+1.0.16 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Sent and viewed invoices stay editable; paid/canceled stay locked without a “Coming next” stub.
 [2026-08-29] – Changed: Creating or updating a client requires a valid email (reminders destination) and accepts phone.
 [2026-08-29] – Added: Paid invoices expose `paidAt` on list rows and a Payment Received timeline event.
 [2026-08-29] – Added: Invoice drawer manual reminder and status transitions (`/remind`, `/status`).

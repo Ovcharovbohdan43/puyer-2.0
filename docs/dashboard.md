@@ -16,7 +16,7 @@ Clients: search, Filter, Export, four KPI cards with the same fade sparklines as
 
 The invoice drawer timeline is a two-column grid (icon rail + labels). Each node draws its own stem; labels stay in normal flow so status text does not slide.
 
-Drawer Edit goes to `/invoices/:id/edit`. Drawer Share copies `/invoice/{publicId}`. `/invoices/new` is the authenticated builder.
+Drawer Edit goes to `/invoices/:id/edit` for unpaid invoices (including sent/viewed). Paid, partial, and canceled invoices hide Edit.
 
 There is **no** moon/sun control in the app. Visiting the dashboard forces `html[data-theme=light]`.
 
@@ -79,11 +79,12 @@ npm run lint
 
 ## Version
 
-1.2.9 — 2026-08-29
+1.2.10 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Fixed: Invoice drawer Edit opens the builder after share/view; paid invoices stay locked.
 [2026-08-29] – Added: Add Client collects email and phone; invoice timeline uses a stable two-column rail.
 [2026-08-29] – Changed: Revenue Trends fills the card with an SVG gradient; Paid invoices show Payment Received on the timeline.
 [2026-08-29] – Added: Invoice drawer Send reminder (editable) and Set status; timeline animates along the track.

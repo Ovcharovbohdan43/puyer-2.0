@@ -283,7 +283,7 @@ Customer Portal = Puyer subscription only. Never connected-account invoice money
 | Invoices row | click | **drawer**, optional `?invoice=` |
 | Drawer Send reminder | click | Pro: edit body, email from reminders@puyer.org; Free: upgrade |
 | Drawer Set status | change | allowed `STATUS_TRANSITIONS` only; Paid adds **Payment Received** on the timeline |
-| Drawer Edit | click | `/invoices/:id/edit` |
+| Drawer Edit | click | `/invoices/:id/edit` (unpaid). Hidden when paid, partial, or canceled |
 | Clients row | click | **client drawer**, optional `?client=` |
 | Client Create Invoice | click | `/invoices/new?client=` |
 | Payments row | click | payment drawer; copy: paid through **connected Stripe**, not Puyer |
@@ -390,4 +390,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Overview Revenue Trends is on every plan; Insights stay Business.
 
 [2026-08-29] – Fixed: Team invite emails send from invites@puyer.org with a production accept URL; failed delivery is shown to the owner.
+[2026-08-29] – Fixed: Sent and viewed invoices open the builder; paid invoices stay locked.
 ```
