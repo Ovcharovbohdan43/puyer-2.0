@@ -1,7 +1,9 @@
 import { Suspense } from "react";
 
 import { InvoicesScreen } from "@/components/dashboard/invoices-screen";
-import { requireSession } from "@/lib/authorization";
+import { requireOrganization, requireSession } from "@/lib/authorization";
+import { can } from "@/lib/entitlements";
+import { planFromRow } from "@/lib/entitlements/load";
 import { t } from "@/lib/i18n";
 import { toInvoiceListRow } from "@/lib/invoices/list-view";
 import { listOrganizationInvoices } from "@/lib/invoices/persist";
@@ -19,7 +21,10 @@ function InvoicesFallback() {
 export default async function InvoicesPage() {
   const session = await requireSession();
   let rows: ReturnType<typeof toInvoiceListRow>[] = [];
+  let remindersEnabled = false;
   try {
+    const membership = await requireOrganization(session);
+    remindersEnabled = can({ plan: planFromRow(membership.organization.subscription) }, "AUTOMATIC_REMINDERS");
     const invoices = await listOrganizationInvoices(session);
     rows = invoices.map((invoice) => toInvoiceListRow(invoice));
   } catch {
@@ -28,7 +33,7 @@ export default async function InvoicesPage() {
 
   return (
     <Suspense fallback={<InvoicesFallback />}>
-      <InvoicesScreen invoices={rows} />
+      <InvoicesScreen invoices={rows} remindersEnabled={remindersEnabled} />
     </Suspense>
   );
 }

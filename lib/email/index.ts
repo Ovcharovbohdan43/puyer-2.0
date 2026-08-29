@@ -5,6 +5,7 @@ import { puyerEmailHtml, puyerParagraph } from "@/lib/email/layout";
 import { deliverEmail } from "@/lib/email/resend";
 import { appBaseUrl } from "@/lib/stripe/client";
 import type { ReminderKind } from "@/lib/reminders/evaluate";
+import { reminderBodyLines, reminderFromAddress } from "@/lib/reminders/message";
 
 export async function sendReminderEmail(input: {
   to: string;
@@ -14,8 +15,9 @@ export async function sendReminderEmail(input: {
   publicId: string;
   amountLabel: string;
   dueLabel: string;
-  type: ReminderKind;
+  type: ReminderKind | "MANUAL";
   idempotencyKey: string;
+  customBody?: string;
 }) {
   return deliverEmail(reminderMessage(input));
 }
@@ -56,8 +58,9 @@ function reminderMessage(input: {
   publicId: string;
   amountLabel: string;
   dueLabel: string;
-  type: ReminderKind;
+  type: ReminderKind | "MANUAL";
   idempotencyKey: string;
+  customBody?: string;
 }): OutboundEmail {
   const url = publicInvoiceUrl(input.publicId);
   const subject =
@@ -65,23 +68,29 @@ function reminderMessage(input: {
       ? `Reminder: invoice ${input.invoiceNumber} is due ${input.dueLabel}`
       : input.type === "ON_DUE"
         ? `Invoice ${input.invoiceNumber} is due today`
-        : `Invoice ${input.invoiceNumber} is past due`;
+        : input.type === "AFTER_DUE"
+          ? `Invoice ${input.invoiceNumber} is past due`
+          : `Reminder: invoice ${input.invoiceNumber}`;
+  const customLines = reminderBodyLines(input.customBody ?? "");
   const lead =
     input.type === "BEFORE_DUE"
       ? `This is a reminder that invoice ${input.invoiceNumber} from ${input.businessName} is due ${input.dueLabel}.`
       : input.type === "ON_DUE"
         ? `Invoice ${input.invoiceNumber} from ${input.businessName} is due today.`
-        : `Invoice ${input.invoiceNumber} from ${input.businessName} is past due.`;
+        : input.type === "AFTER_DUE"
+          ? `Invoice ${input.invoiceNumber} from ${input.businessName} is past due.`
+          : `This is a reminder from ${input.businessName} about invoice ${input.invoiceNumber}, due ${input.dueLabel}.`;
+  const bodyLines = customLines.length > 0 ? customLines : [lead, `Amount due: ${input.amountLabel}.`];
+  const textBody = bodyLines.join("\n");
   return {
     to: input.to,
+    from: reminderFromAddress(),
     subject,
-    text: `${input.businessName}: ${subject}. Amount ${input.amountLabel}. View: ${url}`,
+    text: `${textBody}\nView: ${url}`,
     html: puyerEmailHtml({
       preview: subject,
       heading: subject,
-      bodyHtml:
-        puyerParagraph(`Hi ${input.clientName || "there"},`) +
-        puyerParagraph(`${lead} Amount due: ${input.amountLabel}.`),
+      bodyHtml: puyerParagraph(`Hi ${input.clientName || "there"},`) + bodyLines.map((line) => puyerParagraph(line)).join(""),
       ctaLabel: "View invoice",
       ctaUrl: url,
     }),

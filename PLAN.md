@@ -794,13 +794,13 @@ Store generated PDF in Supabase Storage; signed URL for download. Regenerate on 
 
 ### Reminders (Pro)
 
-Inngest cron (e.g. every 15 minutes) evaluates due invoices.
+Inngest cron (every 15 minutes) evaluates due invoices for **automatic** BEFORE_DUE / ON_DUE / AFTER_DUE.
 
-Do not send for `PAID` or `CANCELED`.
+Do not send for `PAID`, `CANCELED`, or `DRAFT`.
 
-Types: before due, on due, after due. Record every attempt in `ReminderEvent`. Idempotency: unique `(invoiceId, type, scheduledDate)`.
+Types: before due, on due, after due, plus issuer **MANUAL** from the invoice drawer. Record every attempt in `ReminderEvent`. Automatic idempotency: unique `(invoiceId, type, scheduledDate)`. Manual: one send per invoice per UTC day.
 
-Never schedule from an HTTP request lifecycle alone.
+Automatic reminders never schedule from an HTTP request lifecycle alone. Issuer-initiated MANUAL send is a signed-in API call (same pattern as invoice Send) and emails from `reminders@puyer.org`. The issuer may edit the body; HTML is escaped.
 
 ---
 
@@ -1107,6 +1107,9 @@ Until `docs/` exists, keep the changelog in this file.
 ## Changelog
 
 ```
+[2026-08-29] – Added: Invoice drawer manual reminders (editable body, reminders@puyer.org) and allowed status changes.
+  Docs: docs/reminders.md, docs/invoices.md, docs/dashboard.md, docs/UX_FLOWS.md.
+
 [2026-08-29] – Changed: KPI sparks fade with no top stroke; Clients KPIs match Home; Invoice KPIs use Phosphor; long names cannot stretch the shell.
   Docs: docs/dashboard.md, docs/invoices.md, docs/UX_FLOWS.md.
 

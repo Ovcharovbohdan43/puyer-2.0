@@ -61,7 +61,11 @@ export function reminderTypesDue(input: {
   return types;
 }
 
-export function reminderIdempotencyKey(invoiceId: string, type: ReminderKind, scheduledDate: Date | string): string {
+export function reminderIdempotencyKey(
+  invoiceId: string,
+  type: ReminderKind | "MANUAL",
+  scheduledDate: Date | string,
+): string {
   const date = typeof scheduledDate === "string" ? scheduledDate.slice(0, 10) : utcDateKey(scheduledDate);
   return `reminder:${invoiceId}:${type}:${date}`;
 }

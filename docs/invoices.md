@@ -26,7 +26,7 @@ PDF generation lives in Phase 3 — see [`pdf.md`](./pdf.md). Stripe Checkout is
 
 1. Sign in (magic link).
 2. `/invoices/new` — fill the builder, **Save invoice**.
-3. `/invoices` — list, filter, drawer. Share copies `/invoice/{publicId}` and may mark sent.
+3. `/invoices` — list, filter, drawer. Share copies `/invoice/{publicId}` and may mark sent. Drawer can send a Pro reminder and apply allowed status changes.
 4. `/clients` — add a client, row drawer (`?client=`), **Create Invoice** (`/invoices/new?client=`).
 5. Open the public URL while signed out. The payer sees the invoice document and a **Pay Invoice** sidebar when Stripe is connected.
 
@@ -72,11 +72,12 @@ Browser:
 
 ## Version
 
-1.0.12 — 2026-08-29
+1.0.13 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Added: Invoice drawer manual reminder and status transitions (`/remind`, `/status`).
 [2026-08-29] – Changed: Invoice list KPI cards use Phosphor icons; long client names truncate.
 [2026-08-29] – Added: Client drawer on `/clients` (`?client=`), PATCH/DELETE `/api/clients/[id]`.
 [2026-08-28] – Added: Invoice domain persist, numbering, publicId, authenticated builder, public page (no pay).

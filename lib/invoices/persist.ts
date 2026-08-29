@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Prisma, type Invoice, type InvoiceItem } from "@prisma/client";
+import { Prisma, type Invoice, type InvoiceItem, type InvoiceStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/db/prisma";
 import { writeAuditLog } from "@/lib/audit";
@@ -216,6 +216,33 @@ export async function markInvoiceSent(user: SessionUser, invoiceId: string) {
     message: `${invoice.invoiceNumber} was marked as sent.`,
     entityType: "Invoice",
     entityId: invoice.id,
+  });
+  return updated;
+}
+
+export async function setInvoiceStatus(user: SessionUser, invoiceId: string, next: InvoiceStatus) {
+  const { membership, invoice } = await requireInvoiceAccess(user, invoiceId);
+  if (!canTransition(invoice.status, next) || next === "OVERDUE") {
+    throw new ValidationError("This status change is not allowed.");
+  }
+  const data: Prisma.InvoiceUpdateInput = { status: next };
+  if (next === "SENT" && !invoice.sentAt) {
+    data.sentAt = new Date();
+  }
+  if (next === "VIEWED" && !invoice.viewedAt) {
+    data.viewedAt = new Date();
+  }
+  const updated = await prisma.invoice.update({
+    where: { id: invoice.id },
+    data,
+  });
+  await writeAuditLog({
+    actorUserId: user.id,
+    organizationId: membership.organizationId,
+    action: "INVOICE_UPDATED",
+    entityType: "Invoice",
+    entityId: updated.id,
+    metadata: { status: next },
   });
   return updated;
 }

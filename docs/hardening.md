@@ -7,7 +7,7 @@ Rate-limit every listed surface, validate uploads before they touch Storage, kee
 ## Description
 
 - Rate limits: named policies in `lib/rate-limit/policies.ts`. In-process sliding window by default. If `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are set, a fixed-window `INCR`/`EXPIRE NX` pipeline is used (Context7 `/websites/upstash_redis`, 2026-08-28). Redis errors fail open to in-process memory so Stripe webhooks are not blocked by an outage.
-- Surfaces: magic link (email + IP), public invoice GET, public PDF, auth PDF, pay session, invoice/client writes, send/share mark-sent, team, notifications, Connect/platform Stripe, webhooks (300/min/IP so Stripe retries still succeed).
+- Surfaces: magic link (email + IP), public invoice GET, public PDF, auth PDF, pay session, invoice/client writes, send/share mark-sent, **manual reminder**, team, notifications, Connect/platform Stripe, webhooks (300/min/IP so Stripe retries still succeed).
 - CSRF: mutating requests with an `Origin` header must match the request host or `NEXT_PUBLIC_APP_URL`. Missing Origin (webhooks, curl) is allowed.
 - Uploads: `lib/uploads/validate.ts` — JPEG/PNG/WebP, 2 MB, sanitized names, magic-byte sniff. No logo UI yet; this is the gate for a future Storage write.
 - Logs: JSON lines, secret field names (including IBAN/bank keys), and `sk_` / `pk_` / `whsec_` / `Bearer` values redacted. API errors include `x-request-id`.
@@ -28,7 +28,7 @@ Set Upstash env vars in production so limits share across serverless instances.
 
 - 21st public pay POST in one minute → 429.
 - POST `/api/clients` with `Origin: https://evil.example` → 403.
-- PATCH/DELETE `/api/clients/[id]` use the same origin check and `client-write` rate limit.
+- POST `/api/invoices/[id]/remind` and `/status` use origin check plus `invoice-send` / `invoice-write` limits.
 - `logger.info("x", { key: "sk_test_…" })` writes `[redacted]`.
 
 ## How to test
@@ -52,11 +52,12 @@ E2E: `npm run test:e2e`. Magic-link completion needs a real inbox; CI does not s
 
 ## Version
 
-1.0.4 — 2026-08-29
+1.0.5 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Invoice remind/status routes share origin and send/write limits.
 [2026-08-29] – Changed: Client PATCH/DELETE share origin and `client-write` limits.
 [2026-08-28] – Added: Shared rate-limit policies (Upstash optional), origin check, upload validation, log redaction, load indexes, Playwright pay-path smoke.
 [2026-08-28] – Changed: Optional E2E_PUBLIC_INVOICE_ID also asserts dark-theme contrast on the payer portal.

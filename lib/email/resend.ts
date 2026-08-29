@@ -7,7 +7,7 @@ import { logger } from "@/lib/observability/logger";
 
 export async function deliverEmail(message: OutboundEmail): Promise<EmailSendResult> {
   const apiKey = process.env.RESEND_API_KEY?.trim() ?? "";
-  const from = process.env.EMAIL_FROM?.trim() ?? "";
+  const from = message.from?.trim() || process.env.EMAIL_FROM?.trim() || "";
   if (!apiKey || !from.includes("@")) {
     logger.warn("email_skipped_unconfigured");
     return { skipped: true, providerMessageId: null };

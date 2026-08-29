@@ -452,6 +452,7 @@ enum ReminderType {
   BEFORE_DUE
   ON_DUE
   AFTER_DUE
+  MANUAL
 }
 
 enum ReminderStatus {

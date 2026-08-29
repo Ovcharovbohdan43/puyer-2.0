@@ -25,6 +25,10 @@ export function canTransition(from: InvoiceStatus, to: InvoiceStatus): boolean {
   return STATUS_TRANSITIONS[from].includes(to);
 }
 
+export function manualStatusOptions(from: InvoiceStatus): InvoiceStatus[] {
+  return STATUS_TRANSITIONS[from].filter((status) => status !== "OVERDUE");
+}
+
 export function assertTransition(from: InvoiceStatus, to: InvoiceStatus): void {
   if (!canTransition(from, to)) {
     throw new Error(`Cannot change invoice status from ${from} to ${to}`);

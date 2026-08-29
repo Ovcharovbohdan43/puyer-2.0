@@ -457,6 +457,10 @@
     "statusOverdueCaps": "OVERDUE",
     "statusDraftCaps": "DRAFT",
     "statusCanceledCaps": "CANCELED",
+    "statusReady": "Ready",
+    "statusSent": "Sent",
+    "statusViewed": "Viewed",
+    "statusPartial": "Partially paid",
     "invoicesTitle": "Invoices",
     "invoicesSubtitle": "Manage and track your client invoices.",
     "searchInvoices": "Search invoices...",
@@ -542,7 +546,15 @@
     "publicInvoice": "Invoice",
     "publicUnavailable": "This invoice is not available.",
     "copyPublicLink": "Public link copied.",
-    "saveFailed": "Could not save."
+    "saveFailed": "Could not save.",
+    "sendReminder": "Send reminder",
+    "reminderDraft": "Hi {client}, this is a reminder that invoice {number} for {amount} is due {due}. You can view and pay it from the link in this email.",
+    "reminderEditHint": "Edit the message sent to your client. Automatic reminders still follow the Pro schedule.",
+    "reminderFromNote": "Sent from reminders@puyer.org",
+    "reminderSent": "Reminder emailed to the client.",
+    "setInvoiceStatus": "Set status",
+    "chooseStatus": "Choose a status",
+    "statusUpdated": "Invoice status updated."
   },
   "pay": {
     "brand": "Puyer",

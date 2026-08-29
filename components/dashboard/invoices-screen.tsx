@@ -22,7 +22,7 @@ import type { ListStatusFilter } from "@/lib/invoices/status";
 
 const PAGE_SIZE = 8;
 
-export function InvoicesScreen({ invoices }: { invoices: InvoiceListRow[] }) {
+export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: InvoiceListRow[]; remindersEnabled: boolean }) {
   const copy = t("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -231,7 +231,7 @@ export function InvoicesScreen({ invoices }: { invoices: InvoiceListRow[] }) {
           </div>
         </div>
       </div>
-      {selected ? <InvoiceDrawer invoice={selected} onClose={closeDrawer} /> : null}
+      {selected ? <InvoiceDrawer invoice={selected} remindersEnabled={remindersEnabled} onClose={closeDrawer} /> : null}
     </div>
   );
 }

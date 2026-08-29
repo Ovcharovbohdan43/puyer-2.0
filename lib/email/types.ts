@@ -12,6 +12,7 @@ export type OutboundEmail = {
   html: string;
   text: string;
   idempotencyKey: string;
+  from?: string;
 };
 
 export type EmailSendResult = {
