@@ -10,9 +10,9 @@ Sources: light forest-green product frames (Clients, Reports, Payment reminders)
 
 Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications.
 
-Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + sparkline), revenue chart for every plan, Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, a document preview card, and timeline.
+Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines, no stroke), revenue chart for every plan, Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, a document preview card, and timeline.
 
-Clients: search, Filter, Export, four KPIs, paginated table. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer.
+Clients: search, Filter, Export, four KPI cards with the same fade sparklines as Home, paginated table. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer. Long client names and addresses truncate or wrap; they do not stretch the left rail or the right drawer.
 
 Drawer Edit goes to `/invoices/:id/edit`. Drawer Share copies `/invoice/{publicId}`. `/invoices/new` is the authenticated builder.
 
@@ -49,6 +49,8 @@ npm run lint
 - Sign in, confirm light sidebar + Overview KPIs with sparklines, Revenue Trends (no Business wall), and readable Quick Actions
 - Click an invoice row → right preview drawer + `?invoice=` UUID, close, URL clears
 - Open `/clients`, click a row, confirm white right drawer + `?client=` UUID, close, URL clears
+- Open `/clients`, confirm KPI cards have fade sparklines like Home
+- A long client name truncates in the table, drawer, and does not widen the left sidebar
 - Client drawer lists invoices; Create Invoice / Edit / Delete work (delete blocked if invoices exist)
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
 - Sidebar icons stay readable when idle (not faint mixed-color SVGs)
@@ -74,11 +76,12 @@ npm run lint
 
 ## Version
 
-1.2.5 — 2026-08-29
+1.2.6 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: KPI sparklines fade with no stroke; Clients cards match Home; Invoice KPIs use Phosphor; long names no longer stretch the shell.
 [2026-08-29] – Added: Clients row opens a 400px right drawer (`?client=`) with preview, history, edit, and delete.
 [2026-08-29] – Changed: Light forest-green dashboard; invoice list keeps a right preview drawer.
 [2026-08-28] – Added: Dark app shell, Overview (Figma 22017:766), Invoices list + drawer, mock KPIs, protected extra routes.

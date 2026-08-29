@@ -39,5 +39,6 @@ describe("OverviewScreen", () => {
     expect(html).toContain("Add Client");
     expect(html).toContain("hover:bg-[#F6FBF8]");
     expect(html).toContain("kpi-revenue-fill");
+    expect(html).toContain('stop-opacity="0"');
   });
 });

@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.27 — 2026-08-29
+> **Version:** 1.0.28 — 2026-08-29
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -378,6 +378,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Landing trust bar is Phosphor chips (not clickable); copy unchanged.
 [2026-08-29] – Changed: Landing FAQ covers live product questions (no guest PDF download).
 [2026-08-29] – Changed: Dashboard sidebar and mobile tabs use Phosphor nav icons.
+[2026-08-29] – Changed: Dashboard KPI sparks fade without a stroke; long names stay inside the rail and drawers.
 [2026-08-29] – Added: Clients list row opens a right drawer (`?client=`).
 [2026-08-29] – Changed: Overview Revenue Trends is on every plan; Insights stay Business.
 ```

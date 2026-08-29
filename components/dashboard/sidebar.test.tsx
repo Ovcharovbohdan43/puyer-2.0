@@ -25,4 +25,13 @@ describe("Sidebar", () => {
     expect(html).not.toContain("/app/theme.svg");
     expect(html).not.toContain("/app/kpi-revenue.svg");
   });
+
+  it("keeps a long display name inside the rail", () => {
+    const html = renderToStaticMarkup(
+      <Sidebar displayName={"n".repeat(80)} plan="FREE" />,
+    );
+    expect(html).toContain("max-w-[260px]");
+    expect(html).toContain("overflow-hidden");
+    expect(html).toContain("truncate");
+  });
 });

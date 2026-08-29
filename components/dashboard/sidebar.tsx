@@ -22,7 +22,7 @@ export function Sidebar({ displayName, plan }: SidebarProps) {
   const planLabel = copy[planCopyKey(plan)];
 
   return (
-    <aside className="fixed top-0 left-0 z-30 hidden h-dvh w-[260px] flex-col border-r border-[#E5E7EB] bg-[#FBFCFB] p-4 lg:flex">
+    <aside className="fixed top-0 left-0 z-30 hidden h-dvh w-[260px] max-w-[260px] flex-col overflow-hidden border-r border-[#E5E7EB] bg-[#FBFCFB] p-4 lg:flex">
       <div className="px-2 pb-6">
         <Link href="/dashboard" className="inline-flex items-center">
           <PuyerLogo height={28} />
@@ -61,19 +61,19 @@ export function Sidebar({ displayName, plan }: SidebarProps) {
             </Link>
           );
         })}
-        <div className="mt-4 flex items-center gap-3 px-2">
+        <div className="mt-4 flex min-w-0 items-center gap-3 px-2">
           <div
             aria-hidden
             className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#E8F5EF] text-[13px] font-semibold text-[#006C49]"
           >
             {initial}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <p className="truncate text-[13px] font-semibold text-[#111827]">{displayName}</p>
-            <p className="text-[12px] text-[#6B7280]">{planLabel}</p>
+            <p className="truncate text-[12px] text-[#6B7280]">{planLabel}</p>
           </div>
         </div>
-        <Link href="/invoices/new" className={`${dash.btnPrimary} mt-3 w-full`}>
+        <Link href="/invoices/new" className={`${dash.btnPrimary} mt-3 w-full min-w-0`}>
           <AppNavIcon id="plus" onDark size={16} />
           {copy.newInvoice}
         </Link>

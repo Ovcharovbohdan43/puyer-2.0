@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { kpiSparkSpecs, sparklinePath } from "@/lib/dashboard/kpi-sparkline";
+import { kpiSparkSpecs, sparklinePath, sparkMonthlyFromInvoices } from "@/lib/dashboard/kpi-sparkline";
 import type { WorkspaceKpis } from "@/lib/invoices/list-view";
 import type { PresentedTrend } from "@/lib/reports/present";
 
@@ -32,5 +32,53 @@ describe("kpiSparkSpecs", () => {
     const specs = kpiSparkSpecs([], { ...emptyKpis, overdueCount: 2, outstandingCount: 2 });
     expect(specs.overdue.tone).toBe("bad");
     expect(specs.outstanding.tone).toBe("warn");
+  });
+});
+
+describe("sparkMonthlyFromInvoices", () => {
+  it("maps invoice totals onto the last six UTC months", () => {
+    const now = new Date("2026-08-15T12:00:00.000Z");
+    const monthly = sparkMonthlyFromInvoices(
+      [
+        {
+          id: "i1",
+          invoiceNumber: "INV-1",
+          publicId: "p",
+          clientId: "c1",
+          clientName: "A",
+          date: "2026-08-01",
+          dueDate: "2026-08-10",
+          amount: "$10.00",
+          totalMinor: "1000",
+          currency: "USD",
+          status: "SENT",
+          displayStatus: "SENT",
+          createdAt: "2026-08-01",
+          sentAt: null,
+          viewedAt: null,
+        },
+        {
+          id: "i2",
+          invoiceNumber: "INV-2",
+          publicId: "p2",
+          clientId: "c1",
+          clientName: "A",
+          date: "2026-07-01",
+          dueDate: "2026-07-10",
+          amount: "$20.00",
+          totalMinor: "2000",
+          currency: "USD",
+          status: "PAID",
+          displayStatus: "PAID",
+          createdAt: "2026-07-01",
+          sentAt: null,
+          viewedAt: null,
+        },
+      ],
+      now,
+    );
+    expect(monthly).toHaveLength(6);
+    expect(monthly.at(-1)?.period).toBe("2026-08");
+    expect(monthly.find((row) => row.period === "2026-07")?.heightPct).toBe(100);
   });
 });

@@ -231,7 +231,7 @@ export function OverviewScreen({
             </Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px] text-left">
+            <table className="w-full table-fixed text-left">
               <thead className={dash.tableHead}>
                 <tr>
                   <th className="px-4 py-3">{copy.colInvoice}</th>
@@ -263,7 +263,7 @@ export function OverviewScreen({
                       }}
                     >
                       <td className="px-4 py-3 text-[14px] font-medium text-[#111827]">{invoice.invoiceNumber}</td>
-                      <td className="px-4 py-3 text-[14px] text-[#6B7280]">{invoice.clientName}</td>
+                      <td className={`px-4 py-3 text-[14px] text-[#6B7280] ${dash.ellipsis}`}>{invoice.clientName}</td>
                       <td className="px-4 py-3 text-[14px] text-[#6B7280]">{invoice.date}</td>
                       <td className="px-4 py-3 text-right font-mono text-[14px] text-[#111827]">{invoice.amount}</td>
                       <td className="px-4 py-3 text-center">

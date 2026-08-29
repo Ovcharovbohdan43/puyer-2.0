@@ -33,20 +33,20 @@ export function InvoiceDrawer({ invoice, onClose }: InvoiceDrawerProps) {
   ].filter((event): event is { title: string; date: string; paid: boolean } => Boolean(event));
 
   return (
-    <aside className="fixed inset-0 z-20 flex flex-col bg-white shadow-[-8px_0px_24px_rgba(15,23,42,0.08)] lg:inset-y-0 lg:right-0 lg:left-auto lg:w-[400px] lg:border-l lg:border-[#E5E7EB]">
-      <div className="flex items-start justify-between border-b border-[#E5E7EB] p-6">
-        <div className="flex min-w-0 flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <h2 className="text-[22px] leading-8 font-semibold text-[#111827]">{invoice.invoiceNumber}</h2>
+    <aside className="fixed inset-0 z-20 flex max-w-full flex-col overflow-x-hidden bg-white shadow-[-8px_0px_24px_rgba(15,23,42,0.08)] lg:inset-y-0 lg:right-0 lg:left-auto lg:w-[400px] lg:border-l lg:border-[#E5E7EB]">
+      <div className="flex min-w-0 items-start justify-between gap-3 border-b border-[#E5E7EB] p-6">
+        <div className="flex min-w-0 flex-1 flex-col gap-1 overflow-hidden">
+          <div className="flex min-w-0 items-center gap-2">
+            <h2 className="min-w-0 truncate text-[22px] leading-8 font-semibold text-[#111827]">{invoice.invoiceNumber}</h2>
             <StatusPill status={invoice.displayStatus} variant="drawer" />
           </div>
-          <p className="text-[14px] leading-5 text-[#6B7280]">{invoice.clientName}</p>
+          <p className="truncate text-[14px] leading-5 text-[#6B7280]">{invoice.clientName}</p>
         </div>
-        <button type="button" className="text-[22px] leading-5 text-[#9CA3AF]" aria-label={copy.closeDrawer} onClick={onClose}>
+        <button type="button" className="shrink-0 text-[22px] leading-5 text-[#9CA3AF]" aria-label={copy.closeDrawer} onClick={onClose}>
           ×
         </button>
       </div>
-      <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6">
+      <div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto overflow-x-hidden p-6">
         <div className="flex gap-2">
           <button
             type="button"

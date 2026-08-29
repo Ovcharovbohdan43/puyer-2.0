@@ -20,10 +20,10 @@ export function AppShell({ displayName, plan, children }: AppShellProps) {
   }, []);
 
   return (
-    <div className="app-shell min-h-dvh bg-[#F6F7F6] text-[#111827]">
+    <div className="app-shell min-h-dvh overflow-x-hidden bg-[#F6F7F6] text-[#111827]">
       <Sidebar displayName={displayName} plan={plan} />
-      <div className="min-h-dvh lg:pl-[260px]">
-        <div className="pb-16 lg:pb-0">{children}</div>
+      <div className="min-h-dvh min-w-0 overflow-x-hidden lg:pl-[260px]">
+        <div className="min-w-0 pb-16 lg:pb-0">{children}</div>
       </div>
       <MobileTabBar />
     </div>

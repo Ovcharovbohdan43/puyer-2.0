@@ -1107,6 +1107,9 @@ Until `docs/` exists, keep the changelog in this file.
 ## Changelog
 
 ```
+[2026-08-29] – Changed: KPI sparks fade with no top stroke; Clients KPIs match Home; Invoice KPIs use Phosphor; long names cannot stretch the shell.
+  Docs: docs/dashboard.md, docs/invoices.md, docs/UX_FLOWS.md.
+
 [2026-08-29] – Added: Clients row opens a right drawer (`?client=`) with preview, invoice history, edit, and delete.
   Docs: docs/dashboard.md, docs/invoices.md, docs/UX_FLOWS.md, docs/hardening.md.
 

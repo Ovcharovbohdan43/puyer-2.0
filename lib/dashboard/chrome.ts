@@ -25,6 +25,8 @@ export const dash = {
   btnOutline:
     "inline-flex h-10 items-center justify-center gap-1 rounded-lg border border-[#006C49] px-4 text-[14px] font-semibold text-[#006C49] hover:bg-[#E8F5EF]",
   tableWrap: "overflow-hidden rounded-xl border border-[#E5E7EB] bg-white",
+  ellipsis: "min-w-0 truncate",
+  wrapBreak: "min-w-0 break-all",
   tableHead: "bg-[#F9FAFB] text-[12px] leading-4 font-semibold text-[#6B7280]",
   row: "border-b border-[#E5E7EB] last:border-0",
   rowActive: "bg-[#E8F5EF]",

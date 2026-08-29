@@ -72,11 +72,12 @@ Browser:
 
 ## Version
 
-1.0.11 — 2026-08-29
+1.0.12 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Invoice list KPI cards use Phosphor icons; long client names truncate.
 [2026-08-29] – Added: Client drawer on `/clients` (`?client=`), PATCH/DELETE `/api/clients/[id]`.
 [2026-08-28] – Added: Invoice domain persist, numbering, publicId, authenticated builder, public page (no pay).
 [2026-08-28] – Changed: PDF download and public rate limits moved to docs/pdf.md (Phase 3).

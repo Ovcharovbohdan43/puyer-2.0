@@ -1,4 +1,4 @@
-import type { WorkspaceKpis } from "@/lib/invoices/list-view";
+import type { InvoiceListRow, WorkspaceKpis } from "@/lib/invoices/list-view";
 import type { PresentedTrend } from "@/lib/reports/present";
 
 export type KpiSparkTone = "good" | "warn" | "bad";
@@ -56,6 +56,32 @@ export function kpiSparkSpecs(monthly: PresentedTrend[], kpis: WorkspaceKpis): {
       tone: kpis.overdueCount > 0 ? "bad" : "good",
     },
   };
+}
+
+export function sparkMonthlyFromInvoices(invoices: InvoiceListRow[], now = new Date()): PresentedTrend[] {
+  const keys: string[] = [];
+  for (let offset = 5; offset >= 0; offset -= 1) {
+    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - offset, 1));
+    keys.push(`${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`);
+  }
+  const totals = new Map(keys.map((key) => [key, 0n]));
+  for (const invoice of invoices) {
+    const period = invoice.date.slice(0, 7);
+    if (!totals.has(period)) {
+      continue;
+    }
+    totals.set(period, (totals.get(period) ?? 0n) + BigInt(invoice.totalMinor));
+  }
+  const max = keys.reduce((highest, key) => {
+    const value = totals.get(key) ?? 0n;
+    return value > highest ? value : highest;
+  }, 0n);
+  return keys.map((period) => ({
+    period,
+    label: period,
+    paid: "0",
+    heightPct: max === 0n ? 0 : Number(((totals.get(period) ?? 0n) * 100n) / max),
+  }));
 }
 
 export function sparklinePath(values: number[], width: number, height: number): { line: string; area: string } {

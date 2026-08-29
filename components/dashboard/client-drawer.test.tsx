@@ -13,7 +13,7 @@ const client: ClientListRow = {
   id: "c1",
   name: "Acme Corp",
   email: "billing@acme.test",
-  address: "1 Market St",
+  address: "pppppppppppppppppppppppppppppppppppppppppppppppppp",
   phone: "555-0100",
   taxNumber: "TAX-9",
   notes: "Net 30",
@@ -50,10 +50,11 @@ describe("ClientDrawer", () => {
     );
     expect(html).toContain("Acme Corp");
     expect(html).toContain("billing@acme.test");
-    expect(html).toContain("1 Market St");
+    expect(html).toContain("break-all");
     expect(html).toContain("Invoice history");
     expect(html).toContain("INV-2026-0001");
     expect(html).toContain("Create Invoice");
     expect(html).toContain("/invoices?invoice=i1");
+    expect(html).toContain("break-all");
   });
 });

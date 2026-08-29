@@ -3,8 +3,11 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/csr/CheckCircle";
+import { HourglassIcon } from "@phosphor-icons/react/dist/csr/Hourglass";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/csr/WarningCircle";
 
-import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { InvoiceDrawer } from "@/components/dashboard/invoice-drawer";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { dash, downloadCsv } from "@/lib/dashboard/chrome";
@@ -67,36 +70,36 @@ export function InvoicesScreen({ invoices }: { invoices: InvoiceListRow[] }) {
 
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <article className={dash.kpi}>
-            <div className="flex items-start justify-between">
+            <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiListOutstanding}</p>
-              <span className={dash.iconMint}>
-                <FigmaIcon src="/app/kpi-outstanding.svg" alt="" width={15} height={15} />
+              <span className={dash.iconWarn}>
+                <HourglassIcon size={18} weight="duotone" color="#C27803" aria-hidden />
               </span>
             </div>
-            <p className={dash.kpiValue}>{kpis.outstanding}</p>
-            <p className={dash.kpiMeta}>{copy.kpiOutstandingCount.replace("{count}", String(kpis.outstandingCount))}</p>
+            <p className={`relative z-[1] ${dash.kpiValue}`}>{kpis.outstanding}</p>
+            <p className={`relative z-[1] ${dash.kpiMeta}`}>{copy.kpiOutstandingCount.replace("{count}", String(kpis.outstandingCount))}</p>
           </article>
           <article className={dash.kpi}>
-            <div className="flex items-start justify-between">
+            <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiOverdue}</p>
               <span className={dash.iconBad}>
-                <FigmaIcon src="/app/kpi-overdue.svg" alt="" width={15} height={15} />
+                <WarningCircleIcon size={18} weight="duotone" color="#DC2626" aria-hidden />
               </span>
             </div>
-            <p className={dash.kpiValue}>{kpis.overdue}</p>
-            <p className={dash.kpiMetaBad}>
+            <p className={`relative z-[1] ${dash.kpiValue}`}>{kpis.overdue}</p>
+            <p className={`relative z-[1] ${dash.kpiMetaBad}`}>
               {kpis.overdueCount} {copy.colInvoice}
             </p>
           </article>
           <article className={dash.kpi}>
-            <div className="flex items-start justify-between">
+            <div className="relative z-[1] flex items-start justify-between">
               <p className={dash.kpiLabel}>{copy.kpiListPaid}</p>
-              <span className={dash.iconWarn}>
-                <FigmaIcon src="/app/kpi-paid.svg" alt="" width={15} height={15} />
+              <span className={dash.iconMint}>
+                <CheckCircleIcon size={18} weight="duotone" color="#006C49" aria-hidden />
               </span>
             </div>
-            <p className={dash.kpiValue}>{kpis.paid30}</p>
-            <p className={dash.kpiMetaGood}>
+            <p className={`relative z-[1] ${dash.kpiValue}`}>{kpis.paid30}</p>
+            <p className={`relative z-[1] ${dash.kpiMetaGood}`}>
               {kpis.paid30Count} {copy.colInvoice}
             </p>
           </article>
@@ -104,8 +107,8 @@ export function InvoicesScreen({ invoices }: { invoices: InvoiceListRow[] }) {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <label className="relative block w-full sm:w-[280px]">
-            <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2">
-              <FigmaIcon src="/app/search.svg" alt="" width={15} height={15} />
+            <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[#6B7280]">
+              <MagnifyingGlassIcon size={16} weight="bold" aria-hidden />
             </span>
             <span className="sr-only">{copy.searchInvoices}</span>
             <input
@@ -153,7 +156,7 @@ export function InvoicesScreen({ invoices }: { invoices: InvoiceListRow[] }) {
 
         <div className={dash.tableWrap}>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-left">
+            <table className="w-full table-fixed text-left">
               <thead className={dash.tableHead}>
                 <tr>
                   <th className="px-4 py-3">{copy.colInvoice} #</th>
@@ -187,10 +190,10 @@ export function InvoicesScreen({ invoices }: { invoices: InvoiceListRow[] }) {
                           }
                         }}
                       >
-                        <td className={`px-4 py-4 font-mono text-[14px] ${active ? "font-semibold text-[#006C49]" : "text-[#111827]"}`}>
+                        <td className={`px-4 py-4 font-mono text-[14px] ${dash.ellipsis} ${active ? "font-semibold text-[#006C49]" : "text-[#111827]"}`}>
                           {invoice.invoiceNumber}
                         </td>
-                        <td className="px-4 py-4 text-[14px] font-medium text-[#111827]">{invoice.clientName}</td>
+                        <td className={`px-4 py-4 text-[14px] font-medium text-[#111827] ${dash.ellipsis}`}>{invoice.clientName}</td>
                         <td className="px-4 py-4 text-[14px] text-[#6B7280]">{invoice.date}</td>
                         <td className="px-4 py-4 text-[14px] text-[#6B7280]">{invoice.dueDate}</td>
                         <td className="px-4 py-4 text-right font-mono text-[14px] text-[#111827]">{invoice.amount}</td>
