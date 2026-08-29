@@ -1,6 +1,6 @@
 import { connection, NextResponse } from "next/server";
 
-import { envString, findResendApiKey, linuxEnvironSize, listResendEnvNames } from "@/lib/email/env";
+import { envString, linuxEnvironSize, resendKeyProbe } from "@/lib/email/env";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
 import { handleRoute } from "@/lib/http/route";
 import { clientIp } from "@/lib/http/ip";
@@ -17,11 +17,14 @@ export async function GET(request: Request) {
     await connection();
     await requireRateLimit("api-read", clientIp(request));
     const from = helpFromAddress();
+    const probe = resendKeyProbe();
     return NextResponse.json({
       ok: true,
-      keyPresent: Boolean(findResendApiKey()),
+      keyPresent: probe.keyPresent,
       fromPresent: from.includes("@"),
-      resendNames: listResendEnvNames(),
+      resendNames: probe.names,
+      namedChars: probe.namedChars,
+      startsWithRe: probe.startsWithRe,
       linuxEnvKeys: linuxEnvironSize(),
       commit: envString("VERCEL_GIT_COMMIT_SHA").slice(0, 7) || null,
     });

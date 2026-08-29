@@ -53,20 +53,42 @@ export function listResendEnvNames(): string[] {
     .sort();
 }
 
-const RESEND_KEY_SHAPE = /^re_[A-Za-z0-9_]{8,}$/;
+const RESEND_KEY_IN_TEXT = /re_[A-Za-z0-9_-]{8,}/;
+
+function extractResendApiKey(raw: string): string {
+  const value = unwrapEnvValue(raw).replace(/^Bearer\s+/i, "");
+  const match = value.match(RESEND_KEY_IN_TEXT);
+  return match?.[0] ?? "";
+}
+
+export function resendKeyProbe(): {
+  names: string[];
+  keyPresent: boolean;
+  namedChars: number;
+  startsWithRe: boolean;
+} {
+  const env = runtimeEnv();
+  const named = unwrapEnvValue(env.RESEND_API_KEY ?? env.RESEND_KEY ?? "");
+  return {
+    names: listResendEnvNames(),
+    keyPresent: Boolean(findResendApiKey()),
+    namedChars: named.length,
+    startsWithRe: named.startsWith("re_") || named.includes("re_"),
+  };
+}
 
 export function findResendApiKey(): string {
   const env = runtimeEnv();
-  const named = unwrapEnvValue(env.RESEND_API_KEY ?? env.RESEND_KEY ?? "");
-  if (RESEND_KEY_SHAPE.test(named)) {
+  const named = extractResendApiKey(env.RESEND_API_KEY ?? env.RESEND_KEY ?? "");
+  if (named) {
     return named;
   }
   for (const [key, raw] of Object.entries(env)) {
     if (/secret|webhook/i.test(key)) {
       continue;
     }
-    const value = unwrapEnvValue(raw);
-    if (RESEND_KEY_SHAPE.test(value)) {
+    const value = extractResendApiKey(raw);
+    if (value) {
       return value;
     }
   }

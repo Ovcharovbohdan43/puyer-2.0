@@ -27,6 +27,17 @@ describe("findResendApiKey", () => {
     }
   });
 
+  it("extracts re_ from a pasted line with extra text", () => {
+    const previous = process.env.RESEND_API_KEY;
+    process.env.RESEND_API_KEY = "RESEND_API_KEY=re_abcdefghijklmnop";
+    expect(findResendApiKey()).toBe("re_abcdefghijklmnop");
+    if (previous === undefined) {
+      delete process.env.RESEND_API_KEY;
+    } else {
+      process.env.RESEND_API_KEY = previous;
+    }
+  });
+
   it("finds a re_ value even when the env name is not RESEND_API_KEY", () => {
     const previousKey = process.env.RESEND_API_KEY;
     const previousMail = process.env.MAIL_PROVIDER_KEY;
