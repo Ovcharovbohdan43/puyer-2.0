@@ -1,14 +1,13 @@
 import "server-only";
 
+import { connection } from "next/server";
 import { Resend } from "resend";
 
-import { envString } from "@/lib/email/env";
 import type { EmailSendResult, OutboundEmail } from "@/lib/email/types";
 import { logger } from "@/lib/observability/logger";
 
 async function bindRequestRuntime(): Promise<void> {
   try {
-    const { connection } = await import("next/server");
     await connection();
   } catch {
     // Inngest, Vitest, and other non-request workers still read process.env below.
@@ -17,8 +16,9 @@ async function bindRequestRuntime(): Promise<void> {
 
 export async function deliverEmail(message: OutboundEmail): Promise<EmailSendResult> {
   await bindRequestRuntime();
-  const apiKey = envString("RESEND_API_KEY");
-  const from = message.from?.trim() || envString("EMAIL_FROM");
+  // Static process.env.* (not process.env[name]) so Next includes these in the Vercel function.
+  const apiKey = process.env.RESEND_API_KEY?.trim() || process.env.RESEND_KEY?.trim() || "";
+  const from = message.from?.trim() || process.env.EMAIL_FROM?.trim() || "";
   if (!apiKey || !from.includes("@")) {
     logger.warn("email_skipped_unconfigured", {
       hasApiKey: Boolean(apiKey),

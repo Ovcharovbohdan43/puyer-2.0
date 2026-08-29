@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.10  
+> **Version:** 1.4.11  
 > **Date:** 2026-08-29  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -1322,6 +1322,9 @@ Until `docs/` exists, keep the changelog in this file.
   Docs: docs/help.md, docs/UX_FLOWS.md, docs/dashboard.md.
 
 [2026-08-29] – Fixed: Help/Resend reads `RESEND_API_KEY` at request runtime and uses verified `EMAIL_FROM` when `help@` is unset.
+  Docs: docs/help.md.
+
+[2026-08-29] – Fixed: `/api/help` pins static `process.env.RESEND_API_KEY` so Vercel does not omit the key from the function.
   Docs: docs/help.md.
 ```
 
