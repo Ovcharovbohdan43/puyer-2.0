@@ -82,7 +82,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.16 — 2026-08-29
+1.0.17 — 2026-08-29
 
 ## Changelog
 
@@ -109,4 +109,5 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 [2026-08-29] – Fixed: Magic-link `emailRedirectTo` uses the request host (www vs apex) and no longer follows a leftover localhost `NEXT_PUBLIC_APP_URL`. `/` with `code` goes to `/auth/callback`; login no longer treats `/` as a valid return path.
 [2026-08-29] – Changed: Login and Auth HTML templates use the Puyer lockup image.
 [2026-08-29] – Added: Login form links to Terms of Service and Privacy Policy.
+[2026-08-29] – Fixed: Prisma Client uses PgBouncer flags so layout + page queries do not hit `42P05`.
 ```

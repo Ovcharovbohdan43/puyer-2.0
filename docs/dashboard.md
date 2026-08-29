@@ -58,7 +58,7 @@ npm run lint
 - Payments lists synchronized Connect charges. Billing is live (Puyer subscription). Notifications inbox + preferences are live. Reports are live (base KPIs all plans; advanced Business). Team invites are live for Business.
 - Desktop sidebar does not collapse to icons; mobile hides the rail.
 - Sidebar and mobile tabs use Phosphor duotone icons (same family as marketing). KPI/action icons on Overview still use `public/app` SVGs.
-- Mixed-currency KPI cards use the most common currency only.
+- Dashboard routes other than Overview used to hit the page error UI when Prisma/PgBouncer returned `42P05`; Overview swallowed the same failure. Runtime Prisma now forces pooler-safe flags, and list pages render empty instead of `error.tsx`.
 - Credit notes and a product catalog are not in v1; those mock items are not routes.
 
 ## Modules
@@ -70,7 +70,7 @@ npm run lint
 
 ## Version
 
-1.2.2 — 2026-08-29
+1.2.3 — 2026-08-29
 
 ## Changelog
 
@@ -90,4 +90,5 @@ npm run lint
 [2026-08-29] – Changed: Sidebar uses the Puyer lockup instead of text.
 [2026-08-29] – Changed: Sidebar and mobile nav use Phosphor icons (House, Users, Receipt, card, chart, gear, bell).
 [2026-08-29] – Fixed: Dashboard and cookie icons load via Phosphor `dist/csr` in client components.
+[2026-08-29] – Fixed: Invoices/Clients/Payments/Reports/Team/Notifications/Billing survive Prisma pooler `42P05` instead of the page error boundary.
 ```

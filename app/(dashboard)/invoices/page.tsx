@@ -2,9 +2,10 @@ import { Suspense } from "react";
 
 import { InvoicesScreen } from "@/components/dashboard/invoices-screen";
 import { requireSession } from "@/lib/authorization";
-import { listOrganizationInvoices } from "@/lib/invoices/persist";
-import { toInvoiceListRow } from "@/lib/invoices/list-view";
 import { t } from "@/lib/i18n";
+import { toInvoiceListRow } from "@/lib/invoices/list-view";
+import { listOrganizationInvoices } from "@/lib/invoices/persist";
+import { logger } from "@/lib/observability/logger";
 
 function InvoicesFallback() {
   const copy = t("dashboard");
@@ -17,8 +18,13 @@ function InvoicesFallback() {
 
 export default async function InvoicesPage() {
   const session = await requireSession();
-  const invoices = await listOrganizationInvoices(session);
-  const rows = invoices.map((invoice) => toInvoiceListRow(invoice));
+  let rows: ReturnType<typeof toInvoiceListRow>[] = [];
+  try {
+    const invoices = await listOrganizationInvoices(session);
+    rows = invoices.map((invoice) => toInvoiceListRow(invoice));
+  } catch {
+    logger.warn("invoices_list_unavailable");
+  }
 
   return (
     <Suspense fallback={<InvoicesFallback />}>

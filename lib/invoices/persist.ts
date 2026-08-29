@@ -28,7 +28,21 @@ export async function listOrganizationInvoices(user: SessionUser) {
   const membership = await requireOrganization(user);
   const invoices = await prisma.invoice.findMany({
     where: { organizationId: membership.organizationId },
-    include: { items: { orderBy: { sortOrder: "asc" } }, client: true },
+    select: {
+      id: true,
+      invoiceNumber: true,
+      publicId: true,
+      clientId: true,
+      clientName: true,
+      issueDate: true,
+      dueDate: true,
+      totalMinor: true,
+      currency: true,
+      status: true,
+      createdAt: true,
+      sentAt: true,
+      viewedAt: true,
+    },
     orderBy: { createdAt: "desc" },
   });
   return invoices.map((invoice) => ({

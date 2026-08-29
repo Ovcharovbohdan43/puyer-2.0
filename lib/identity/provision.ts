@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { Prisma } from "@prisma/client";
 
+import { isPreparedStatementConflict } from "@/lib/db/pooler-url";
 import { prisma } from "@/lib/db/prisma";
 import { workspaceDisplayName } from "@/lib/identity/name";
 import { logger } from "@/lib/observability/logger";
@@ -93,7 +94,7 @@ async function createWorkspace(userId: string, email: string): Promise<Workspace
   return result.membership;
 }
 
-const provisionWorkspace = cache(async (userId: string, email: string): Promise<WorkspaceMembership> => {
+async function loadOrCreateWorkspace(userId: string, email: string): Promise<WorkspaceMembership> {
   const existing = await findMembership(prisma, userId);
   if (existing) {
     return existing;
@@ -110,6 +111,22 @@ const provisionWorkspace = cache(async (userId: string, email: string): Promise<
     }
     throw error;
   }
+}
+
+const provisionWorkspace = cache(async (userId: string, email: string): Promise<WorkspaceMembership> => {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await loadOrCreateWorkspace(userId, email);
+    } catch (error) {
+      lastError = error;
+      if (!isPreparedStatementConflict(error) || attempt === 2) {
+        throw error;
+      }
+      logger.warn("workspace_prepared_statement_retry", { attempt });
+    }
+  }
+  throw lastError;
 });
 
 export async function ensureWorkspace(user: ProvisionUser): Promise<WorkspaceMembership> {

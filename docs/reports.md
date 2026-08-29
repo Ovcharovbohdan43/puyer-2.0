@@ -57,11 +57,12 @@ Browser:
 
 ## Version
 
-1.0.1 — 2026-08-28
+1.0.2 — 2026-08-29
 
 ## Changelog
 
 ```
 [2026-08-28] – Added: Base reports for all plans, Business analytics, monthly ReportSnapshot job, tenant isolation tests.
 [2026-08-28] – Changed: Paid (30d) is a real window; snapshots feed completed months; Overview no longer duplicates revenue or shows a fake chart.
+[2026-08-29] – Fixed: Missing `InvoicePayment` / pooler errors no longer blank `/reports`; payments load is isolated.
 ```

@@ -2,34 +2,50 @@ import { BillingSettings } from "@/components/dashboard/billing-settings";
 import { requireOrganization, requireSession } from "@/lib/authorization";
 import { planFromRow } from "@/lib/entitlements/load";
 import { messages, t } from "@/lib/i18n";
+import { logger } from "@/lib/observability/logger";
 
 type BillingCopy = (typeof messages)["billing"];
 
 export default async function BillingPage() {
   const session = await requireSession();
-  const membership = await requireOrganization(session);
   const copy = t("billing");
   const dash = t("dashboard");
-  const subscription = membership.organization.subscription;
-  const plan = planFromRow(subscription);
-  const planLabel =
-    plan === "BUSINESS" ? dash.businessPlan : plan === "PRO" ? dash.proPlan : dash.freePlan;
-  const statusLabel = statusCopy(subscription?.status ?? null, copy);
-  const periodEndLabel = subscription?.currentPeriodEnd
-    ? copy.renewsOn.replace("{date}", subscription.currentPeriodEnd.toLocaleDateString("en-US"))
-    : null;
+  try {
+    const membership = await requireOrganization(session);
+    const subscription = membership.organization.subscription;
+    const plan = planFromRow(subscription);
+    const planLabel =
+      plan === "BUSINESS" ? dash.businessPlan : plan === "PRO" ? dash.proPlan : dash.freePlan;
+    const statusLabel = statusCopy(subscription?.status ?? null, copy);
+    const periodEndLabel = subscription?.currentPeriodEnd
+      ? copy.renewsOn.replace("{date}", subscription.currentPeriodEnd.toISOString().slice(0, 10))
+      : null;
 
-  return (
-    <BillingSettings
-      isOwner={membership.role === "OWNER"}
-      planLabel={planLabel}
-      statusLabel={statusLabel}
-      periodEndLabel={periodEndLabel}
-      cancelAtPeriodEnd={subscription?.cancelAtPeriodEnd ?? false}
-      hasCustomer={Boolean(subscription?.stripeCustomerId)}
-      canCheckout={plan === "FREE"}
-    />
-  );
+    return (
+      <BillingSettings
+        isOwner={membership.role === "OWNER"}
+        planLabel={planLabel}
+        statusLabel={statusLabel}
+        periodEndLabel={periodEndLabel}
+        cancelAtPeriodEnd={subscription?.cancelAtPeriodEnd ?? false}
+        hasCustomer={Boolean(subscription?.stripeCustomerId)}
+        canCheckout={plan === "FREE"}
+      />
+    );
+  } catch {
+    logger.warn("billing_unavailable");
+    return (
+      <BillingSettings
+        isOwner={false}
+        planLabel={dash.freePlan}
+        statusLabel={statusCopy(null, copy)}
+        periodEndLabel={null}
+        cancelAtPeriodEnd={false}
+        hasCustomer={false}
+        canCheckout={false}
+      />
+    );
+  }
 }
 
 function statusCopy(status: string | null, copy: BillingCopy): string {

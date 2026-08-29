@@ -72,7 +72,7 @@ Browser:
 
 ## Version
 
-1.0.5 — 2026-08-29
+1.0.6 — 2026-08-29
 
 ## Changelog
 
@@ -84,4 +84,5 @@ Browser:
 [2026-08-28] – Changed: Public payer page uses document + pay sidebar.
 [2026-08-28] – Fixed: Settings Stripe lookup failures no longer crash the page.
 [2026-08-29] – Changed: Public pay sidebar explains bank transfer when Stripe Pay is unavailable.
+[2026-08-29] – Fixed: Payments list maps amounts to strings and survives pooler lookup failures.
 ```

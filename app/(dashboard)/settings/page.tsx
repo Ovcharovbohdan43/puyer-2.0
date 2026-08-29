@@ -38,12 +38,18 @@ export default async function SettingsPage({
   }
 
   const connection = await loadConnectionForSettings(membership.organizationId);
+  let canConnect = false;
+  try {
+    canConnect = can({ plan: planFromRow(membership.organization.subscription) }, "STRIPE_PAYMENTS");
+  } catch {
+    logger.warn("settings_plan_unavailable");
+  }
   return (
     <StripeSettings
       isOwner={membership.role === "OWNER"}
       status={connection.status}
       chargesEnabled={connection.chargesEnabled}
-      canConnect={can({ plan: planFromRow(membership.organization.subscription) }, "STRIPE_PAYMENTS")}
+      canConnect={canConnect}
     />
   );
 }

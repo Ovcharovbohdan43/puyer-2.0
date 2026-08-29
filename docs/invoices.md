@@ -71,7 +71,7 @@ Browser:
 
 ## Version
 
-1.0.9 — 2026-08-29
+1.0.10 — 2026-08-29
 
 ## Changelog
 
@@ -86,4 +86,5 @@ Browser:
 [2026-08-28] – Fixed: Public payer portal contrast in dark theme (token colors).
 [2026-08-29] – Added: Platform disclaimer under Notes on every invoice (HTML, PDF, public page).
 [2026-08-29] – Added: Bank transfer details on invoices; stored only with explicit storage consent.
+[2026-08-29] – Changed: Invoice/client lists load scalar invoice fields only (no line-item join).
 ```

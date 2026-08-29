@@ -73,10 +73,11 @@ Manual: `npm run dev`, open `/` and `/pricing`. Both must load without a login r
 - `setAll` in Server Components can throw; cookie writes after refresh happen in `proxy.ts`.
 - Magic link works with public keys only. `/dashboard` needs Prisma + identity tables (`DATABASE_URL`).
 - Missing public env: `trySupabasePublicEnv()` returns null so `/` still loads.
+- Runtime Prisma always appends `pgbouncer=true` and `statement_cache_size=0` so a Vercel `DATABASE_URL` missing those flags does not 500 dashboard routes with Postgres `42P05` (`prepared statement "s0" already exists`).
 
 ## Modules touched
 
-`utils/supabase/*`, `proxy.ts`, `supabase/config.toml`, `.env.example`, `package.json`, this doc.
+`utils/supabase/*`, `proxy.ts`, `supabase/config.toml`, `.env.example`, `package.json`, `lib/db/prisma.ts`, `lib/db/pooler-url.ts`, this doc.
 
 ## Changelog
 
@@ -87,5 +88,5 @@ Manual: `npm run dev`, open `/` and `/pricing`. Both must load without a login r
 - [2026-08-28] – Added: Invoice domain tables + RLS (`20260828180000_invoice_domain.sql`).
 - [2026-08-28] – Added: Private `invoice-pdfs` Storage bucket (`20260828190000_invoice_pdf_storage.sql`).
 - [2026-08-29] – Fixed: Document production Site URL vs Redirect URLs (www + apex). Auth cookies use `.puyer.org` so PKCE survives host switches.
-
+- [2026-08-29] – Fixed: Prisma runtime URL always enables PgBouncer compatibility (Postgres `42P05` on Vercel).
 - [2026-08-28] – Fixed: Cloud Auth templates are applied with `npm run auth:push-templates`, not `config.toml` alone.

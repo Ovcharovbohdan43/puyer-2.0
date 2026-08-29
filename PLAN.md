@@ -228,7 +228,7 @@ Background jobs (reminders, email, PDF) are **not** a reason to put the whole ap
 ### Vercel constraints we design around
 
 - No long-running process in a single request. Jobs go through Inngest.
-- Serverless DB connections: Prisma + Supabase **transaction pooler (port 6543)** at runtime; **direct (5432)** for migrations.
+- Serverless DB connections: Prisma + Supabase **transaction pooler (port 6543)** at runtime; **direct (5432)** for migrations. Prisma Client always sets `pgbouncer=true` and `statement_cache_size=0` so Vercel env missing those flags does not throw Postgres `42P05`.
 - PDF must not require full Chrome in v1.
 - Webhooks must return 2xx quickly; heavy work is enqueued to Inngest after signature verification + idempotent insert.
 
@@ -941,7 +941,7 @@ NEXT_PUBLIC_APP_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-DATABASE_URL=                 # pooler 6543 for runtime
+DATABASE_URL=                 # transaction pooler :6543; runtime always adds pgbouncer=true
 DIRECT_URL=                   # 5432 for Prisma migrate
 
 # Stripe — platform (Domain A) + Connect requests

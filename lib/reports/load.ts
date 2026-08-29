@@ -52,17 +52,22 @@ async function loadReportInvoices(organizationId: string): Promise<ReportInvoice
 }
 
 async function loadReportPayments(organizationId: string): Promise<ReportPayment[]> {
-  return prisma.invoicePayment.findMany({
-    where: { organizationId, status: "SUCCEEDED" },
-    select: {
-      organizationId: true,
-      invoiceId: true,
-      amountMinor: true,
-      currency: true,
-      status: true,
-      paidAt: true,
-    },
-  });
+  try {
+    return await prisma.invoicePayment.findMany({
+      where: { organizationId, status: "SUCCEEDED" },
+      select: {
+        organizationId: true,
+        invoiceId: true,
+        amountMinor: true,
+        currency: true,
+        status: true,
+        paidAt: true,
+      },
+    });
+  } catch {
+    logger.warn("report_payments_unavailable", { organizationId });
+    return [];
+  }
 }
 
 export async function loadLatestSnapshot(organizationId: string): Promise<SnapshotMetrics | null> {
