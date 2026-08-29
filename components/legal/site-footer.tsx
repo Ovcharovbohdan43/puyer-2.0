@@ -44,6 +44,11 @@ export function SiteFooter() {
           <p className="text-[12px] font-semibold tracking-[0.6px] text-white">{footer.company}</p>
           <ul className="flex flex-col gap-1 text-[14px] leading-5 text-[#eaf1ff] opacity-80">
             <li>
+              <Link className="landing-btn landing-btn--nav" href="/help">
+                {footer.help}
+              </Link>
+            </li>
+            <li>
               <a className="landing-btn landing-btn--nav" href={`mailto:${footer.contactEmail}`}>
                 {footer.contact}
               </a>

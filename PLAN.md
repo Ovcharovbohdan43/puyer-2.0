@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.8  
+> **Version:** 1.4.9  
 > **Date:** 2026-08-29  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -36,6 +36,7 @@ Users can:
 - receive payments **directly** on that connected Stripe account
 - configure automatic reminders (Pro)
 - view reports
+- ask for help from `/help`
 - subscribe to **Puyer Pro** or **Puyer Business**
 
 ### Monetization (only)
@@ -1052,6 +1053,12 @@ Do not start a later phase until the previous phase’s tests/typecheck are gree
 - Server enforcement
 - Audit: invite, role change
 
+### Help Center
+
+- Public `/help` with searchable guides and a contact form
+- `POST /api/help` rate-limited; Resend to the support inbox; `SupportRequest` rows for signed-in history
+- Docs: docs/help.md
+
 ### Phase 9 — Hardening
 
 - Rate limits on all listed surfaces
@@ -1310,6 +1317,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Changed: UX contract polish — payer theme toggle, `/invoices/new?template=`, client picker, payments drawer.
   Docs: docs/UX_FLOWS.md, docs/theme.md, docs/dashboard.md, docs/invoice-builder.md.
+
+[2026-08-29] – Added: Help Center (`/help`) with contact form, searchable guides, and Resend support mail.
+  Docs: docs/help.md, docs/UX_FLOWS.md, docs/dashboard.md.
 ```
 
 ---

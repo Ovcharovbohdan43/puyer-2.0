@@ -40,6 +40,9 @@ export function PublicHeader() {
           <button type="button" className="landing-btn landing-btn--nav" onClick={() => go("/#faq")}>
             {copy.faq}
           </button>
+          <button type="button" className="landing-btn landing-btn--nav" onClick={() => go("/help")}>
+            {copy.help}
+          </button>
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
@@ -105,6 +108,9 @@ export function PublicHeader() {
             </button>
             <button type="button" className="landing-btn landing-btn--nav text-left" onClick={() => go("/#faq")}>
               {copy.faq}
+            </button>
+            <button type="button" className="landing-btn landing-btn--nav text-left" onClick={() => go("/help")}>
+              {copy.help}
             </button>
             {authenticated ? (
               <button type="button" className="landing-btn landing-btn--nav text-left" onClick={() => go("/dashboard")}>

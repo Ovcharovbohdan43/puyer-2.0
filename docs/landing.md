@@ -31,7 +31,7 @@ Strings live in `messages/en.json`. Feature icons come from `@phosphor-icons/rea
 - Desktop: header + hero + 50/50 builder + preview (landing form is two steps), feature marquee, 3-up templates/pricing
 - Tablet: grids collapse to 2 columns; feature marquee still scrolls horizontally
 - Mobile: header Menu sheet; builder Edit/Preview tabs; FAQ accordion opens
-- Header Create Invoice / Login / Pricing match UX_FLOWS.md; header brand is the lockup image
+- Header Create Invoice / Login / Pricing / Help match UX_FLOWS.md; header brand is the lockup image
 - Marketing CTAs (header, hero, templates, Stripe, pricing, FAQ, footer) have a light hover; reduced-motion drops the lift
 - Landing and `/pricing` stay light (no theme toggle)
 - Pricing toggle switches monthly/yearly (segmented control; prices stay $0 / $9 / $29 monthly and 10× yearly)
@@ -46,7 +46,7 @@ Strings live in `messages/en.json`. Feature icons come from `@phosphor-icons/rea
 
 ## Modules
 
-- `app/(marketing)/page.tsx`, `app/layout.tsx`, `app/globals.css`, `app/(marketing)/pricing/page.tsx`, `app/(marketing)/privacy|terms|cookies/page.tsx`
+- `app/(marketing)/page.tsx`, `app/layout.tsx`, `app/globals.css`, `app/(marketing)/pricing/page.tsx`, `app/(marketing)/privacy|terms|cookies/page.tsx`, `app/help/page.tsx`
 - `docs/brand.md`
 - `components/marketing/*` (`features-marquee.tsx` for `#features`, `how-it-works.tsx` for Create/Send/Get Paid, `why-benefits.tsx` for the capability chips, `stripe-flow.tsx` for `#stripe`, `pricing-section.tsx` for `#pricing`, `trust-bar.tsx` for `#trust`, `template-invoice-mockup.tsx` for `#templates`, `landing-studio-shot.tsx` / `landing-reveal.tsx` for tracking and reminders)
 - `lib/invoices/template-demo.ts`
@@ -56,7 +56,7 @@ Strings live in `messages/en.json`. Feature icons come from `@phosphor-icons/rea
 
 ## Version
 
-1.2.30 — 2026-08-29
+1.2.31 — 2026-08-29
 
 ## Changelog
 
@@ -93,4 +93,5 @@ Strings live in `messages/en.json`. Feature icons come from `@phosphor-icons/rea
 [2026-08-29] – Changed: Pricing uses Phosphor plan cards and a Monthly/Yearly segmented control.
 [2026-08-29] – Changed: Trust bar uses Phosphor chips; copy is unchanged.
 [2026-08-29] – Changed: FAQ answers real signup questions and no longer claims guest PDF download.
+[2026-08-29] – Added: Header and footer Help links to `/help`.
 ```

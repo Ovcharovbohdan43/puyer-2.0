@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Signed-in app chrome: **Home** (`/dashboard`), **Invoices** (`/invoices`) with a right-hand preview drawer, **Clients** (`/clients`) with a right-hand client drawer, Payments, Reports, Settings, Team, Billing, Notifications.
+Signed-in app chrome: **Home** (`/dashboard`), **Invoices** (`/invoices`) with a right-hand preview drawer, **Clients** (`/clients`) with a right-hand client drawer, Payments, Reports, Settings, Team, Billing, Notifications, **Help** (`/help`).
 
 Sources: light forest-green product frames (Clients, Reports, Payment reminders). The app is **light-only**.
 
 ## Description
 
-Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications.
+Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications, Help). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications, Help.
 
 Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines, no stroke), a full-bleed Revenue Trends SVG (smooth path, vertical forest→mint gradient, `preserveAspectRatio="none"`), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, Filter, Export, three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
 
@@ -56,7 +56,7 @@ npm run lint
 - A long client name truncates in the table, drawer, and does not widen the left sidebar
 - Narrow viewport: Recent Invoices and Clients tables scroll sideways; status pills stay off amounts
 - Client drawer lists invoices; Create Invoice / Edit / Delete work (delete blocked if invoices exist)
-- Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
+- Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications / Help
 - Sidebar icons stay readable when idle (not faint mixed-color SVGs)
 - Signed-out `/invoices` and `/clients` redirect to `/login`
 - Sign out is in the sidebar (desktop) and More sheet (mobile)
@@ -80,11 +80,12 @@ npm run lint
 
 ## Version
 
-1.2.12 — 2026-08-29
+1.2.13 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Added: Sidebar, More sheet, and Help Center (`/help`) for support requests.
 [2026-08-29] – Changed: Payments rows open a Stripe-not-Puyer drawer; tables scroll on mobile.
 [2026-08-29] – Fixed: Mobile invoice and client tables scroll; status pills no longer cover amounts.
 [2026-08-29] – Fixed: Invoice drawer Edit opens the builder after share/view; paid invoices stay locked.

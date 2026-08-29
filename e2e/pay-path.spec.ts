@@ -23,6 +23,11 @@ test.describe("signup → invoice → share → pay surfaces", () => {
     await page.goto("/pricing");
     await expect(page).toHaveURL(/\/pricing/);
 
+    await page.goto("/help");
+    await expect(page.getByRole("heading", { name: "Help Center" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Send request" })).toBeVisible();
+    await expect(page).not.toHaveURL(/\/login/);
+
     await page.goto("/team");
     await expect(page).toHaveURL(/\/login/);
     await page.goto("/settings");

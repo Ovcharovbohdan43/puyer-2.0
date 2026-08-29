@@ -75,5 +75,7 @@ describe("isNavActive", () => {
     expect(isNavActive("/invoices", "/invoices")).toBe(true);
     expect(isNavActive("/invoices/new", "/invoices")).toBe(true);
     expect(isNavActive("/invoices/INV-2024-001/edit", "/invoices")).toBe(true);
+    expect(isNavActive("/help", "/help")).toBe(true);
+    expect(isNavActive("/help", "/team")).toBe(false);
   });
 });

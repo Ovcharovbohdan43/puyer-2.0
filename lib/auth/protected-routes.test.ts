@@ -28,5 +28,6 @@ describe("isProtectedPath", () => {
     expect(isProtectedPath("/auth/confirm")).toBe(false);
     expect(isProtectedPath("/verify")).toBe(false);
     expect(isProtectedPath("/invite/" + "ab".repeat(32))).toBe(false);
+    expect(isProtectedPath("/help")).toBe(false);
   });
 });

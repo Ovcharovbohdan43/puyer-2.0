@@ -20,6 +20,7 @@ export async function deliverEmail(message: OutboundEmail): Promise<EmailSendRes
       subject: message.subject,
       html: message.html,
       text: message.text,
+      ...(message.replyTo?.includes("@") ? { replyTo: message.replyTo } : {}),
     },
     { idempotencyKey: message.idempotencyKey.slice(0, 256) },
   );

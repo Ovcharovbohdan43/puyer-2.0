@@ -28,6 +28,7 @@ export const FOOTER_NAV = [
   SETTINGS_NAV,
   { id: "team" as const, href: "/team" },
   { id: "notifications" as const, href: "/notifications" },
+  { id: "help" as const, href: "/help" },
 ];
 
 export const MOBILE_PRIMARY_NAV: AppNavItem[] = SIDEBAR_NAV.filter(
@@ -40,6 +41,7 @@ export const MORE_LINKS = [
   { id: "team" as const, href: "/team" },
   { id: "billing" as const, href: "/billing" },
   { id: "notifications" as const, href: "/notifications" },
+  { id: "help" as const, href: "/help" },
 ];
 
 export function isNavActive(pathname: string, href: string): boolean {

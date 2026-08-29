@@ -19,6 +19,11 @@ enum InviteStatus {
   REVOKED
 }
 
+enum SupportRequestStatus {
+  OPEN
+  CLOSED
+}
+
 enum Plan {
   FREE
   PRO
@@ -94,6 +99,7 @@ model User {
   createdInvoices          Invoice[]                @relation("InvoiceCreator")
   activeOrganization       Organization?            @relation("UserActiveOrganization", fields: [activeOrganizationId], references: [id], onDelete: SetNull)
   invitesSent              OrganizationInvite[]     @relation("InviteSender")
+  supportRequests          SupportRequest[]
 
   @@index([activeOrganizationId])
 }
@@ -127,6 +133,7 @@ model Organization {
   reminderEvents          ReminderEvent[]
   notifications           Notification[]
   reportSnapshots         ReportSnapshot[]
+  supportRequests         SupportRequest[]
 }
 
 model OrganizationMember {
@@ -541,4 +548,24 @@ model ReportSnapshot {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, period])
+}
+
+model SupportRequest {
+  id             String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email          String
+  name           String
+  topic          String
+  message        String
+  userId         String?               @db.Uuid
+  organizationId String?               @db.Uuid
+  status         SupportRequestStatus  @default(OPEN)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @default(now()) @updatedAt
+
+  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([email, createdAt])
+  @@index([status, createdAt])
 }

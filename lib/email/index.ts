@@ -1,9 +1,10 @@
 import "server-only";
 
-import type { OutboundEmail } from "@/lib/email/types";
+import { escapeHtml, type OutboundEmail } from "@/lib/email/types";
 import { puyerEmailHtml, puyerParagraph } from "@/lib/email/layout";
 import { deliverEmail } from "@/lib/email/resend";
 import { ValidationError } from "@/lib/errors";
+import { helpFromAddress, helpInboxAddress } from "@/lib/help/from";
 import { logger } from "@/lib/observability/logger";
 import { appBaseUrl } from "@/lib/stripe/client";
 import type { ReminderKind } from "@/lib/reminders/evaluate";
@@ -137,4 +138,62 @@ export async function sendInviteEmail(input: {
     });
     throw new ValidationError("The invitation email could not be sent. Try again in a moment.");
   }
+}
+
+export async function sendHelpInboxEmail(input: {
+  requestId: string;
+  name: string;
+  email: string;
+  topic: string;
+  message: string;
+  signedIn: boolean;
+}) {
+  const sessionLine = input.signedIn ? "Signed in: yes" : "Signed in: no";
+  const text = [
+    `Help request ${input.requestId}`,
+    `From: ${input.name} <${input.email}>`,
+    `Topic: ${input.topic}`,
+    sessionLine,
+    "",
+    input.message,
+  ].join("\n");
+  const messageHtml = input.message
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => puyerParagraph(line))
+    .join("");
+  return deliverEmail({
+    to: helpInboxAddress(),
+    from: helpFromAddress(),
+    replyTo: input.email,
+    subject: `Help: ${input.topic} from ${input.email}`,
+    text,
+    html: puyerEmailHtml({
+      preview: `Help request ${input.requestId}`,
+      heading: "New help request",
+      bodyHtml:
+        puyerParagraph(`Request ${input.requestId}`) +
+        puyerParagraph(`From: ${input.name} <${input.email}>`) +
+        puyerParagraph(`Topic: ${input.topic}. ${sessionLine}.`) +
+        messageHtml,
+    }),
+    idempotencyKey: `help-inbox:${input.requestId}`,
+  });
+}
+
+export async function sendHelpAckEmail(input: { requestId: string; name: string; email: string }) {
+  const greeting = input.name.trim() || "there";
+  return deliverEmail({
+    to: input.email,
+    from: helpFromAddress(),
+    subject: "We received your Puyer help request",
+    text: `Hi ${greeting},\n\nWe received your request (${input.requestId}). Our team will reply to this email.\n\n— Puyer Help`,
+    html: puyerEmailHtml({
+      preview: "We received your help request",
+      heading: "We got your request",
+      bodyHtml: puyerParagraph(`Hi ${escapeHtml(greeting)},`) + puyerParagraph("Thanks for writing in. Our team will reply to this email."),
+    }),
+    idempotencyKey: `help-ack:${input.requestId}`,
+  });
 }

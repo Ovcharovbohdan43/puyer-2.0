@@ -10,6 +10,8 @@ export const RATE_LIMITS = {
   "invoice-send": { windowMs: 15 * 60_000, max: 30 },
   "api-read": { windowMs: 60_000, max: 120 },
   "team-invite": { windowMs: 15 * 60_000, max: 20 },
+  "help-contact-ip": { windowMs: 15 * 60_000, max: 5 },
+  "help-contact-email": { windowMs: 15 * 60_000, max: 5 },
   "team-write": { windowMs: 60_000, max: 40 },
   "notifications-write": { windowMs: 60_000, max: 60 },
   "stripe-onboard": { windowMs: 15 * 60_000, max: 10 },

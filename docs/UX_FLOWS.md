@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.30 — 2026-08-29
+> **Version:** 1.0.31 — 2026-08-29
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -46,13 +46,14 @@ Forbidden on System B: `application_fee_amount`, destination charges, separate c
 | Templates | click | `/#templates` |
 | Pricing | click | `/pricing` |
 | FAQ | click | `/#faq` |
+| Help | click | `/help` |
 | Login | click | `/login` |
 | Create Invoice | click | Unauth: scroll to `#builder`, focus first input. Auth: `/invoices/new` |
 | Theme toggle | — | Not on landing, `/pricing`, `/login`, or the dashboard. Those stay light. Public `/invoice/[publicId]` may still follow stored `puyer-theme`. |
 
 Mobile public header: Logo + Create Invoice + Menu. Menu opens sheet with the remaining links.
 
-Footer (marketing): Features, Pricing, Templates, Contact, Privacy, Terms, Cookie Policy, Cookie settings.
+Footer (marketing): Features, Pricing, Templates, Help (`/help`), Contact (`mailto:`), Privacy, Terms, Cookie Policy, Cookie settings.
 
 ### Cookie window
 
@@ -71,15 +72,28 @@ Footer Cookie settings or `/cookies` button → reopen Customize.
 
 ### Authenticated app
 
-Sidebar (desktop): Home, Clients, Invoices, Payments, Reports. Footer: Settings, Team, Notifications. Icons are Phosphor duotone (gear for Settings, bell for Notifications).
+Sidebar (desktop): Home, Clients, Invoices, Payments, Reports. Footer: Settings, Team, Notifications, Help. Icons are Phosphor duotone (gear for Settings, bell for Notifications, question for Help).
 
 Mobile bottom: Home, Clients, Invoices, Payments, More.
 
-More sheet: Reports, Settings, Team, Billing, Notifications, Sign out.
+More sheet: Reports, Settings, Team, Billing, Notifications, Help, Sign out.
 
 Logo (auth) → `/dashboard` (unsaved modal if builder dirty).
 
 Sign out (sidebar, More sheet, Settings, error boundary) → `POST /api/auth/signout` (clears Auth cookies) → `/login`.
+
+### Help `/help`
+
+```
+Header Help | Footer Help | Sidebar Help | More Help
+→ TARGET: /help (public; guests keep marketing chrome, signed-in users get the app shell)
+→ UI: searchable articles (guides + landing FAQ) + contact form (name, email, topic, message)
+→ SERVER: POST /api/help (origin check, 5/15m per IP and email)
+→ DB: SupportRequest OPEN (userId/organizationId when signed in)
+→ EXTERNAL: Resend to HELP_INBOX from help@puyer.org (replyTo = submitter) + ack to submitter
+→ SUCCESS: confirmation on the form; signed-in users see recent tickets
+→ ERROR: validation 400, rate limit 429, Resend skipped/failed 400
+```
 
 ### Universal nav rules
 
@@ -394,4 +408,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Fixed: Mobile Home/Clients tables scroll so status badges do not cover amounts.
 [2026-08-29] – Added: Browser tab uses the square Puyer ring favicon.
 [2026-08-29] – Changed: Payer portal has theme toggle; dashboard no longer overwrites `puyer-theme`. Signed-in template/client builder matches this contract. Payments rows open a drawer.
+[2026-08-29] – Added: Help Center at `/help` (search + contact form). Footer and app nav link there.
 ```

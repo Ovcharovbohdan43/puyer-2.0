@@ -8,6 +8,7 @@ import { DotsThreeIcon } from "@phosphor-icons/react/dist/csr/DotsThree";
 import { GearIcon } from "@phosphor-icons/react/dist/csr/Gear";
 import { HouseIcon } from "@phosphor-icons/react/dist/csr/House";
 import { PlusIcon } from "@phosphor-icons/react/dist/csr/Plus";
+import { QuestionIcon } from "@phosphor-icons/react/dist/csr/Question";
 import { ReceiptIcon } from "@phosphor-icons/react/dist/csr/Receipt";
 import { SignOutIcon } from "@phosphor-icons/react/dist/csr/SignOut";
 import { UsersIcon } from "@phosphor-icons/react/dist/csr/Users";
@@ -24,6 +25,7 @@ export type AppNavIconId =
   | "team"
   | "notifications"
   | "billing"
+  | "help"
   | "more"
   | "plus"
   | "signOut";
@@ -38,6 +40,7 @@ const ICONS: Record<AppNavIconId, Icon> = {
   team: UsersThreeIcon,
   notifications: BellIcon,
   billing: WalletIcon,
+  help: QuestionIcon,
   more: DotsThreeIcon,
   plus: PlusIcon,
   signOut: SignOutIcon,

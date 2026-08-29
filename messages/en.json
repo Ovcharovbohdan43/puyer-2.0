@@ -303,6 +303,7 @@
     "pricing": "Pricing",
     "templates": "Templates",
     "company": "Company",
+    "help": "Help",
     "contact": "Contact",
     "contactEmail": "support@puyer.org",
     "legal": "Legal",
@@ -311,6 +312,75 @@
     "cookies": "Cookie Policy",
     "cookieSettings": "Cookie settings",
     "copyright": "© 2026 Puyer Inc. All rights reserved."
+  },
+  "help": {
+    "title": "Help Center",
+    "subtitle": "Search guides, or send a request. We reply by email.",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search invoices, payments, billing…",
+    "allCategories": "All",
+    "faqCategory": "FAQ",
+    "noArticles": "No articles match that search. Send a request and we will help.",
+    "contactTitle": "Contact us",
+    "contactBody": "Tell us what you need. We email you from help@puyer.org. Signed-in requests keep a copy here.",
+    "name": "Name",
+    "email": "Email",
+    "topic": "Topic",
+    "message": "How can we help?",
+    "submit": "Send request",
+    "sending": "Sending…",
+    "sent": "Request sent. Check your inbox for a confirmation.",
+    "sendFailed": "Could not send your request. Try again.",
+    "ticketsTitle": "Your recent requests",
+    "ticketsEmpty": "No requests yet.",
+    "statusOpen": "Open",
+    "statusClosed": "Closed",
+    "topics": {
+      "ACCOUNT": "Account and sign-in",
+      "BILLING": "Puyer billing",
+      "PAYMENTS": "Invoice payments (Stripe)",
+      "INVOICES": "Invoices and PDF",
+      "TEAM": "Team and invites",
+      "OTHER": "Something else"
+    },
+    "guides": [
+      {
+        "id": "create-invoice",
+        "category": "Getting started",
+        "title": "Create and save an invoice",
+        "body": "Sign in, then open New Invoice from the sidebar. Fill the client, line items, and dates, then save. Guests can preview on the homepage but drafts are not stored if they leave."
+      },
+      {
+        "id": "send-share",
+        "category": "Getting started",
+        "title": "Send or share an invoice",
+        "body": "Open the invoice, then Send to email the client or copy the unguessable public link. Clients do not need a Puyer account to view or pay."
+      },
+      {
+        "id": "magic-link",
+        "category": "Account",
+        "title": "Sign in without a password",
+        "body": "Enter your email on /login. We send a one-time magic link. Open it, then click Continue to Puyer so email scanners do not use the link first."
+      },
+      {
+        "id": "stripe-connect",
+        "category": "Payments",
+        "title": "Get paid by card",
+        "body": "On Pro or Business, connect your Stripe account in Settings. Payers use Checkout on that account. Puyer does not hold customer funds or take a cut of invoice payments."
+      },
+      {
+        "id": "puyer-billing",
+        "category": "Billing",
+        "title": "Upgrade Puyer Pro or Business",
+        "body": "Open Billing to start Stripe Checkout for your Puyer subscription. That is separate from invoice payments on your connected account."
+      },
+      {
+        "id": "team-invite",
+        "category": "Team",
+        "title": "Invite a teammate",
+        "body": "Business owners invite members from Team. Invites expire in seven days. Members work on invoices and clients; billing and Stripe stay with the owner."
+      }
+    ]
   },
   "cookies": {
     "title": "Cookies on Puyer",
@@ -337,6 +407,7 @@
     "templates": "Templates",
     "pricing": "Pricing",
     "faq": "FAQ",
+    "help": "Help",
     "login": "Login",
     "dashboard": "Dashboard",
     "createInvoice": "Create Invoice",
@@ -414,7 +485,8 @@
       "more": "More",
       "team": "Team",
       "billing": "Billing",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "help": "Help"
     },
     "greetingMorning": "Good morning, {name}",
     "greetingAfternoon": "Good afternoon, {name}",

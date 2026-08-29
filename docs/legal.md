@@ -17,7 +17,7 @@ The cookie window records a versioned choice in `localStorage` (`puyer-cookie-co
 - `/login`: agreement line under Continue with email
 - First visit: floating card — Accept all, Reject optional, or Customize
 
-Contact: `privacy@puyer.org` (data) and `support@puyer.org` (product). Confirm registered address and governing-law details with counsel before treating the pages as a filed legal product.
+Contact: `privacy@puyer.org` (data) and `support@puyer.org` (product). Product questions can also go through `/help`. Confirm registered address and governing-law details with counsel before treating the pages as a filed legal product.
 
 ## Examples
 
@@ -54,10 +54,11 @@ Browser: open `/` with a clean origin (no `puyer-cookie-consent`). Accept, reloa
 
 ## Version
 
-1.0.0 — 2026-08-29
+1.0.1 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Product support also runs through `/help`.
 [2026-08-29] – Added: Privacy, Terms, Cookie Policy, cookie choice window, footer legal links.
 ```
