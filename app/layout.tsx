@@ -4,7 +4,6 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { AppProviders } from "@/components/providers";
 import { InlineScript } from "@/components/ui/inline-script";
 import { t } from "@/lib/i18n";
-import { PUYER_LOGO_SRC } from "@/lib/brand";
 import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
 
 import "./globals.css";
@@ -26,10 +25,6 @@ const meta = t("meta");
 export const metadata: Metadata = {
   title: meta.title,
   description: meta.description,
-  icons: {
-    icon: PUYER_LOGO_SRC,
-    apple: PUYER_LOGO_SRC,
-  },
 };
 
 export default function RootLayout({

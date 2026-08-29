@@ -1,4 +1,5 @@
 export const PUYER_LOGO_SRC = "/brand/puyer-logo.png";
+export const PUYER_FAVICON_SRC = "/brand/puyer-favicon.png";
 export const PUYER_LOGO_WIDTH = 95;
 export const PUYER_LOGO_HEIGHT = 27;
 

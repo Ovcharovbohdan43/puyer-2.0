@@ -1304,6 +1304,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Fixed: Mobile invoice and client list tables scroll; pills no longer overlap amounts.
   Docs: docs/dashboard.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Added: Square tab favicon from the Puyer ring mark (`app/icon.svg`).
+  Docs: docs/brand.md.
 ```
 
 ---

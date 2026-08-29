@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { PUYER_LOGO_SRC, puyerLogoAbsoluteUrl } from "@/lib/brand";
+import { PUYER_FAVICON_SRC, PUYER_LOGO_SRC, puyerLogoAbsoluteUrl } from "@/lib/brand";
 
 describe("Puyer brand mark", () => {
   it("ships a transparent lockup PNG", () => {
@@ -12,6 +12,17 @@ describe("Puyer brand mark", () => {
     const png = readFileSync(file);
     expect(png.subarray(0, 8).toString("binary")).toBe("\x89PNG\r\n\x1a\n");
     expect(png[25]).toBe(6);
+  });
+
+  it("ships a square transparent favicon PNG", () => {
+    expect(PUYER_FAVICON_SRC).toBe("/brand/puyer-favicon.png");
+    const file = join(process.cwd(), "public", "brand", "puyer-favicon.png");
+    expect(existsSync(file)).toBe(true);
+    const png = readFileSync(file);
+    expect(png.subarray(0, 8).toString("binary")).toBe("\x89PNG\r\n\x1a\n");
+    expect(png[25]).toBe(6);
+    expect(existsSync(join(process.cwd(), "app", "icon.svg"))).toBe(true);
+    expect(existsSync(join(process.cwd(), "app", "apple-icon.png"))).toBe(true);
   });
 
   it("builds an absolute logo URL from APP_URL", () => {
