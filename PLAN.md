@@ -1108,6 +1108,9 @@ Until `docs/` exists, keep the changelog in this file.
 ## Changelog
 
 ```
+[2026-08-29] – Added: Client create/update require email (optional phone); invoice timeline is a stable two-column rail.
+  Docs: docs/dashboard.md, docs/invoices.md, docs/reminders.md, docs/UX_FLOWS.md.
+
 [2026-08-29] – Fixed: Magic links confirm on click-through `/auth/confirm` so GET prefetch does not expire the token.
   Docs: docs/auth.md, docs/UX_FLOWS.md.
 

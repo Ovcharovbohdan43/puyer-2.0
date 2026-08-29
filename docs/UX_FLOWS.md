@@ -278,7 +278,7 @@ Customer Portal = Puyer subscription only. Never connected-account invoice money
 | Source | Action | Target |
 |---|---|---|
 | Dashboard Create Invoice | click | `/invoices/new` |
-| Dashboard Add Client | click | client modal; stay on dashboard |
+| Dashboard Add Client | click | modal: name, email, optional phone |
 | Dashboard View Payments | click | `/payments` |
 | Invoices row | click | **drawer**, optional `?invoice=` |
 | Drawer Send reminder | click | Pro: edit body, email from reminders@puyer.org; Free: upgrade |
@@ -380,6 +380,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Landing trust bar is Phosphor chips (not clickable); copy unchanged.
 [2026-08-29] – Changed: Landing FAQ covers live product questions (no guest PDF download).
 [2026-08-29] – Changed: Dashboard sidebar and mobile tabs use Phosphor nav icons.
+[2026-08-29] – Added: Add Client collects email and phone; invoice timeline rail no longer slides status labels.
 [2026-08-29] – Fixed: Magic-link GET no longer consumes the one-time token; user confirms on `/auth/confirm`.
 [2026-08-29] – Added: Table Editor can set Organization plan type (`plan`) and billing status (`planSource=MANUAL`).
 [2026-08-29] – Changed: Overview/Reports trend chart fills the card; Paid invoices show Payment Received on the timeline.

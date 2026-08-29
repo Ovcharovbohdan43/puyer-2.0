@@ -7,6 +7,7 @@ import { writeAuditLog } from "@/lib/audit";
 import type { SessionUser } from "@/lib/authorization";
 import { requireOrganization } from "@/lib/authorization";
 import { resolveTenantRecord } from "@/lib/authorization/tenant";
+import { parseClientCreate } from "@/lib/clients/input";
 import { NotFoundError, ValidationError } from "@/lib/errors";
 
 export async function listClients(user: SessionUser) {
@@ -22,17 +23,14 @@ export async function createClient(
   input: { name: string; email?: string; address?: string; phone?: string; notes?: string },
 ) {
   const membership = await requireOrganization(user);
-  const name = input.name.trim();
-  if (!name) {
-    throw new ValidationError("Enter a client name.");
-  }
+  const parsed = parseClientCreate(input);
   const client = await prisma.client.create({
     data: {
       organizationId: membership.organizationId,
-      name,
-      email: input.email?.trim() ?? "",
-      address: input.address?.trim() ?? "",
-      phone: input.phone?.trim() ?? "",
+      name: parsed.name,
+      email: parsed.email,
+      address: parsed.address,
+      phone: parsed.phone,
       notes: input.notes?.trim() ?? "",
     },
   });
@@ -93,17 +91,19 @@ export async function updateClient(
   input: { name: string; email?: string; address?: string; phone?: string; taxNumber?: string; notes?: string },
 ) {
   const { membership, client } = await requireClientAccess(user, clientId);
-  const name = input.name.trim();
-  if (!name) {
-    throw new ValidationError("Enter a client name.");
-  }
+  const parsed = parseClientCreate({
+    name: input.name,
+    email: input.email,
+    phone: input.phone,
+    address: input.address,
+  });
   const updated = await prisma.client.update({
     where: { id: client.id },
     data: {
-      name,
-      email: input.email?.trim() ?? "",
-      address: input.address?.trim() ?? "",
-      phone: input.phone?.trim() ?? "",
+      name: parsed.name,
+      email: parsed.email,
+      address: parsed.address,
+      phone: parsed.phone,
       taxNumber: input.taxNumber?.trim() ?? "",
       notes: input.notes?.trim() ?? "",
     },

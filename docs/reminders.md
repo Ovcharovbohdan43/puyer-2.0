@@ -21,7 +21,7 @@ Inngest SDK 4: `serve` exports `GET`/`POST`/`PUT` only. Functions use `cron()` a
 1. Apply [`supabase/migrations/20260828230000_reminders_notifications.sql`](../supabase/migrations/20260828230000_reminders_notifications.sql) and [`supabase/migrations/20260829170000_manual_reminders.sql`](../supabase/migrations/20260829170000_manual_reminders.sql). `npx prisma generate`.
 2. `.env.local`: `RESEND_API_KEY`, `EMAIL_FROM` (verified domain), `EMAIL_FROM_REMINDERS=Puyer Reminders <reminders@puyer.org>`. Auth magic links use dashboard HTML templates over Resend SMTP unless the Send Email hook is enabled (see [`auth.md`](./auth.md)). Optional: `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`.
 3. Local: `INNGEST_DEV=1` in `.env.local` and/or `npx inngest-cli@latest dev` (syncs `/api/inngest`). Production: Inngest Cloud app pointing at `https://<host>/api/inngest` with `INNGEST_SIGNING_KEY`.
-4. Workspace must be Pro/Business. Client needs a valid email.
+4. Workspace must be Pro/Business. Creating a client requires a valid email (reminders send to `Client.email`).
 
 ## Examples
 
@@ -56,11 +56,12 @@ Without Resend keys, due reminders are claimed then **SKIPPED** (logged). Overvi
 
 ## Version
 
-1.0.3 — 2026-08-29
+1.0.4 — 2026-08-29
 
 ## Changelog
 
 ```
+[2026-08-29] – Changed: Add Client / client create API require email (and optional phone) so reminders have a destination.
 [2026-08-29] – Added: Invoice drawer manual reminder (editable body, reminders@puyer.org) and allowed status changes; MANUAL ReminderType.
 [2026-08-28] – Added: Inngest reminder cron, Resend client/invoice email, in-app notifications and preferences.
 [2026-08-28] – Changed: Invoice, reminder, and invite emails use the branded Puyer layout.

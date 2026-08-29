@@ -34,7 +34,7 @@ describe("InvoiceDrawer", () => {
     );
     expect(html).toContain("Send reminder");
     expect(html).toContain("Set status");
-    expect(html).toContain("puyer-timeline");
+    expect(html).toContain("puyer-timeline-stem");
     expect(html).toContain("Invoice Created");
     expect(html).toContain("Invoice Sent");
   });

@@ -13,6 +13,7 @@ import { UsersIcon } from "@phosphor-icons/react/dist/csr/Users";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/csr/WarningCircle";
 import { HourglassIcon } from "@phosphor-icons/react/dist/csr/Hourglass";
 
+import { AddClientFields } from "@/components/dashboard/add-client-fields";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { KpiSparkline } from "@/components/dashboard/kpi-sparkline";
 import { Modal } from "@/components/ui/modal";
@@ -25,6 +26,7 @@ import { filterInvoiceRows } from "@/lib/invoices/list-view";
 import type { PaymentInsight } from "@/lib/reports/compute";
 import { insightMessage, type PresentedTrend } from "@/lib/reports/present";
 import { TrendBars } from "@/components/dashboard/trend-bars";
+import { useToast } from "@/components/ui/toast";
 
 type OverviewScreenProps = {
   name: string | null;
@@ -80,10 +82,13 @@ export function OverviewScreen({
   const reports = t("reports");
   const billing = t("billing");
   const router = useRouter();
+  const toast = useToast();
   const [query, setQuery] = useState("");
   const [clientOpen, setClientOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
   const [clientBusy, setClientBusy] = useState(false);
   const firstName = displayFirstName(name, email, copy.fallbackName);
   const period = greetingPeriod(new Date().getHours());
@@ -280,17 +285,10 @@ export function OverviewScreen({
 
       <Modal open={clientOpen} title={copy.addClientTitle} onClose={() => setClientOpen(false)}>
         <p className="text-[14px] leading-5 text-[#45464d]">{copy.addClientBody}</p>
-        <input
-          value={clientName}
-          onChange={(event) => setClientName(event.target.value)}
-          placeholder={copy.addClientName}
-          className="mt-4 h-11 w-full rounded-lg border border-[#e2e8f0] px-3 text-[16px]"
-        />
-        <button
-          type="button"
-          disabled={clientBusy}
-          className={`${dash.btnPrimary} mt-4 disabled:opacity-50`}
-          onClick={() => {
+        <form
+          className="mt-4 flex flex-col gap-4"
+          onSubmit={(event) => {
+            event.preventDefault();
             if (clientBusy) {
               return;
             }
@@ -298,21 +296,38 @@ export function OverviewScreen({
             void fetch("/api/clients", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name: clientName }),
+              body: JSON.stringify({ name: clientName, email: clientEmail, phone: clientPhone }),
             })
               .then(async (response) => {
+                const payload = (await response.json()) as { ok?: boolean; error?: string };
                 if (!response.ok) {
+                  toast(payload.error ?? copy.saveFailed);
                   return;
                 }
                 setClientName("");
+                setClientEmail("");
+                setClientPhone("");
                 setClientOpen(false);
                 router.refresh();
               })
               .finally(() => setClientBusy(false));
           }}
         >
-          {copy.addClientSave}
-        </button>
+          <AddClientFields
+            name={clientName}
+            email={clientEmail}
+            phone={clientPhone}
+            namePlaceholder={copy.addClientName}
+            emailPlaceholder={copy.addClientEmail}
+            phonePlaceholder={copy.addClientPhone}
+            onName={setClientName}
+            onEmail={setClientEmail}
+            onPhone={setClientPhone}
+          />
+          <button type="submit" disabled={clientBusy} className={`${dash.btnPrimary} disabled:opacity-50`}>
+            {copy.addClientSave}
+          </button>
+        </form>
       </Modal>
       <Modal open={reminderOpen} title={copy.reminderTitle} onClose={() => setReminderOpen(false)}>
         <p className="text-[14px] leading-5 text-[#45464d]">

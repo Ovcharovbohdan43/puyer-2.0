@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { AddClientFields } from "@/components/dashboard/add-client-fields";
 import { ClientDrawer } from "@/components/dashboard/client-drawer";
 import { KpiSparkline } from "@/components/dashboard/kpi-sparkline";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/csr/CheckCircle";
@@ -53,6 +54,8 @@ export function ClientsScreen({
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("client");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"ALL" | ClientStatusKind>("ALL");
@@ -100,7 +103,7 @@ export function ClientsScreen({
 
       {formOpen ? (
         <form
-          className={`${dash.card} flex gap-2 p-4`}
+          className={`${dash.card} flex flex-col gap-3 p-4`}
           onSubmit={(event) => {
             event.preventDefault();
             if (busy) {
@@ -110,7 +113,7 @@ export function ClientsScreen({
             void fetch("/api/clients", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name }),
+              body: JSON.stringify({ name, email, phone }),
             })
               .then(async (response) => {
                 const payload = (await response.json()) as { ok?: boolean; error?: string };
@@ -119,19 +122,26 @@ export function ClientsScreen({
                   return;
                 }
                 setName("");
+                setEmail("");
+                setPhone("");
                 setFormOpen(false);
                 router.refresh();
               })
               .finally(() => setBusy(false));
           }}
         >
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder={copy.addClientName}
-            className="h-10 flex-1 rounded-lg border border-[#E5E7EB] px-3 text-[14px] text-[#111827]"
+          <AddClientFields
+            name={name}
+            email={email}
+            phone={phone}
+            namePlaceholder={copy.addClientName}
+            emailPlaceholder={copy.addClientEmail}
+            phonePlaceholder={copy.addClientPhone}
+            onName={setName}
+            onEmail={setEmail}
+            onPhone={setPhone}
           />
-          <button type="submit" disabled={busy} className={`${dash.btnPrimary} disabled:opacity-50`}>
+          <button type="submit" disabled={busy} className={`${dash.btnPrimary} self-start disabled:opacity-50`}>
             {copy.addClientSave}
           </button>
         </form>
