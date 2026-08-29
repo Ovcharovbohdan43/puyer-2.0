@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CookieIcon } from "@phosphor-icons/react/dist/ssr/Cookie";
+import { CookieIcon } from "@phosphor-icons/react/dist/csr/Cookie";
 import { useCallback, useEffect, useState } from "react";
 
 import {

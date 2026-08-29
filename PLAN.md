@@ -1267,6 +1267,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Changed: Landing trust bar uses Phosphor chips; the three lines are unchanged.
   Docs: docs/landing.md, docs/theme.md, docs/UX_FLOWS.md.
+
+[2026-08-29] – Changed: Dashboard sidebar and mobile tabs use Phosphor nav icons.
+  Docs: docs/dashboard.md, docs/UX_FLOWS.md.
 ```
 
 ---

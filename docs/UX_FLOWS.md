@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.24 — 2026-08-29
+> **Version:** 1.0.25 — 2026-08-29
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -71,7 +71,7 @@ Footer Cookie settings or `/cookies` button → reopen Customize.
 
 ### Authenticated app
 
-Sidebar (desktop): Home, Clients, Invoices, Payments, Reports. Footer: Settings, Team, Notifications.
+Sidebar (desktop): Home, Clients, Invoices, Payments, Reports. Footer: Settings, Team, Notifications. Icons are Phosphor duotone (gear for Settings, bell for Notifications).
 
 Mobile bottom: Home, Clients, Invoices, Payments, More.
 
@@ -377,4 +377,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Pricing is Phosphor plan cards with a Monthly/Yearly segmented control.
 [2026-08-29] – Changed: Landing trust bar is Phosphor chips (not clickable); copy unchanged.
 [2026-08-29] – Changed: Landing FAQ covers live product questions (no guest PDF download).
+[2026-08-29] – Changed: Dashboard sidebar and mobile tabs use Phosphor nav icons.
 ```

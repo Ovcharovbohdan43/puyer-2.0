@@ -33,7 +33,7 @@ export const dash = {
   paid: "text-[#006C49]",
   outstanding: "text-[#C27803]",
   link: "text-[14px] font-semibold text-[#006C49] hover:underline",
-  navIdle: "text-[#4B5563] hover:bg-[#F3F4F6]",
+  navIdle: "text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#111827]",
   navActive: "bg-[#E8F5EF] text-[#006C49]",
 } as const;
 

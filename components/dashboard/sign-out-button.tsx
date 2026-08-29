@@ -1,9 +1,16 @@
 "use client";
 
+import { AppNavIcon } from "@/components/dashboard/nav-icons";
 import { LOGIN_PATH } from "@/lib/auth/login-path";
 import { t } from "@/lib/i18n";
 
-export function SignOutButton({ className }: { className?: string }) {
+export function SignOutButton({
+  className,
+  withIcon = false,
+}: {
+  className?: string;
+  withIcon?: boolean;
+}) {
   const copy = t("dashboard");
 
   return (
@@ -23,6 +30,7 @@ export function SignOutButton({ className }: { className?: string }) {
         })();
       }}
     >
+      {withIcon ? <AppNavIcon id="signOut" size={18} /> : null}
       {copy.signOut}
     </button>
   );

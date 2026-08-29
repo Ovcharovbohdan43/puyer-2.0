@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { AppNavIcon, type AppNavIconId } from "@/components/dashboard/nav-icons";
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
-import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { t } from "@/lib/i18n";
 import { isNavActive, MOBILE_PRIMARY_NAV, MORE_LINKS } from "@/lib/dashboard/nav";
 
@@ -26,19 +26,26 @@ export function MobileTabBar() {
             onClick={() => setMoreOpen(false)}
           />
           <div className="absolute right-0 bottom-16 left-0 mx-3 rounded-xl border border-[#E5E7EB] bg-white p-3 shadow-lg">
-            {MORE_LINKS.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                className={`block rounded-lg px-3 py-2 text-[13px] font-medium ${
-                  isNavActive(pathname, item.href) ? "bg-[#E8F5EF] text-[#006C49]" : "text-[#374151]"
-                }`}
-                onClick={() => setMoreOpen(false)}
-              >
-                {copy.nav[item.id]}
-              </Link>
-            ))}
-            <SignOutButton className="mt-1 w-full rounded-lg px-3 py-2 text-left text-[13px] font-medium text-[#6B7280]" />
+            {MORE_LINKS.map((item) => {
+              const active = isNavActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium ${
+                    active ? "bg-[#E8F5EF] text-[#006C49]" : "text-[#374151]"
+                  }`}
+                  onClick={() => setMoreOpen(false)}
+                >
+                  <AppNavIcon id={item.id as AppNavIconId} active={active} size={18} />
+                  {copy.nav[item.id]}
+                </Link>
+              );
+            })}
+            <SignOutButton
+              withIcon
+              className="mt-1 inline-flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[13px] font-medium text-[#4B5563]"
+            />
           </div>
         </div>
       ) : null}
@@ -50,10 +57,10 @@ export function MobileTabBar() {
               key={item.id}
               href={item.href}
               className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-[10px] font-semibold ${
-                active ? "text-[#006C49]" : "text-[#6B7280]"
+                active ? "text-[#006C49]" : "text-[#4B5563]"
               }`}
             >
-              <FigmaIcon src={item.icon} alt="" width={18} height={18} />
+              <AppNavIcon id={item.id} active={active} size={20} />
               {copy.nav[item.id]}
             </Link>
           );
@@ -61,11 +68,11 @@ export function MobileTabBar() {
         <button
           type="button"
           className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-[10px] font-semibold ${
-            moreOpen || moreActive ? "text-[#006C49]" : "text-[#6B7280]"
+            moreOpen || moreActive ? "text-[#006C49]" : "text-[#4B5563]"
           }`}
           onClick={() => setMoreOpen((open) => !open)}
         >
-          <FigmaIcon src="/app/select-chevron.svg" alt="" width={18} height={18} />
+          <AppNavIcon id="more" active={moreOpen || moreActive} size={20} />
           {copy.nav.more}
         </button>
       </nav>

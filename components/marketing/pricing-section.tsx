@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import type { Icon } from "@phosphor-icons/react";
-import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import { LightningIcon } from "@phosphor-icons/react/dist/ssr/Lightning";
-import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
+import { BuildingsIcon } from "@phosphor-icons/react/dist/csr/Buildings";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/csr/CheckCircle";
+import { LightningIcon } from "@phosphor-icons/react/dist/csr/Lightning";
+import { ReceiptIcon } from "@phosphor-icons/react/dist/csr/Receipt";
 
 import { useBuilderSession } from "@/components/invoice-builder/builder-session";
 import { t } from "@/lib/i18n";

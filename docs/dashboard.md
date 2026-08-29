@@ -47,6 +47,7 @@ npm run lint
 - Sign in, confirm light sidebar + Overview KPIs and recent table
 - Open `/invoices`, click a row, confirm white right drawer + `?invoice=` UUID, close, URL clears
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications
+- Sidebar icons stay readable when idle (not faint mixed-color SVGs)
 - Signed-out `/invoices` and `/clients` redirect to `/login`
 - Sign out is in the sidebar (desktop) and More sheet (mobile)
 - Public `/invoice/[publicId]` (singular) is not gated by this shell
@@ -56,7 +57,7 @@ npm run lint
 - Revenue Trends and Insights on Overview follow the Business reports gate (live data or upgrade copy + Billing link). Paid (30d) is last 30 days, not lifetime revenue.
 - Payments lists synchronized Connect charges. Billing is live (Puyer subscription). Notifications inbox + preferences are live. Reports are live (base KPIs all plans; advanced Business). Team invites are live for Business.
 - Desktop sidebar does not collapse to icons; mobile hides the rail.
-- Nav icons reuse overview/landing exports.
+- Sidebar and mobile tabs use Phosphor duotone icons (same family as marketing). KPI/action icons on Overview still use `public/app` SVGs.
 - Mixed-currency KPI cards use the most common currency only.
 - Credit notes and a product catalog are not in v1; those mock items are not routes.
 
@@ -69,7 +70,7 @@ npm run lint
 
 ## Version
 
-1.2.0 — 2026-08-29
+1.2.2 — 2026-08-29
 
 ## Changelog
 
@@ -87,4 +88,6 @@ npm run lint
 [2026-08-28] – Fixed: Settings survives a failed Stripe/workspace lookup. Sign out is in the sidebar and More sheet.
 [2026-08-29] – Changed: Overview moon no longer restyles the landing (marketing stays light).
 [2026-08-29] – Changed: Sidebar uses the Puyer lockup instead of text.
+[2026-08-29] – Changed: Sidebar and mobile nav use Phosphor icons (House, Users, Receipt, card, chart, gear, bell).
+[2026-08-29] – Fixed: Dashboard and cookie icons load via Phosphor `dist/csr` in client components.
 ```

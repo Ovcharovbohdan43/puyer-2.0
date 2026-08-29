@@ -2,9 +2,16 @@ import { expect, test } from "@playwright/test";
 
 test.describe("signup → invoice → share → pay surfaces", () => {
   test("landing, magic-link start, public invoice, and pay API", async ({ page, request }) => {
+    const pageErrors: string[] = [];
+    page.on("pageerror", (error) => pageErrors.push(error.message));
     await page.goto("/");
     await expect(page.getByRole("button", { name: "Login" }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Create Invoice" }).first()).toBeVisible();
+    expect(pageErrors, pageErrors.join("\n")).toEqual([]);
+    await page.goto("/privacy");
+    await expect(page.getByRole("heading", { name: "Privacy Policy" })).toBeVisible();
+    expect(pageErrors, pageErrors.join("\n")).toEqual([]);
+    await page.goto("/");
 
     await page.getByRole("button", { name: "Login" }).first().click();
     await expect(page).toHaveURL(/\/login$/);
