@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.11  
+> **Version:** 1.4.12  
 > **Date:** 2026-08-29  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -1325,6 +1325,9 @@ Until `docs/` exists, keep the changelog in this file.
   Docs: docs/help.md.
 
 [2026-08-29] – Fixed: `/api/help` pins static `process.env.RESEND_API_KEY` so Vercel does not omit the key from the function.
+  Docs: docs/help.md.
+
+[2026-08-29] – Fixed: Resend uses `node:process.env` so webpack cannot inline an empty `RESEND_API_KEY` on Vercel.
   Docs: docs/help.md.
 ```
 

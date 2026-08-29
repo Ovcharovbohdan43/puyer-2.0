@@ -1,5 +1,7 @@
+import nodeProcess from "node:process";
+
 export function envString(name: string): string {
-  const value = process.env[name];
+  const value = nodeProcess.env[name];
   return typeof value === "string" ? value.trim() : "";
 }
 

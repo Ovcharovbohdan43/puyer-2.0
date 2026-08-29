@@ -13,10 +13,6 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   return handleRoute(async () => {
     await connection();
-    void process.env.RESEND_API_KEY;
-    void process.env.EMAIL_FROM;
-    void process.env.EMAIL_FROM_HELP;
-    void process.env.HELP_INBOX;
     await requireRateLimit("help-contact-ip", clientIp(request));
     let body: unknown = {};
     try {

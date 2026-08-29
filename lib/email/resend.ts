@@ -3,6 +3,7 @@ import "server-only";
 import { connection } from "next/server";
 import { Resend } from "resend";
 
+import { envString } from "@/lib/email/env";
 import type { EmailSendResult, OutboundEmail } from "@/lib/email/types";
 import { logger } from "@/lib/observability/logger";
 
@@ -16,13 +17,12 @@ async function bindRequestRuntime(): Promise<void> {
 
 export async function deliverEmail(message: OutboundEmail): Promise<EmailSendResult> {
   await bindRequestRuntime();
-  // Static process.env.* (not process.env[name]) so Next includes these in the Vercel function.
-  const apiKey = process.env.RESEND_API_KEY?.trim() || process.env.RESEND_KEY?.trim() || "";
-  const from = message.from?.trim() || process.env.EMAIL_FROM?.trim() || "";
+  const apiKey = envString("RESEND_API_KEY") || envString("RESEND_KEY");
+  const from = message.from?.trim() || envString("EMAIL_FROM");
   if (!apiKey || !from.includes("@")) {
     logger.warn("email_skipped_unconfigured", {
-      hasApiKey: Boolean(apiKey),
-      hasFrom: from.includes("@"),
+      keyPresent: Boolean(apiKey),
+      fromPresent: from.includes("@"),
     });
     return { skipped: true, providerMessageId: null };
   }
