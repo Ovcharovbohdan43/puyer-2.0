@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isEditableStatus, manualStatusOptions } from "@/lib/invoices/status";
+import { canHardDeleteInvoice, isEditableStatus, manualStatusOptions } from "@/lib/invoices/status";
 
 describe("manualStatusOptions", () => {
   it("omits overdue overlay and lists allowed next statuses", () => {
@@ -19,5 +19,16 @@ describe("isEditableStatus", () => {
     expect(isEditableStatus("PARTIALLY_PAID")).toBe(false);
     expect(isEditableStatus("PAID")).toBe(false);
     expect(isEditableStatus("CANCELED")).toBe(false);
+  });
+});
+
+describe("canHardDeleteInvoice", () => {
+  it("blocks paid money and allows unpaid or canceled invoices", () => {
+    expect(canHardDeleteInvoice("READY", false)).toBe(true);
+    expect(canHardDeleteInvoice("SENT", false)).toBe(true);
+    expect(canHardDeleteInvoice("CANCELED", false)).toBe(true);
+    expect(canHardDeleteInvoice("PAID", false)).toBe(false);
+    expect(canHardDeleteInvoice("PARTIALLY_PAID", false)).toBe(false);
+    expect(canHardDeleteInvoice("READY", true)).toBe(false);
   });
 });

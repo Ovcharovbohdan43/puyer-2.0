@@ -385,7 +385,7 @@
         "id": "create-invoice",
         "category": "Getting started",
         "title": "Create and save an invoice",
-        "body": "Sign in, then open New Invoice from the sidebar. Fill the client, line items, and dates, then save. Guests can preview on the homepage but drafts are not stored if they leave."
+        "body": "Sign in, then open New Invoice from the sidebar. Fill the client, line items, and dates, then save. Open an invoice in the list to download, share, or delete it if it is not paid. Guests can preview on the homepage but drafts are not stored if they leave."
       },
       {
         "id": "send-share",
@@ -762,7 +762,11 @@
     "reminderSent": "Reminder emailed to the client.",
     "setInvoiceStatus": "Set status",
     "chooseStatus": "Choose a status",
-    "statusUpdated": "Invoice status updated."
+    "statusUpdated": "Invoice status updated.",
+    "invoiceDelete": "Delete invoice",
+    "invoiceDeleteBody": "This cannot be undone. The public link will stop working. Paid invoices cannot be deleted.",
+    "invoiceDeleted": "Invoice deleted.",
+    "invoiceDeletePaid": "Paid and partially paid invoices cannot be deleted."
   },
   "pay": {
     "brand": "Puyer",

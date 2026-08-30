@@ -16,11 +16,12 @@ import { formatMoney } from "@/lib/invoices/money";
 import { createInvoicePublicId } from "@/lib/invoices/public-id";
 import { isValidEmail, prepareBuilderState } from "@/lib/invoices/validate";
 import { notifyOrganizationMembers } from "@/lib/notifications";
-import { assertTransition, canTransition, displayInvoiceStatus, isEditableStatus } from "@/lib/invoices/status";
+import { assertTransition, canHardDeleteInvoice, canTransition, displayInvoiceStatus, isEditableStatus } from "@/lib/invoices/status";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { paymentDetailsForStorage } from "@/lib/invoices/bank-transfer";
 import type { BuilderState } from "@/components/invoice-builder/types";
 import { logger } from "@/lib/observability/logger";
+import { deleteStoredInvoicePdfs } from "@/lib/storage/invoice-pdf";
 
 export type InvoiceWithItems = Invoice & { items: InvoiceItem[] };
 
@@ -115,6 +116,27 @@ export async function createInvoiceFromBuilder(user: SessionUser, state: Builder
   });
   logger.info("invoice_created", { invoiceId: invoice.id });
   return invoice;
+}
+
+export async function deleteInvoice(user: SessionUser, invoiceId: string) {
+  const { membership, invoice } = await requireInvoiceAccess(user, invoiceId);
+  const succeededPayments = await prisma.invoicePayment.count({
+    where: { invoiceId: invoice.id, status: "SUCCEEDED" },
+  });
+  if (!canHardDeleteInvoice(invoice.status, succeededPayments > 0)) {
+    throw new ValidationError("Paid invoices cannot be deleted.");
+  }
+  await deleteStoredInvoicePdfs(invoice.id);
+  await prisma.invoice.delete({ where: { id: invoice.id } });
+  await writeAuditLog({
+    actorUserId: user.id,
+    organizationId: membership.organizationId,
+    action: "INVOICE_DELETED",
+    entityType: "Invoice",
+    entityId: invoice.id,
+    metadata: { invoiceNumber: invoice.invoiceNumber },
+  });
+  logger.info("invoice_deleted", { invoiceId: invoice.id });
 }
 
 export async function updateInvoiceFromBuilder(user: SessionUser, invoiceId: string, state: BuilderState) {

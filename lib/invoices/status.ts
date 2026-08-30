@@ -45,6 +45,13 @@ export function isEditableStatus(status: InvoiceStatus): boolean {
   return EDITABLE.has(status);
 }
 
+export function canHardDeleteInvoice(status: InvoiceStatus, hasSucceededPayment: boolean): boolean {
+  if (hasSucceededPayment || status === "PAID" || status === "PARTIALLY_PAID") {
+    return false;
+  }
+  return true;
+}
+
 export function isUnpaidOpenStatus(status: InvoiceStatus): boolean {
   return UNPAID.has(status);
 }

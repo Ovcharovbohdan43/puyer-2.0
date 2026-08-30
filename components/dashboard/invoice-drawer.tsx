@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BellIcon } from "@phosphor-icons/react/dist/csr/Bell";
 import { DownloadSimpleIcon } from "@phosphor-icons/react/dist/csr/DownloadSimple";
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/csr/PencilSimple";
+import { TrashIcon } from "@phosphor-icons/react/dist/csr/Trash";
 import { XIcon } from "@phosphor-icons/react/dist/csr/X";
 
 import { PuyerBusyText } from "@/components/brand/puyer-spinner";
@@ -16,7 +17,7 @@ import { Modal } from "@/components/ui/modal";
 import { dash } from "@/lib/dashboard/chrome";
 import { t } from "@/lib/i18n";
 import type { InvoiceListRow } from "@/lib/invoices/list-view";
-import { canTransition, isEditableStatus, manualStatusOptions } from "@/lib/invoices/status";
+import { canHardDeleteInvoice, canTransition, isEditableStatus, manualStatusOptions } from "@/lib/invoices/status";
 import type { InvoiceStatus } from "@prisma/client";
 import { downloadPdfResponse } from "@/lib/pdf/browser-download";
 import { useToast } from "@/components/ui/toast";
@@ -54,37 +55,26 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
     .replace("{amount}", invoice.amount)
     .replace("{due}", invoice.dueDate);
   const [reminderOpen, setReminderOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [message, setMessage] = useState(defaultMessage);
   const [busy, setBusy] = useState(false);
+  const canDelete = canHardDeleteInvoice(invoice.status, false);
 
-  const events = useMemo((): TimelineEvent[] => {
-    const items: TimelineEvent[] = [];
-    if (invoice.status === "PAID" || invoice.paidAt) {
-      items.unshift({
-        kind: "paid",
-        title: copy.paymentReceived,
-        date: invoice.paidAt ?? invoice.createdAt,
-      });
-    }
-    if (invoice.viewedAt) {
-      items.push({ kind: "viewed", title: copy.invoiceViewed, date: invoice.viewedAt });
-    }
-    if (invoice.sentAt) {
-      items.push({ kind: "sent", title: copy.invoiceSent, date: invoice.sentAt });
-    }
-    items.push({ kind: "created", title: copy.invoiceCreated, date: invoice.createdAt });
-    return items;
-  }, [
-    copy.invoiceCreated,
-    copy.invoiceSent,
-    copy.invoiceViewed,
-    copy.paymentReceived,
-    invoice.createdAt,
-    invoice.paidAt,
-    invoice.sentAt,
-    invoice.status,
-    invoice.viewedAt,
-  ]);
+  const events: TimelineEvent[] = [];
+  if (invoice.status === "PAID" || invoice.paidAt) {
+    events.push({
+      kind: "paid",
+      title: copy.paymentReceived,
+      date: invoice.paidAt ?? invoice.createdAt,
+    });
+  }
+  if (invoice.viewedAt) {
+    events.push({ kind: "viewed", title: copy.invoiceViewed, date: invoice.viewedAt });
+  }
+  if (invoice.sentAt) {
+    events.push({ kind: "sent", title: copy.invoiceSent, date: invoice.sentAt });
+  }
+  events.push({ kind: "created", title: copy.invoiceCreated, date: invoice.createdAt });
 
   function sendReminder() {
     if (!remindersEnabled) {
@@ -108,6 +98,27 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
         }
         toast(copy.reminderSent);
         setReminderOpen(false);
+      })
+      .finally(() => setBusy(false));
+  }
+
+  function removeInvoice() {
+    if (busy || !canDelete) {
+      return;
+    }
+    setBusy(true);
+    void fetch(`/api/invoices/${encodeURIComponent(invoice.id)}`, { method: "DELETE" })
+      .then(async (response) => {
+        const payload = (await response.json()) as { ok?: boolean; error?: string };
+        if (!response.ok) {
+          toast(payload.error ?? copy.saveFailed);
+          return;
+        }
+        toast(copy.invoiceDeleted);
+        setConfirmDelete(false);
+        onClose();
+        router.replace("/invoices");
+        router.refresh();
       })
       .finally(() => setBusy(false));
   }
@@ -224,6 +235,18 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
               </select>
             </label>
           ) : null}
+          {canDelete ? (
+            <button
+              type="button"
+              className={`${dash.btnSecondary} w-full text-[#DC2626]`}
+              onClick={() => setConfirmDelete(true)}
+            >
+              <TrashIcon size={16} weight="bold" aria-hidden />
+              {copy.invoiceDelete}
+            </button>
+          ) : (
+            <p className="text-[13px] leading-5 text-[#6B7280]">{copy.invoiceDeletePaid}</p>
+          )}
         </div>
 
         <section className="rounded-xl border border-[#E5E7EB] bg-white p-5 shadow-sm">
@@ -268,6 +291,23 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
           </button>
           <button type="button" disabled={busy} className={`${dash.btnPrimary} flex-1 disabled:opacity-50`} onClick={sendReminder}>
             <PuyerBusyText busy={busy} busyLabel={t("header").loading} idle={copy.sendReminder} />
+          </button>
+        </div>
+      </Modal>
+
+      <Modal open={confirmDelete} title={copy.invoiceDelete} onClose={() => setConfirmDelete(false)}>
+        <p className="text-[14px] leading-5 text-[#45464d]">{copy.invoiceDeleteBody}</p>
+        <div className="mt-4 flex gap-2">
+          <button type="button" className={dash.btnSecondary} onClick={() => setConfirmDelete(false)}>
+            {copy.addClientClose}
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-[#DC2626] px-4 text-[14px] font-semibold text-white disabled:opacity-50"
+            onClick={removeInvoice}
+          >
+            {copy.invoiceDelete}
           </button>
         </div>
       </Modal>

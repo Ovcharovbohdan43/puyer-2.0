@@ -34,3 +34,27 @@ export async function writeStoredInvoicePdf(path: string, buffer: Buffer): Promi
     logger.warn("invoice_pdf_store_failed");
   }
 }
+
+export async function deleteStoredInvoicePdfs(invoiceId: string): Promise<void> {
+  const admin = tryStorageAdmin();
+  if (!admin || !invoiceId) {
+    return;
+  }
+  const { data, error } = await admin.storage.from(INVOICE_PDF_BUCKET).list(invoiceId, { limit: 100 });
+  if (error || !data?.length) {
+    return;
+  }
+  const paths = data.flatMap((entry) => {
+    if (entry.id && entry.name) {
+      return [`${invoiceId}/${entry.name}`];
+    }
+    return [];
+  });
+  if (paths.length === 0) {
+    return;
+  }
+  const removed = await admin.storage.from(INVOICE_PDF_BUCKET).remove(paths);
+  if (removed.error) {
+    logger.warn("invoice_pdf_delete_failed");
+  }
+}

@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.39 — 2026-08-30
+> **Version:** 1.0.40 — 2026-08-30
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -332,6 +332,7 @@ Customer Portal = Puyer subscription only. Never connected-account invoice money
 | Invoices row | click | **drawer**, optional `?invoice=` |
 | Drawer Send reminder | click | Pro: edit body, email from reminders@puyer.org; Free: upgrade |
 | Drawer Set status | change | allowed `STATUS_TRANSITIONS` only; Paid adds **Payment Received** on the timeline |
+| Drawer Delete | click | Confirm modal. Unpaid invoices hard-delete. Paid / partial stay. |
 | Drawer Edit | click | `/invoices/:id/edit` (unpaid). Hidden when paid, partial, or canceled |
 | Clients row | click | **client drawer**, optional `?client=` |
 | Client Create Invoice | click | `/invoices/new?client=` |
@@ -464,4 +465,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-30] – Added: Invoice/client CSV export; `/reports` period download.
 [2026-08-30] – Fixed: Invoice and report date fields fit a narrow viewport.
 [2026-08-30] – Added: Settings country for Stripe Connect (not inferred from USD).
+[2026-08-30] – Added: Invoice drawer delete for unpaid invoices.
 ```

@@ -30,7 +30,7 @@ PDF generation lives in Phase 3 — see [`pdf.md`](./pdf.md). Stripe Checkout is
 
 1. Sign in (magic link).
 2. `/invoices/new` — fill the builder, **Save invoice**.
-3. `/invoices` — list, filter, issue-date range, drawer. **Export** downloads a UTF-8 CSV of the filtered list (not only the current page). Share copies `/invoice/{publicId}` and may mark sent. Drawer can send a Pro reminder and apply allowed status changes. Setting **Paid** adds a Payment Received timeline node (date from `updatedAt`).
+3. `/invoices` — list, filter, issue-date range, drawer. **Export** downloads a UTF-8 CSV of the filtered list (not only the current page). Share copies `/invoice/{publicId}` and may mark sent. Drawer can send a Pro reminder, apply allowed status changes, and **Delete** unpaid invoices (confirm modal). Paid and partially paid invoices stay. Setting **Paid** adds a Payment Received timeline node (date from `updatedAt`).
 4. `/clients` — add a client (name, email, optional phone), row drawer (`?client=`), **Create Invoice** (`/invoices/new?client=`). **Export** downloads the filtered client list (contact fields, outstanding, notes).
 5. Open the public URL while signed out. The payer sees the invoice document and a **Pay Invoice** sidebar when Stripe is connected.
 
@@ -55,6 +55,7 @@ Browser:
 
 - Save from `/invoices/new` → lands on `/invoices/{id}/edit` with a real number.
 - Drawer Edit on a sent/viewed invoice opens the same builder; paid invoices hide Edit.
+- Drawer Delete removes an unpaid invoice after confirm; paid invoices stay.
 - List/drawer/Overview KPIs use saved invoices, not mock figures.
 - Invoices Export and Clients Export download CSV of the filtered lists.
 - Copy public link → `/invoice/{publicId}` shows the payer layout (document + pay sidebar).
@@ -64,6 +65,7 @@ Browser:
 
 ## Limitations
 
+- Paid and partially paid invoices cannot be hard-deleted (`DELETE /api/invoices/{id}` returns 400). Unpaid invoices are removed, including cached PDFs when Storage is configured.
 - Product catalog UI is not built (schema only).
 - Mixed-currency KPI cards use the most common currency only.
 - Paid totals stay `$0` until a Connect webhook marks the invoice `PAID`.
@@ -78,11 +80,12 @@ Browser:
 
 ## Version
 
-1.0.19 — 2026-08-30
+1.0.20 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Delete unpaid invoices from the list drawer (`DELETE /api/invoices/{id}`). Paid invoices stay.
 [2026-08-30] – Added: Invoice and client list CSV export (filtered rows, UTF-8 BOM).
 [2026-08-30] – Changed: Invoice Builder requires Stripe vs bank-transfer before bank fields; Stripe-not-connected warning modal.
 [2026-08-30] – Added: Company logo snapshot (`logoUrl`, `logoScale`) on invoices.

@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.20  
+> **Version:** 1.4.21  
 > **Date:** 2026-08-30  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -1363,6 +1363,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Added: Settings business/Stripe country, independent of invoice currency.
   Docs: docs/account.md, docs/stripe-connect.md, docs/UX_FLOWS.md.
+
+[2026-08-30] – Added: Delete unpaid invoices from the invoice drawer.
+  Docs: docs/invoices.md, docs/dashboard.md, docs/UX_FLOWS.md.
 ```
 
 ---
