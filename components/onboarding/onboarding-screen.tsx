@@ -178,8 +178,9 @@ export function OnboardingScreen({
     }
   }
 
-  const inputClass =
-    "mt-2 h-[42px] w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-[14px] text-[#111827] outline-none focus:border-[#006C49]";
+  const fieldControl =
+    "box-border h-[42px] w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-[14px] leading-5 text-[#111827] outline-none focus:border-[#006C49]";
+  const inputClass = `mt-2 ${fieldControl}`;
 
   let panel: ReactNode = null;
   if (step === 0) {
@@ -202,13 +203,13 @@ export function OnboardingScreen({
             className={inputClass}
           />
         </label>
-        <label>
+        <div>
           <FieldLabel label={copy.timezone} optional hint={copy.timezoneHint} />
-          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-2 flex items-center gap-2">
             <select
               value={formTz}
               onChange={(event) => setFormTz(event.target.value)}
-              className={`${inputClass} mt-0 flex-1`}
+              className={`${fieldControl} min-w-0 flex-1`}
             >
               {zones.map((zone) => (
                 <option key={zone} value={zone}>
@@ -218,13 +219,13 @@ export function OnboardingScreen({
             </select>
             <button
               type="button"
-              className="h-[42px] rounded-xl border border-[#E5E7EB] px-3 text-[12px] font-semibold text-[#111827]"
+              className="inline-flex h-[42px] shrink-0 items-center justify-center whitespace-nowrap rounded-xl border border-[#E5E7EB] bg-white px-4 text-[12px] font-semibold text-[#111827]"
               onClick={() => setFormTz(Intl.DateTimeFormat().resolvedOptions().timeZone)}
             >
               {copy.useDeviceTz}
             </button>
           </div>
-        </label>
+        </div>
       </div>
     );
   } else if (step === 1) {
@@ -349,11 +350,11 @@ export function OnboardingScreen({
           <form className="mt-6" onSubmit={(event) => void onSubmit(event)}>
             <div className="onboarding-panel">{panel}</div>
             {error ? <p className="mt-4 text-[14px] text-[#DC2626]">{error}</p> : null}
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-6 flex items-center gap-3">
               {step > 0 ? (
                 <button
                   type="button"
-                  className="h-11 rounded-xl border border-[#E5E7EB] px-5 text-[13px] font-semibold text-[#111827]"
+                  className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] px-5 text-[13px] font-semibold text-[#111827]"
                   onClick={() => changeStep(step - 1, setStep)}
                 >
                   {copy.back}
@@ -362,7 +363,7 @@ export function OnboardingScreen({
               <button
                 type="submit"
                 disabled={pending}
-                className="h-11 flex-1 rounded-xl bg-[#006C49] px-5 text-[13px] font-semibold text-white disabled:opacity-60"
+                className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-xl bg-[#006C49] px-5 text-[13px] font-semibold text-white disabled:opacity-60"
               >
                 {pending ? copy.saving : lastStep ? copy.finish : copy.continue}
               </button>
