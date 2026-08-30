@@ -389,6 +389,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ```
 [2026-08-30] – Added: `/settings` account profile, email change, optional password, deletion request.
 [2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
+[2026-08-30] – Added: Ops GET account list for bans (`/api/admin/bans?target=`).
 [2026-08-30] – Added: Temporary/permanent user or workspace bans; official reason email; `/banned`.
 [2026-08-30] – Added: Illustrated empty state on `/payments`.
 [2026-08-30] – Added: Company logo on invoices (crop, size, background removal) before apply.
