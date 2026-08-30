@@ -20,7 +20,7 @@ Leaving `/` for `/pricing` (or any non-hash route) while the builder is dirty op
 
 1. Open `/`.
 2. Click **Create Invoice** in the header or hero.
-3. Edit business, client, line items, tax, discount, template, accent.
+3. Edit business, **logo** (preview editor: crop, size, remove background), client, line items, tax, discount, template, accent.
 4. Preview updates on every change (desktop split; mobile Edit/Preview tabs). On the landing page the form is two steps: invoice details, then payment and notes. `/invoices/new` and edit stay a single form.
 5. Click Download or Share to hit validation + registration modal.
 
@@ -83,7 +83,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 
 ## Version
 
-1.2.18 — 2026-08-29
+1.2.19 — 2026-08-30
 
 ## Changelog
 
@@ -118,5 +118,6 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 [2026-08-29] – Changed: Invoice preview drops Terms & conditions so bank details use full width.
 [2026-08-29] – Changed: Filled Total due uses the selected accent color (preview and PDF).
 [2026-08-29] – Changed: Dashboard `/invoices/{id}/edit` stays available after send/view.
+[2026-08-30] – Added: Company logo with crop, size, and background-removal preview before apply.
 [2026-08-29] – Changed: Signed-in “Use this template” opens `/invoices/new?template=`; the builder lists saved clients.
 ```

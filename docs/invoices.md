@@ -10,6 +10,8 @@ Money is stored as `bigint` minor units. Totals are recomputed on the server fro
 
 Every invoice prints a small platform disclaimer under Notes (`lib/invoices/disclaimer.ts`). It is not stored in `Invoice.notes` and issuers cannot remove it. Copy follows PLAN: Puyer is invoicing software, not a party to the transaction, and does not claim “never legally responsible for anything.”
 
+Issuers may add a **company logo** (crop, size, remove a flat background in a preview editor). See [`invoice-logos.md`](./invoice-logos.md). The invoice stores `logoUrl` + `logoScale`; files live in Storage, not in Postgres.
+
 Issuers may add **bank transfer** details (outside Stripe). Those fields are stored on the invoice only when `storeBankDetailsConsent` is true. The server strips IBAN/account fields without that flag (`paymentDetailsForStorage`). Without consent they appear only in the live preview and must be re-entered later. Puyer does not confirm bank payments.
 
 Invoice numbers come from `InvoiceSequence` with `SELECT … FOR UPDATE` inside a Repeatable Read transaction. The format is `INV-{year}-{pad4}`. Public links use a 16-byte `base64url` `publicId`, not the invoice number.
@@ -75,11 +77,12 @@ Browser:
 
 ## Version
 
-1.0.16 — 2026-08-29
+1.0.17 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Company logo snapshot (`logoUrl`, `logoScale`) on invoices.
 [2026-08-29] – Fixed: Sent and viewed invoices stay editable; paid/canceled stay locked without a “Coming next” stub.
 [2026-08-29] – Changed: Creating or updating a client requires a valid email (reminders destination) and accepts phone.
 [2026-08-29] – Added: Paid invoices expose `paidAt` on list rows and a Payment Received timeline event.

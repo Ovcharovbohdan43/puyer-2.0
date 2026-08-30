@@ -45,6 +45,8 @@ describe("public invoice view", () => {
       paymentDetails: "",
       template: "PROFESSIONAL",
       accentColor: "#000000",
+      logoUrl: "",
+      logoScale: 100,
       subtotalMinor: 100n,
       discountAmountMinor: 0n,
       taxAmountMinor: 0n,

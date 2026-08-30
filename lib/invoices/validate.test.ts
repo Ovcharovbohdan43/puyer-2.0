@@ -53,6 +53,15 @@ describe("validateBuilder", () => {
     expect(prepared.bankIban).toBe("");
     expect(prepared.storeBankDetailsConsent).toBe(false);
   });
+
+  it("drops blob logo URLs so only https logos are stored", () => {
+    const state = createDefaultBuilderState();
+    state.logoUrl = "blob:https://puyer.org/abc";
+    state.logoScale = 12;
+    const prepared = prepareBuilderState(state);
+    expect(prepared.logoUrl).toBe("");
+    expect(prepared.logoScale).toBe(40);
+  });
 });
 
 describe("isValidEmail", () => {

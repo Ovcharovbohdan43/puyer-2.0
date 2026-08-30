@@ -15,6 +15,7 @@ import {
 import { useToast } from "@/components/ui/toast";
 import { t } from "@/lib/i18n";
 import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
+import { ensureLogoUploaded } from "@/lib/invoices/upload-logo";
 import { prepareBuilderState } from "@/lib/invoices/validate";
 
 type WorkspaceSessionProps = {
@@ -46,10 +47,17 @@ export function WorkspaceSession({ initial, invoiceId, publicId, children }: Wor
     }
     setPersisting(true);
     try {
+      let ready = state;
+      try {
+        ready = await ensureLogoUploaded(state);
+      } catch {
+        toast(copy.logoUploadFailed);
+        return null;
+      }
       const response = await fetch(persistedId ? `/api/invoices/${persistedId}` : "/api/invoices", {
         method: persistedId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(prepareBuilderState(state)),
+        body: JSON.stringify(prepareBuilderState(ready)),
       });
       const payload = (await response.json()) as {
         ok?: boolean;
@@ -60,13 +68,13 @@ export function WorkspaceSession({ initial, invoiceId, publicId, children }: Wor
         toast(payload.error ?? copy.saveFailed);
         return null;
       }
-      const next = { ...state, invoiceNumber: payload.invoice.invoiceNumber };
+      const next = { ...ready, invoiceNumber: payload.invoice.invoiceNumber };
       setSavedId(payload.invoice.id);
       setSavedPublicId(payload.invoice.publicId);
       setStateRaw(next);
       setBaseline(next);
       toast(
-        hasBankTransfer(state) && state.storeBankDetailsConsent !== true
+        hasBankTransfer(ready) && ready.storeBankDetailsConsent !== true
           ? copy.savedWithoutBankStorage
           : copy.saved,
       );
@@ -81,7 +89,7 @@ export function WorkspaceSession({ initial, invoiceId, publicId, children }: Wor
     } finally {
       setPersisting(false);
     }
-  }, [copy.saveFailed, copy.saved, copy.savedWithoutBankStorage, invoiceId, persistedId, persisting, router, state, toast]);
+  }, [copy.logoUploadFailed, copy.saveFailed, copy.saved, copy.savedWithoutBankStorage, invoiceId, persistedId, persisting, router, state, toast]);
 
   const onCopyPublicLink = useCallback(() => {
     if (!persistedId) {

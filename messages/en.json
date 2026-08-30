@@ -23,6 +23,7 @@
     "businessPlaceholder": "Your Name or Company",
     "addressPlaceholder": "Your Address",
     "logoAdd": "Add logo",
+    "logoLabel": "Logo",
     "logoChange": "Replace logo",
     "logoEdit": "Edit logo",
     "logoRemove": "Remove logo",

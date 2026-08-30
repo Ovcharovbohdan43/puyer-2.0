@@ -30,6 +30,7 @@ export default async function NewInvoicePage({
       clientName: presetClient?.name,
       clientAddress: presetClient?.address || undefined,
       template: template ?? undefined,
+      logoUrl: profile?.logoUrl,
     });
 
     return (

@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useBuilderSession } from "@/components/invoice-builder/builder-session";
 import { CurrencySelect } from "@/components/invoice-builder/currency-select";
 import { InvoicePreview } from "@/components/invoice-builder/invoice-preview";
+import { LogoEditor } from "@/components/invoice-builder/logo-editor";
 import { ACCENT_COLORS, type InvoiceTemplate } from "@/components/invoice-builder/types";
 import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { Modal } from "@/components/ui/modal";
@@ -15,6 +16,7 @@ import { getCurrency, type Currency } from "@/lib/invoices/currencies";
 import { formatMoney } from "@/lib/invoices/money";
 import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
 import { hasBuilderErrors, validateBuilder, type BuilderErrors } from "@/lib/invoices/validate";
+import { ensureLogoUploaded } from "@/lib/invoices/upload-logo";
 import { downloadPdfResponse } from "@/lib/pdf/browser-download";
 import { t } from "@/lib/i18n";
 
@@ -48,6 +50,9 @@ export function InvoiceBuilder({
   const [pendingCurrency, setPendingCurrency] = useState<Currency | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [landingStep, setLandingStep] = useState<LandingFormStep>(1);
+  const [logoEditorOpen, setLogoEditorOpen] = useState(false);
+  const [logoSource, setLogoSource] = useState<File | string | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   const currency = getCurrency(state.currency);
   const totals = useMemo(
@@ -195,6 +200,86 @@ export function InvoiceBuilder({
           placeholder={copy.addressPlaceholder}
           className={textareaClass}
           rows={3}
+        />
+        <p className="text-[13px] leading-5 text-puyer-muted">{copy.logoPngHint}</p>
+        <span className={`${labelClass} mt-3`}>{copy.logoLabel}</span>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <input
+            ref={logoInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+            className="sr-only"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (!file) {
+                return;
+              }
+              setLogoSource(file);
+              setLogoEditorOpen(true);
+            }}
+          />
+          <button
+            type="button"
+            className="rounded-lg border border-[#006c49] bg-white px-3 py-2 text-[14px] font-semibold text-[#006c49] hover:bg-[#E8F5EF]"
+            onClick={() => logoInputRef.current?.click()}
+          >
+            {state.logoUrl ? copy.logoChange : copy.logoAdd}
+          </button>
+          {state.logoUrl ? (
+            <>
+              <button
+                type="button"
+                className="rounded border border-[#e2e8f0] px-3 py-2 text-[14px] font-medium text-[#0b1c30]"
+                onClick={() => {
+                  setLogoSource(state.logoUrl);
+                  setLogoEditorOpen(true);
+                }}
+              >
+                {copy.logoEdit}
+              </button>
+              <button
+                type="button"
+                className="rounded border border-[#e2e8f0] px-3 py-2 text-[14px] font-medium text-[#0b1c30]"
+                onClick={() => setState({ ...state, logoUrl: "" })}
+              >
+                {copy.logoRemove}
+              </button>
+            </>
+          ) : null}
+        </div>
+        {state.logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={state.logoUrl} alt="" className="mt-2 h-12 w-auto object-contain" />
+        ) : null}
+        <LogoEditor
+          open={logoEditorOpen}
+          source={logoSource}
+          scale={state.logoScale}
+          onClose={() => {
+            setLogoEditorOpen(false);
+            setLogoSource(null);
+          }}
+          onApply={(blob, scale) => {
+            void (async () => {
+              const local = URL.createObjectURL(blob);
+              const next = { ...state, logoUrl: local, logoScale: scale };
+              if (authenticated) {
+                try {
+                  const uploaded = await ensureLogoUploaded(next);
+                  setState(uploaded);
+                  URL.revokeObjectURL(local);
+                } catch {
+                  setState(next);
+                  toast(copy.logoUploadFailed);
+                }
+              } else {
+                setState(next);
+              }
+              setLogoEditorOpen(false);
+              setLogoSource(null);
+            })();
+          }}
         />
       </div>
 

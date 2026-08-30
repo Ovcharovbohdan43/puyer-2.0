@@ -6,6 +6,7 @@ import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
 import { invoiceTemplateSkin } from "@/lib/invoices/template-layout";
 import type { Currency } from "@/lib/invoices/currencies";
 import type { InvoiceTotals } from "@/lib/invoices/calculate";
+import { invoiceLogoHeightPx } from "@/lib/invoices/logo";
 import type { BuilderState } from "@/components/invoice-builder/types";
 
 type InvoicePreviewProps = {
@@ -38,6 +39,15 @@ export function InvoicePreview({ state, currency, totals, zoom }: InvoicePreview
 
       <header className="flex min-w-0 items-start justify-between gap-6">
         <div className={`min-w-0 flex-1 ${wrap}`}>
+          {state.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={state.logoUrl}
+              alt=""
+              className="mb-3 max-w-full object-contain"
+              style={{ height: invoiceLogoHeightPx(state.logoScale) }}
+            />
+          ) : null}
           <p className={`text-[28px] font-semibold leading-8 tracking-[-0.6px] ${wrap}`} style={{ color: markColor }}>
             {state.businessName || "Your business"}
           </p>

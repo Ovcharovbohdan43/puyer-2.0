@@ -26,6 +26,8 @@ export type BuilderState = {
   storeBankDetailsConsent: boolean;
   template: InvoiceTemplate;
   accentColor: string;
+  logoUrl: string;
+  logoScale: number;
   issueDate: string;
   dueDate: string;
 } & BankTransferDetails;
@@ -53,6 +55,8 @@ export function createDefaultBuilderState(): BuilderState {
     ...emptyBankTransfer(),
     template: "PROFESSIONAL",
     accentColor: "#000000",
+    logoUrl: "",
+    logoScale: 100,
     issueDate: "2026-08-27",
     dueDate: "2026-09-26",
   };

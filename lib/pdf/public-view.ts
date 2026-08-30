@@ -19,6 +19,8 @@ export type PublicInvoiceView = {
   paymentDetails: string;
   template: InvoiceTemplate;
   accentColor: string;
+  logoUrl: string;
+  logoScale: number;
   issueDate: string;
   dueDate: string;
   items: Array<{
@@ -57,6 +59,8 @@ export function toPublicInvoiceView(
     paymentDetails: invoice.paymentDetails,
     template: state.template,
     accentColor: state.accentColor,
+    logoUrl: state.logoUrl,
+    logoScale: state.logoScale,
     issueDate: state.issueDate,
     dueDate: state.dueDate,
     items: state.items.map((item, index) => ({
@@ -93,6 +97,8 @@ export function publicBuilderState(view: PublicInvoiceView): BuilderState {
     ...bank,
     template: view.template,
     accentColor: view.accentColor,
+    logoUrl: view.logoUrl,
+    logoScale: view.logoScale,
     issueDate: view.issueDate,
     dueDate: view.dueDate,
   };

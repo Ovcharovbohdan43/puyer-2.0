@@ -1,5 +1,6 @@
 import { bankTransferFromState, emptyBankTransfer } from "@/lib/invoices/bank-transfer";
 import type { BuilderLine, BuilderState } from "@/components/invoice-builder/types";
+import { clampLogoScale, sanitizeStoredLogoUrl } from "@/lib/invoices/logo";
 import { parseMajorToMinor, parseQuantity } from "@/lib/invoices/money";
 import { getCurrency } from "@/lib/invoices/currencies";
 
@@ -80,6 +81,8 @@ export function prepareBuilderState(state: BuilderState): BuilderState {
     notes: state.notes.trim(),
     paymentDetails: state.paymentDetails.trim(),
     storeBankDetailsConsent: consented,
+    logoUrl: sanitizeStoredLogoUrl(state.logoUrl),
+    logoScale: clampLogoScale(state.logoScale),
     items: items.length > 0 ? items : state.items,
   };
 }

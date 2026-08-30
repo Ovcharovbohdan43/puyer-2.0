@@ -81,4 +81,23 @@ describe("InvoicePreview", () => {
     expect(html).toContain("#7c3aed");
     expect(html).not.toContain("#0B1C30");
   });
+
+  it("renders a company logo when the invoice has a https URL", () => {
+    const state = createDefaultBuilderState();
+    state.logoUrl = "https://cdn.example/logo.png";
+    state.logoScale = 80;
+    const currency = getCurrency(state.currency);
+    const totals = totalsForInvoice(
+      state.items,
+      currency.exponent,
+      state.discountType,
+      state.discountValue,
+      state.taxRate,
+    );
+    const html = renderToStaticMarkup(
+      <InvoicePreview state={state} currency={currency} totals={totals} zoom={1} />,
+    );
+    expect(html).toContain("https://cdn.example/logo.png");
+    expect(html).toContain("height:45px");
+  });
 });

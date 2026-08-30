@@ -4,6 +4,7 @@ import { emptyBankTransfer, hasBankTransfer, splitPaymentDetails } from "@/lib/i
 import type { BuilderState } from "@/components/invoice-builder/types";
 import { getCurrency } from "@/lib/invoices/currencies";
 import { quantityToInput, unitPriceToInput } from "@/lib/invoices/compute";
+import { clampLogoScale, sanitizeStoredLogoUrl } from "@/lib/invoices/logo";
 import type { DiscountType } from "@/lib/invoices/calculate";
 
 type InvoiceLike = {
@@ -20,6 +21,8 @@ type InvoiceLike = {
   paymentDetails: string;
   template: InvoiceTemplate;
   accentColor: string;
+  logoUrl?: string | null;
+  logoScale?: number;
   issueDate: Date;
   dueDate: Date;
   items: InvoiceItem[];
@@ -44,6 +47,8 @@ export function invoiceToBuilderState(invoice: InvoiceLike): BuilderState {
     ...bank,
     template: invoice.template,
     accentColor: invoice.accentColor,
+    logoUrl: sanitizeStoredLogoUrl(invoice.logoUrl ?? ""),
+    logoScale: clampLogoScale(invoice.logoScale ?? 100),
     issueDate: invoice.issueDate.toISOString().slice(0, 10),
     dueDate: invoice.dueDate.toISOString().slice(0, 10),
     items: invoice.items.map((item) => ({
@@ -63,6 +68,7 @@ export function emptyWorkspaceBuilderState(input: {
   clientName?: string;
   clientAddress?: string;
   template?: InvoiceTemplate;
+  logoUrl?: string | null;
 }): BuilderState {
   const today = new Date();
   const due = new Date(today);
@@ -84,6 +90,8 @@ export function emptyWorkspaceBuilderState(input: {
     ...emptyBankTransfer(),
     template: input.template ?? "PROFESSIONAL",
     accentColor: "#000000",
+    logoUrl: sanitizeStoredLogoUrl(input.logoUrl ?? ""),
+    logoScale: 100,
     issueDate: today.toISOString().slice(0, 10),
     dueDate: due.toISOString().slice(0, 10),
   };

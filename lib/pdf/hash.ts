@@ -7,7 +7,7 @@ export function invoicePdfHash(state: BuilderState, paper: PaperSize, branded: b
   return createHash("sha256")
     .update(
       JSON.stringify({
-        layout: 9,
+        layout: 10,
         paper,
         branded,
         invoiceNumber: state.invoiceNumber,
@@ -35,6 +35,8 @@ export function invoicePdfHash(state: BuilderState, paper: PaperSize, branded: b
         bankPaymentReference: state.bankPaymentReference,
         template: state.template,
         accentColor: state.accentColor,
+        logoUrl: state.logoUrl,
+        logoScale: state.logoScale,
         issueDate: state.issueDate,
         dueDate: state.dueDate,
       }),

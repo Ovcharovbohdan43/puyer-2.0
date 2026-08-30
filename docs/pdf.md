@@ -53,7 +53,7 @@ Browser:
 - Public page Download PDF works signed out
 - A very long address without spaces stays inside the page **in both the HTML preview and the downloaded PDF**
 - Cyrillic (and other Noto-covered scripts) render as real letters in the PDF, not `?`
-- After a renderer change, download again — Storage cache keys include `layout: 9`
+- After a renderer change, download again — Storage cache keys include `layout: 10`
 - View-source / network on the public page has no `organizationId`
 
 ## Limitations
@@ -76,7 +76,7 @@ Browser:
 
 ## Version
 
-1.0.9 — 2026-08-29
+1.0.10 — 2026-08-30
 
 ## Changelog
 
@@ -90,5 +90,6 @@ Browser:
 [2026-08-29] – Added: Bank transfer block on the PDF when the issuer consented to store it. Cache key `layout: 6`.
 [2026-08-29] – Changed: PDFs use the shared Figma invoice skeleton for every template. Cache key `layout: 7`.
 [2026-08-29] – Changed: PDF payment block is full width; Terms & conditions column removed. Cache key `layout: 8`.
+[2026-08-30] – Added: Company logo on the PDF when `logoUrl` is https. Cache key `layout: 10`.
 [2026-08-29] – Changed: Filled Total due bar uses the invoice accent. Cache key `layout: 9`.
 ```
