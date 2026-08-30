@@ -53,6 +53,8 @@ npm run lint
 - Mark an invoice Paid → timeline shows Payment Received; the green track does not run past the last node
 - Open `/clients`, click a row, confirm white right drawer + `?client=` UUID, close, URL clears
 - Open `/clients`, confirm KPI cards have fade sparklines like Home
+- Open `/payments` with no Stripe charges → illustrated empty state (Create invoice / Connect Stripe)
+- Open `/payments` with synced charges → table + row drawer
 - A long client name truncates in the table, drawer, and does not widen the left sidebar
 - Narrow viewport: Recent Invoices and Clients tables scroll sideways; status pills stay off amounts
 - Client drawer lists invoices; Create Invoice / Edit / Delete work (delete blocked if invoices exist)
@@ -80,11 +82,12 @@ npm run lint
 
 ## Version
 
-1.2.15 — 2026-08-30
+1.2.16 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Payments empty state with illustration and next-step links.
 [2026-08-30] – Added: First-login `/onboarding` gate before the app shell.
 [2026-08-29] – Fixed: Revenue Trends curve stays inside the card; KPI and trend charts animate in (reduced-motion off).
 [2026-08-29] – Added: Sidebar, More sheet, and Help Center (`/help`) for support requests.

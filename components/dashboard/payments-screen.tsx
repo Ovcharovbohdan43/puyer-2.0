@@ -22,7 +22,26 @@ export function PaymentsScreen({ rows }: { rows: PaymentListRow[] }) {
           <p className={dash.subtitle}>{copy.paymentsIntro}</p>
         </div>
         {rows.length === 0 ? (
-          <p className="text-[14px] text-[#6B7280]">{copy.paymentsEmpty}</p>
+          <div className="flex flex-col items-center rounded-xl border border-[#E5E7EB] bg-white px-6 py-12 text-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/app/payments-empty.png"
+              alt=""
+              width={840}
+              height={630}
+              className="h-auto w-full max-w-[420px]"
+            />
+            <h2 className="mt-6 text-[20px] font-semibold tracking-[-0.2px] text-[#111827]">{copy.paymentsEmpty}</h2>
+            <p className="mt-2 max-w-md text-[14px] leading-5 text-[#6B7280]">{copy.paymentsEmptyBody}</p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link href="/invoices/new" className={dash.btnPrimary}>
+                {copy.paymentsEmptyCta}
+              </Link>
+              <Link href="/settings" className={dash.btnOutline}>
+                {copy.paymentsEmptyConnect}
+              </Link>
+            </div>
+          </div>
         ) : (
           <div className={dash.tableWrap}>
             <div className={dash.tableScroll}>

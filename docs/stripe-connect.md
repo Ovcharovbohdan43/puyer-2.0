@@ -23,7 +23,7 @@ Pinned Stripe API version: `2026-02-25.clover` (`stripe` Node SDK 20). Re-checke
    - Platform endpoint: `https://<host>/api/stripe/webhooks/platform` (Puyer subscriptions; see [`billing.md`](./billing.md)).
 3. Sign in → **Settings** → **Connect Stripe** (owner). Complete hosted onboarding.
 4. Share `/invoice/{publicId}` → customer **Pay Invoice**.
-5. **Payments** lists synchronized charges with copy that money went to the connected account.
+5. **Payments** lists synchronized charges with copy that money went to the connected account. With no charges, `/payments` shows an illustrated empty state.
 
 Local CLI (test mode, both endpoints in one process):
 
@@ -67,12 +67,13 @@ Browser:
 - `lib/stripe/**`, `lib/payments/**`, `lib/entitlements/index.ts`
 - `app/api/stripe/**`, `app/api/public/invoices/[publicId]/pay/route.ts`
 - `app/(dashboard)/settings/page.tsx`, `app/(dashboard)/payments/page.tsx`
-- `components/dashboard/stripe-settings.tsx`, `components/invoice/public-pay-panel.tsx`
+- `components/dashboard/stripe-settings.tsx`, `components/invoice/public-pay-panel.tsx`, `components/dashboard/payments-screen.tsx`
+- `public/app/payments-empty.png`
 - `prisma/schema.prisma`, `supabase/migrations/20260828210000_stripe_connect_domain.sql`
 
 ## Version
 
-1.0.6 — 2026-08-29
+1.0.7 — 2026-08-30
 
 ## Changelog
 
@@ -84,5 +85,6 @@ Browser:
 [2026-08-28] – Changed: Public payer page uses document + pay sidebar.
 [2026-08-28] – Fixed: Settings Stripe lookup failures no longer crash the page.
 [2026-08-29] – Changed: Public pay sidebar explains bank transfer when Stripe Pay is unavailable.
+[2026-08-30] – Added: Illustrated empty state on `/payments` when no charges are synced.
 [2026-08-29] – Fixed: Payments list maps amounts to strings and survives pooler lookup failures.
 ```
