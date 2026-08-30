@@ -1378,6 +1378,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Fixed: Landing builder `ssr: false` runs in a Client Component (Next 16 Turbopack).
   Docs: docs/landing.md.
+
+[2026-08-30] – Fixed: Landing LCP — SSR the in-viewport invoice; do not delay it with `ssr: false`.
+  Docs: docs/landing.md.
 ```
 
 ---

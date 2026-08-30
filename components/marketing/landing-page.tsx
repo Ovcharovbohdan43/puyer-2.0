@@ -1,12 +1,12 @@
 import { FaqSection } from "@/components/marketing/faq-section";
-import { LandingInvoiceBuilder } from "@/components/marketing/landing-invoice-builder";
+import { InvoiceBuilder } from "@/components/invoice-builder/invoice-builder";
 import { LandingReveal } from "@/components/marketing/landing-reveal";
 import { LandingStudioShot } from "@/components/marketing/landing-studio-shot";
 import { PricingSection } from "@/components/marketing/pricing-section";
 import { PublicChrome } from "@/components/marketing/public-chrome";
 import { CreateInvoiceButton, UseTemplateButton } from "@/components/marketing/public-ctas";
 import { FeaturesMarquee, landingFeatureCards } from "@/components/marketing/features-marquee";
-import { TemplateInvoiceMockup } from "@/components/marketing/template-invoice-mockup";
+import { LandingTemplateMockup } from "@/components/marketing/landing-template-mockup";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { WhyBenefits } from "@/components/marketing/why-benefits";
 import { StripeFlow } from "@/components/marketing/stripe-flow";
@@ -51,7 +51,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <LandingInvoiceBuilder />
+      <InvoiceBuilder paged />
 
       <section id="features" className="scroll-mt-24 flex w-full flex-col gap-0 pb-12 pt-24">
         <h2 className="mx-auto max-w-[1280px] px-5 text-center text-[28px] font-semibold leading-10 tracking-[-0.32px] sm:px-10 sm:text-[32px]">
@@ -75,7 +75,7 @@ export function LandingPage() {
                 key={card.name}
                 className="group flex h-auto flex-col rounded-xl border border-[#e2e8f0] bg-white p-4 shadow-[0px_1px_1px_rgba(0,0,0,0.05)]"
               >
-                <TemplateInvoiceMockup template={card.id} label={card.previewLabel} />
+                <LandingTemplateMockup template={card.id} label={card.previewLabel} />
                 <h3 className="pt-[10px] text-center text-[24px] font-semibold leading-8">{card.name}</h3>
                 <span className="mx-auto mt-2 rounded bg-[#6cf8bb] px-2 py-1 text-[12px] font-semibold tracking-[0.6px] text-[#006c49]">
                   {templates.free}
