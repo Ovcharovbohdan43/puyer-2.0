@@ -12,7 +12,7 @@ import { INVOICE_NAVY, invoiceTemplateSkin } from "@/lib/invoices/template-layou
 import { ensurePdfFonts } from "@/lib/pdf/fonts";
 import { hyphenatePdfWord, wrapPdfText } from "@/lib/pdf/hyphenate";
 import type { PaperSize } from "@/lib/pdf/paper";
-import { invoiceLogoHeightPt, sanitizeStoredLogoUrl } from "@/lib/invoices/logo";
+import { invoicePdfLogoStyle, sanitizeStoredLogoUrl } from "@/lib/invoices/logo";
 
 type InvoicePdfDocumentProps = {
   state: BuilderState;
@@ -68,9 +68,11 @@ export function InvoicePdfDocument({
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             {sanitizeStoredLogoUrl(state.logoUrl) ? (
-              // react-pdf Image has no alt; this is decorative beside the business name.
-              // eslint-disable-next-line jsx-a11y/alt-text
-              <Image src={state.logoUrl} style={{ height: invoiceLogoHeightPt(state.logoScale), objectFit: "contain", marginBottom: 8 }} />
+              <View style={styles.logoWrap}>
+                {/* react-pdf Image has no alt; this is decorative beside the business name. */}
+                {/* eslint-disable-next-line jsx-a11y/alt-text */}
+                <Image src={state.logoUrl} style={invoicePdfLogoStyle(state.logoScale)} />
+              </View>
             ) : null}
             <FlowText style={styles.mark}>{state.businessName || " "}</FlowText>
             {splitLines(state.businessAddress).map((line, index) => (
@@ -212,7 +214,8 @@ function makeStyles(accent: string, skin: ReturnType<typeof invoiceTemplateSkin>
       width: "100%",
       marginBottom: 28,
     },
-    headerLeft: { ...shrink, paddingRight: 16 },
+    headerLeft: { ...shrink, paddingRight: 16, alignItems: "flex-start" },
+    logoWrap: { alignSelf: "flex-start", marginBottom: 8 },
     headerRight: { width: "42%", flexShrink: 0, alignItems: "flex-end" },
     mark: {
       fontSize: 18,

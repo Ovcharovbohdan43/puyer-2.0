@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { floodClearBackground, knockoutCornerBackground } from "@/lib/invoices/logo-bg";
-import { clampLogoScale, invoiceLogoHeightPx, sanitizeStoredLogoUrl } from "@/lib/invoices/logo";
+import {
+  clampLogoScale,
+  invoiceLogoHeightPx,
+  invoiceLogoHeightPt,
+  invoicePdfLogoStyle,
+  PDF_LOGO_ASPECT,
+  sanitizeStoredLogoUrl,
+} from "@/lib/invoices/logo";
 
 describe("logo scale and URL", () => {
   it("clamps display scale and rejects non-https URLs", () => {
@@ -11,6 +18,16 @@ describe("logo scale and URL", () => {
     expect(sanitizeStoredLogoUrl("https://cdn.example/logo.png")).toBe("https://cdn.example/logo.png");
     expect(sanitizeStoredLogoUrl("blob:https://puyer.org/abc")).toBe("");
     expect(sanitizeStoredLogoUrl("javascript:alert(1)")).toBe("");
+  });
+
+  it("sizes the PDF logo as a left-aligned box, not full header width", () => {
+    const style = invoicePdfLogoStyle(100);
+    const height = invoiceLogoHeightPt(100);
+    expect(style.height).toBe(height);
+    expect(style.width).toBe(Math.round(height * PDF_LOGO_ASPECT));
+    expect(style.width).toBeLessThan(200);
+    expect(style.objectFit).toBe("contain");
+    expect(style.objectPosition).toBe("left");
   });
 });
 

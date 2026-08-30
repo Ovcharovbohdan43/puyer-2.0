@@ -99,6 +99,7 @@ describe("InvoicePreview", () => {
     );
     expect(html).toContain("https://cdn.example/logo.png");
     expect(html).toContain("height:45px");
+    expect(html).toContain("object-left");
   });
 
   it("does not print bank details until the bank channel is chosen", () => {

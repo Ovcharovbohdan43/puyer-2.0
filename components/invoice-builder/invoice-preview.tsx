@@ -45,7 +45,7 @@ export function InvoicePreview({ state, currency, totals, zoom }: InvoicePreview
             <img
               src={state.logoUrl}
               alt=""
-              className="mb-3 max-w-full object-contain"
+              className="mb-3 max-w-full object-contain object-left"
               style={{ height: invoiceLogoHeightPx(state.logoScale) }}
             />
           ) : null}

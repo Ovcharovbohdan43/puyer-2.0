@@ -1366,6 +1366,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Added: Delete unpaid invoices from the invoice drawer.
   Docs: docs/invoices.md, docs/dashboard.md, docs/UX_FLOWS.md.
+
+[2026-08-30] – Fixed: PDF invoice logo is left-aligned like the HTML preview.
+  Docs: docs/pdf.md, docs/invoice-logos.md, docs/invoice-builder.md.
 ```
 
 ---

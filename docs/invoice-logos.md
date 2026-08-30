@@ -12,7 +12,7 @@ There is **no Railway image worker**. Background removal is a corner flood-fill 
 
 Guests can preview with a `blob:` URL. Persist uploads through `POST /api/logos` (session, `logo-upload` rate limit, magic-byte validation, 2 MB). The server stores only `https://` URLs.
 
-HTML preview, public payer page, and PDF (`@react-pdf/renderer` `Image`) all read the same URL. PDF cache hash includes `layout: 11`, `logoUrl`, and `logoScale`.
+HTML preview, public payer page, and PDF (`@react-pdf/renderer` `Image`) all read the same URL. The PDF logo is a shrink-wrapped left-aligned box (`invoicePdfLogoStyle`); Yoga otherwise stretches Image across the header column and `objectFit: contain` centers the mark. PDF cache hash includes `layout: 12`, `logoUrl`, and `logoScale`.
 
 ## How to use
 
@@ -52,11 +52,12 @@ Browser: add a PNG, crop, remove background, confirm live preview, save, downloa
 
 ## Version
 
-1.0.1 — 2026-08-30
+1.0.2 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Fixed: PDF logo sits left above the business name (not centered in the header column). Cache key `layout: 12`.
 [2026-08-30] – Changed: PDF hash `layout: 11` (payment channel included).
 [2026-08-30] – Added: Invoice company logo with in-browser crop, scale, and background removal; public Storage + snapshot on Invoice.
 ```

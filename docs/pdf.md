@@ -53,7 +53,8 @@ Browser:
 - Public page Download PDF works signed out
 - A very long address without spaces stays inside the page **in both the HTML preview and the downloaded PDF**
 - Cyrillic (and other Noto-covered scripts) render as real letters in the PDF, not `?`
-- After a renderer change, download again — Storage cache keys include `layout: 11`
+- After a renderer change, download again — Storage cache keys include `layout: 12`
+- The company logo sits on the **left** above the business name in both HTML preview and PDF (not page-center)
 - View-source / network on the public page has no `organizationId`
 
 ## Limitations
@@ -76,11 +77,12 @@ Browser:
 
 ## Version
 
-1.0.11 — 2026-08-30
+1.0.12 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Fixed: PDF company logo is left-aligned like the HTML preview. Cache key `layout: 12`.
 [2026-08-30] – Changed: PDF bank block follows the builder payment channel. Cache key `layout: 11`.
 [2026-08-28] – Added: Server PDF (A4/Letter, three templates), Storage cache, public download, rate limits.
 [2026-08-28] – Changed: Public HTML is the payer document + sidebar, not the builder preview.
