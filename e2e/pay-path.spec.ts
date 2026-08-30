@@ -30,6 +30,8 @@ test.describe("signup → invoice → share → pay surfaces", () => {
 
     await page.goto("/team");
     await expect(page).toHaveURL(/\/login/);
+    await page.goto("/onboarding");
+    await expect(page).toHaveURL(/\/login/);
     await page.goto("/settings");
     await expect(page).toHaveURL(/\/login/);
 

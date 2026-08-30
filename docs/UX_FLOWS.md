@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.33 — 2026-08-29
+> **Version:** 1.0.34 — 2026-08-30
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -165,16 +165,30 @@ Header, pricing subscribe (unauth), and gated app routes all open `/login`. Down
 
 Cancel on `/login` is the Puyer logo → `/`.
 
+### Workspace onboarding `/onboarding`
+
+```
+First app visit | signed-in /pricing
+→ CONDITION: User.onboardingCompletedAt is null
+→ TARGET: /onboarding (no app sidebar)
+→ UI: owner 3 steps (you / business / invoice defaults); member 1 step (name). Optional fields labeled. Continue / Back / Go to Puyer.
+→ SERVER: POST /api/onboarding (origin check, 20/min)
+→ DB: User name, timezone, onboardingCompletedAt; owner also BusinessProfile, Organization.name, optional Client
+→ SUCCESS: next path (default /dashboard)
+→ ERROR: validation 400
+```
+
 ### Magic link `/auth/confirm` (via `/auth/callback` or `/verify`)
 
 ```
 Email → open link (GET does not consume token) → Continue to Puyer → session
 → Restore `authReturnTo` context (never stay on `/` after a successful login):
 
-A login          → /dashboard
+A login          → /dashboard (then `/onboarding` if first setup is incomplete)
 B download PDF   → builder + resume download
 C share          → builder + open Share menu
 D team invite    → invitation accept screen
+E subscribe      → `/pricing` (then `/onboarding?next=/pricing` if first setup is incomplete)
 ```
 
 Never lose context. Never persist unauthenticated drafts on the server.
@@ -352,6 +366,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ## Changelog
 
 ```
+[2026-08-30] – Added: First-login workspace onboarding (`/onboarding`) before Home.
 [2026-08-29] – Fixed: Overview/Reports trend line stays in the card; charts ease in on load.
 [2026-08-29] – Changed: Help request confirmation (page + ack email) includes reference, topic, and next steps.
 [2026-08-27] – Added: Complete interaction contract for Puyer.

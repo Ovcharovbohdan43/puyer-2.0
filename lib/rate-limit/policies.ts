@@ -18,6 +18,7 @@ export const RATE_LIMITS = {
   "platform-checkout": { windowMs: 15 * 60_000, max: 10 },
   "platform-portal": { windowMs: 15 * 60_000, max: 10 },
   "stripe-disconnect": { windowMs: 15 * 60_000, max: 10 },
+  "onboarding-write": { windowMs: 60_000, max: 20 },
   "stripe-webhook": { windowMs: 60_000, max: 300 },
   "auth-email-hook": { windowMs: 60_000, max: 300 },
 } as const;

@@ -17,6 +17,7 @@ describe("isProtectedPath", () => {
     expect(isProtectedPath("/invoices/new")).toBe(true);
     expect(isProtectedPath("/clients")).toBe(true);
     expect(isProtectedPath("/settings")).toBe(true);
+    expect(isProtectedPath("/onboarding")).toBe(true);
   });
 
   it("does not protect marketing, public invoice, or login", () => {

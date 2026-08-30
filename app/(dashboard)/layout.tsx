@@ -5,6 +5,7 @@ import type { Plan } from "@prisma/client";
 import { AppShell } from "@/components/dashboard/app-shell";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
 import { planFromOrganization } from "@/lib/entitlements/load";
+import { needsOnboarding } from "@/lib/onboarding/input";
 import { t } from "@/lib/i18n";
 
 export default async function DashboardGroupLayout({ children }: { children: ReactNode }) {
@@ -16,11 +17,19 @@ export default async function DashboardGroupLayout({ children }: { children: Rea
   const copy = t("dashboard");
   let displayName = session.email;
   let plan: Plan = "FREE";
+  let membership = null;
   try {
-    const membership = await requireOrganization(session);
+    membership = await requireOrganization(session);
+  } catch {
+    membership = null;
+  }
+  if (membership && needsOnboarding(membership.user.onboardingCompletedAt)) {
+    redirect("/onboarding");
+  }
+  if (membership) {
     displayName = membership.user.name?.trim() || session.email;
     plan = planFromOrganization(membership.organization);
-  } catch {
+  } else {
     displayName = copy.fallbackName;
   }
 

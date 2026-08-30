@@ -88,6 +88,7 @@ model User {
   locale               String   @default("en")
   timezone             String   @default("UTC")
   theme                ThemePreference @default(LIGHT)
+  onboardingCompletedAt DateTime?
   activeOrganizationId String?  @db.Uuid
   createdAt            DateTime @default(now())
   updatedAt            DateTime @default(now()) @updatedAt

@@ -2,8 +2,8 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.14  
-> **Date:** 2026-08-29  
+> **Version:** 1.4.15  
+> **Date:** 2026-08-30  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
 ---
@@ -638,7 +638,7 @@ AuditAction:       (see §14)
 
 | Table | Purpose |
 |---|---|
-| **User** | Profile: email, name, avatarUrl, locale, timezone, theme |
+| **User** | Profile: email, name, avatarUrl, locale, timezone, theme, onboardingCompletedAt |
 | **Organization** | Tenant |
 | **OrganizationMember** | userId, organizationId, role, unique(user, org) |
 | **OrganizationInvite** | pending/accepted/revoked email invite; token stored hashed |
@@ -1332,6 +1332,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Fixed: Help finds the Resend key by scanning env names for `re_`; skip logs include `resendNames`.
   Docs: docs/help.md.
+
+[2026-08-30] – Added: First-login workspace onboarding (`/onboarding`) before the dashboard.
+  Docs: docs/onboarding.md, docs/auth.md, docs/UX_FLOWS.md.
 
 [2026-08-29] – Fixed: Resend reads `/proc/self/environ` on Linux so Vercel/Next cannot hide `RESEND_API_KEY`.
   Docs: docs/help.md.

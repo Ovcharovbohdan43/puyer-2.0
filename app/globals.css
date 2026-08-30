@@ -739,3 +739,32 @@ html[data-theme="dark"] .app-shell {
     stroke-dashoffset: 0;
   }
 }
+
+.onboarding-shell {
+  interpolate-size: allow-keywords;
+}
+
+.onboarding-card {
+  container-type: inline-size;
+}
+
+.onboarding-panel {
+  view-transition-name: onboarding-panel;
+}
+
+.onboarding-grow {
+  field-sizing: content;
+  min-height: 4.5rem;
+}
+
+::view-transition-old(onboarding-panel),
+::view-transition-new(onboarding-panel) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-panel {
+    view-transition-name: none;
+  }
+}

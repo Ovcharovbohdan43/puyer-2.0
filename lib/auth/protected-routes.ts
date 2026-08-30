@@ -8,6 +8,7 @@ export const PROTECTED_PREFIXES = [
   "/team",
   "/billing",
   "/notifications",
+  "/onboarding",
 ] as const;
 
 export function isProtectedPath(path: string): boolean {

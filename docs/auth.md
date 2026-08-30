@@ -12,9 +12,10 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
 - `GET /auth/callback` and `GET /verify` copy query params to `/auth/confirm` and **do not** consume the token. The user clicks **Continue to Puyer**, which `POST`s `/auth/confirm/complete` (`token` / `token_hash` / PKCE `code`). Email scanners that only GET the link no longer burn it. GoTrue’s `token=` query is accepted (not only `token_hash`).
 - Public Supabase helpers live in `utils/supabase/*`. `lib/auth/browser.ts` and `lib/auth/server.ts` wrap them so marketing still loads when keys are missing (`trySupabasePublicEnv()`).
-- Next.js 16 request gate is [`proxy.ts`](../proxy.ts) (`getClaims()` before the response is committed). `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, and `/notifications` require a session; otherwise redirect to `/login`. `/help` is public. `/?login=1` also redirects to `/login`.
+- Next.js 16 request gate is [`proxy.ts`](../proxy.ts) (`getClaims()` before the response is committed). `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, `/notifications`, and `/onboarding` require a session; otherwise redirect to `/login`. `/help` is public. `/?login=1` also redirects to `/login`.
 - Prisma uses the server connection **and** `requireSession` / `requireOrganization` / `requireOrgRole`. RLS in [`supabase/migrations/20260828120000_identity_rls_and_trigger.sql`](../supabase/migrations/20260828120000_identity_rls_and_trigger.sql) is defense in depth.
 - `requireOrganization` is idempotent: if the session is valid and `OrganizationMember` is missing, `ensureWorkspace` creates `User` + Organization (OWNER) + BusinessProfile + NotificationPreference. That covers Auth users created before `on_auth_user_created` existed. The call is memoized with React `cache()` so layout and page do not provision twice in one request; a unique-constraint race retries by re-reading membership. Cross-tenant lookups still 404 via `resolveTenantRecord`.
+- First visit: if `User.onboardingCompletedAt` is null, app routes (and signed-in `/pricing`) redirect to `/onboarding`. Owners complete a three-step workspace form; members set their name. Existing users were backfilled complete. See [`onboarding.md`](./onboarding.md).
 - Authenticated Create Invoice goes to `/invoices/new` and saves through the invoice domain. Dashboard UI is the Figma app shell; see [`dashboard.md`](./dashboard.md) and [`invoices.md`](./invoices.md).
 
 ## How to use
@@ -45,7 +46,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 
 ## Examples
 
-- Login intent → after the link, `/dashboard`.
+- Login intent → after the link, `/dashboard` (then `/onboarding` if the workspace is not set up).
 - Subscribe intent (`/login?intent=subscribe`) → after the link, `/pricing`.
 - Download/Share intent → landing modal, then after the link `/?resume=download` or `/?resume=share` (user clicks Download/Share again; unauth drafts are not persisted).
 
@@ -80,16 +81,17 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 - `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/auth/confirm/page.tsx`, `app/(auth)/verify/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`, `app/api/auth/signout/route.ts`
 - `lib/email/auth-templates.ts`, `lib/email/layout.ts`, `lib/email/hosted-auth-templates.ts`, `lib/email/send-email-hook.ts`, `lib/auth/login-path.ts`, `supabase/templates/*`, `scripts/push-auth-email-templates.mjs`
 - `components/auth/*`
-- `app/(dashboard)/*`, `components/dashboard/*`
+- `app/(dashboard)/*`, `app/(onboarding)/*`, `components/dashboard/*`
 - `components/invoice-builder/builder-session.tsx`
 
 ## Version
 
-1.0.19 — 2026-08-29
+1.0.20 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: First-login `/onboarding` before the dashboard when `onboardingCompletedAt` is null.
 [2026-08-29] – Changed: `/help` is public; app routes still require a session.
 [2026-08-29] – Fixed: Magic links confirm on a click-through page; GoTrue `token=` is verified; scanners no longer burn the one-time code on GET.
 [2026-08-28] – Added: Magic-link auth, identity schema, proxy session refresh,

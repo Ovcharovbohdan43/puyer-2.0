@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Signed-in app chrome: **Home** (`/dashboard`), **Invoices** (`/invoices`) with a right-hand preview drawer, **Clients** (`/clients`) with a right-hand client drawer, Payments, Reports, Settings, Team, Billing, Notifications, **Help** (`/help`).
+Signed-in app chrome: **Home** (`/dashboard`), **Invoices** (`/invoices`) with a right-hand preview drawer, **Clients** (`/clients`) with a right-hand client drawer, Payments, Reports, Settings, Team, Billing, Notifications, **Help** (`/help`). First login with no `onboardingCompletedAt` goes to `/onboarding` (no sidebar) until setup is finished.
 
 Sources: light forest-green product frames (Clients, Reports, Payment reminders). The app is **light-only**.
 
@@ -80,11 +80,12 @@ npm run lint
 
 ## Version
 
-1.2.14 — 2026-08-29
+1.2.15 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: First-login `/onboarding` gate before the app shell.
 [2026-08-29] – Fixed: Revenue Trends curve stays inside the card; KPI and trend charts animate in (reduced-motion off).
 [2026-08-29] – Added: Sidebar, More sheet, and Help Center (`/help`) for support requests.
 [2026-08-29] – Changed: Payments rows open a Stripe-not-Puyer drawer; tables scroll on mobile.
