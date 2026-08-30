@@ -1375,6 +1375,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Added: npm allowlist for Prisma, sharp, protobufjs, and unrs-resolver install scripts.
   Docs: README.md, docs/hardening.md.
+
+[2026-08-30] – Fixed: Landing builder `ssr: false` runs in a Client Component (Next 16 Turbopack).
+  Docs: docs/landing.md.
 ```
 
 ---

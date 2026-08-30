@@ -1,7 +1,5 @@
-import dynamic from "next/dynamic";
-
 import { FaqSection } from "@/components/marketing/faq-section";
-import { LandingBuilderPlaceholder } from "@/components/marketing/landing-builder-placeholder";
+import { LandingInvoiceBuilder } from "@/components/marketing/landing-invoice-builder";
 import { LandingReveal } from "@/components/marketing/landing-reveal";
 import { LandingStudioShot } from "@/components/marketing/landing-studio-shot";
 import { PricingSection } from "@/components/marketing/pricing-section";
@@ -14,11 +12,6 @@ import { WhyBenefits } from "@/components/marketing/why-benefits";
 import { StripeFlow } from "@/components/marketing/stripe-flow";
 import { TrustBar } from "@/components/marketing/trust-bar";
 import { t } from "@/lib/i18n";
-
-const InvoiceBuilder = dynamic(
-  () => import("@/components/invoice-builder/invoice-builder").then((mod) => ({ default: mod.InvoiceBuilder })),
-  { ssr: false, loading: () => <LandingBuilderPlaceholder /> },
-);
 
 export function LandingPage() {
   const hero = t("hero");
@@ -58,7 +51,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <InvoiceBuilder paged />
+      <LandingInvoiceBuilder />
 
       <section id="features" className="scroll-mt-24 flex w-full flex-col gap-0 pb-12 pt-24">
         <h2 className="mx-auto max-w-[1280px] px-5 text-center text-[28px] font-semibold leading-10 tracking-[-0.32px] sm:px-10 sm:text-[32px]">

@@ -12,7 +12,7 @@ Pixel-faithful marketing page using Figma colors, type (Inter + JetBrains Mono),
 
 The How section (`HowItWorks`) is a three-step track: Phosphor badges and titles centered in each column, a connector line through the icon centers on desktop, product screenshots in `public/landing/how-*.png` (Next.js `Image`, hover zoom, `LandingReveal`). Tracking and reminders use the chosen light product stills (`tracking-payments.jpg`, `reminders-pro.jpg`) with a thin white edge blend. Clients and reports use the same zigzag as tracking / reminders: clients still on the left with copy on the right, reports copy on the left with the still on the right. The clients block is title + still only (no Manage clients button). Screenshot and copy slide in from opposite sides (`LandingReveal`, respects `prefers-reduced-motion`). Landing and `/pricing` stay light: no moon/sun control, `marketing-shell` ignores `html[data-theme=dark]`. The Templates grid (`#templates`) shows live Mini / Professional / Premium invoice previews from the same `InvoicePreview` as the builder. Platform disclaimer copy is hidden on those cards so the layout stays readable. The Features row (`#features`) is an infinite horizontal marquee (`FeaturesMarquee`); hover pauses it; `prefers-reduced-motion` shows a wrapping static set. The Why block keeps the same headline/body, then two opposite Phosphor chip marquees for the ten capabilities (no Figma checkmarks).
 
-The Invoice Builder on this page is interactive (see [`invoice-builder.md`](./invoice-builder.md)). It is loaded with `next/dynamic` (`ssr: false`) after the hero HTML so Largest Contentful Paint is the heading, not the invoice paper waiting on the builder chunk. A `#builder` placeholder keeps Create Invoice scroll working. `PublicChrome` does not wrap the page in a header-only `Suspense` fallback (that hid the hero until JS).
+The Invoice Builder on this page is interactive (see [`invoice-builder.md`](./invoice-builder.md)). A Client Component (`LandingInvoiceBuilder`) lazy-loads it with `next/dynamic` (`ssr: false`) — Next 16 forbids `ssr: false` in Server Components. The hero stays in the first HTML so Largest Contentful Paint is the heading. A `#builder` placeholder keeps Create Invoice scroll working. `PublicChrome` does not wrap the page in a header-only `Suspense` fallback (that hid the hero until JS).
 
 Copy for Stripe/fees follows `PLAN.md`: Puyer does not hold customer funds or charge invoice transaction fees. The Stripe block (`#stripe`, `StripeFlow`) uses Phosphor duotone nodes (customer → Stripe → business), the required note, and Connect Stripe. Pricing (`#pricing`, `PricingSection`) is a lavender band with a Monthly/Yearly segmented control, Phosphor plan icons, CheckCircle feature rows, and a highlighted Pro card. Checkout and plan prices are unchanged. The trust bar (`#trust`, `TrustBar`) stays dark and uses Phosphor Lock / Shield / ShieldCheck chips with the same three copy lines.
 
@@ -49,7 +49,7 @@ Strings live in `messages/en.json`. Feature icons come from `@phosphor-icons/rea
 
 - `app/(marketing)/page.tsx`, `app/layout.tsx`, `app/globals.css`, `app/(marketing)/pricing/page.tsx`, `app/(marketing)/privacy|terms|cookies/page.tsx`, `app/help/page.tsx`
 - `docs/brand.md`
-- `components/marketing/*` (`features-marquee.tsx` for `#features`, `how-it-works.tsx` for Create/Send/Get Paid, `why-benefits.tsx` for the capability chips, `stripe-flow.tsx` for `#stripe`, `pricing-section.tsx` for `#pricing`, `trust-bar.tsx` for `#trust`, `template-invoice-mockup.tsx` for `#templates`, `landing-studio-shot.tsx` / `landing-reveal.tsx` for tracking and reminders)
+- `components/marketing/*` (`landing-invoice-builder.tsx` for the deferred builder, `features-marquee.tsx` for `#features`, `how-it-works.tsx` for Create/Send/Get Paid, `why-benefits.tsx` for the capability chips, `stripe-flow.tsx` for `#stripe`, `pricing-section.tsx` for `#pricing`, `trust-bar.tsx` for `#trust`, `template-invoice-mockup.tsx` for `#templates`, `landing-studio-shot.tsx` / `landing-reveal.tsx` for tracking and reminders)
 - `lib/invoices/template-demo.ts`
 - `components/invoice-builder/*`
 - `messages/en.json`
@@ -57,7 +57,7 @@ Strings live in `messages/en.json`. Feature icons come from `@phosphor-icons/rea
 
 ## Version
 
-1.2.32 — 2026-08-30
+1.2.33 — 2026-08-30
 
 ## Changelog
 
@@ -95,5 +95,6 @@ Strings live in `messages/en.json`. Feature icons come from `@phosphor-icons/rea
 [2026-08-29] – Changed: Trust bar uses Phosphor chips; copy is unchanged.
 [2026-08-29] – Changed: FAQ answers real signup questions and no longer claims guest PDF download.
 [2026-08-30] – Fixed: Landing LCP — hero is in the first HTML; Invoice Builder loads after paint.
+[2026-08-30] – Fixed: `ssr: false` for the builder lives in a Client Component (`LandingInvoiceBuilder`).
 [2026-08-29] – Added: Header and footer Help links to `/help`.
 ```
