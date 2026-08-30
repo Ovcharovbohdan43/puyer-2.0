@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { PuyerLogo } from "@/components/brand/puyer-logo";
+import { ConfirmContinueButton } from "@/components/auth/confirm-continue-button";
 import { hasMagicLinkParams } from "@/lib/auth/complete-magic-link";
 import { loginUrl } from "@/lib/auth/login-path";
 import { sanitizeReturnTo } from "@/lib/auth/return-to";
@@ -55,12 +56,7 @@ export default async function AuthConfirmPage({
               }
               return <input key={name} type="hidden" name={name} value={value} />;
             })}
-            <button
-              type="submit"
-              className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#006C49] text-[15px] font-semibold text-white"
-            >
-              {copy.confirmContinue}
-            </button>
+            <ConfirmContinueButton label={copy.confirmContinue} pendingLabel={copy.sending} />
           </form>
         </div>
       </div>

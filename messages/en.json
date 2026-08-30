@@ -451,7 +451,8 @@
     "themeLight": "Switch to light theme",
     "themeDark": "Switch to dark theme",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "loading": "Loading"
   },
   "auth": {
     "signIn": "Sign in to Puyer",

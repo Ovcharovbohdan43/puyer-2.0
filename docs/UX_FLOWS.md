@@ -388,6 +388,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ## Changelog
 
 ```
+[2026-08-30] – Added: Brand-green spinner on route transitions and pending buttons.
 [2026-08-30] – Added: `/settings` account profile, email change, optional password, deletion request.
 [2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
 [2026-08-30] – Changed: `/banned` redirects to `/dashboard` (or `/login`) when the ban is no longer in force.

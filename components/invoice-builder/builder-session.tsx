@@ -10,6 +10,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import {
   createDefaultBuilderState,
   isBuilderDirty,
@@ -412,7 +413,7 @@ export function PublicSession({ children }: { children: React.ReactNode }) {
                   disabled={authBusy}
                   className="rounded bg-[#006c49] py-3 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
                 >
-                  {authBusy ? copy.sending : copy.register}
+                  <PuyerBusyText busy={authBusy} busyLabel={copy.sending} idle={copy.register} />
                 </button>
                 <button
                   type="button"
@@ -420,7 +421,7 @@ export function PublicSession({ children }: { children: React.ReactNode }) {
                   className="rounded border border-black py-[9px] text-[12px] font-semibold tracking-[0.6px] text-black disabled:opacity-50"
                   onClick={() => void sendMagicLink()}
                 >
-                  {authBusy ? copy.sending : copy.logIn}
+                  <PuyerBusyText busy={authBusy} busyLabel={copy.sending} idle={copy.logIn} />
                 </button>
               </>
             ) : (
@@ -429,7 +430,7 @@ export function PublicSession({ children }: { children: React.ReactNode }) {
                 disabled={authBusy}
                 className="rounded bg-[#006c49] py-3 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
               >
-                {authBusy ? copy.sending : copy.continueEmail}
+                <PuyerBusyText busy={authBusy} busyLabel={copy.sending} idle={copy.continueEmail} />
               </button>
             )}
             <button

@@ -7,6 +7,7 @@ import { PencilSimpleIcon } from "@phosphor-icons/react/dist/csr/PencilSimple";
 import { TrashIcon } from "@phosphor-icons/react/dist/csr/Trash";
 import { XIcon } from "@phosphor-icons/react/dist/csr/X";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { Modal } from "@/components/ui/modal";
 import { dash, clientInitials } from "@/lib/dashboard/chrome";
@@ -206,7 +207,7 @@ export function ClientDrawer({ client, invoices, onClose }: ClientDrawerProps) {
               />
             </label>
             <button type="submit" disabled={busy} className={`${dash.btnPrimary} disabled:opacity-50`}>
-              {copy.addClientSave}
+              <PuyerBusyText busy={busy} busyLabel={t("header").loading} idle={copy.addClientSave} />
             </button>
           </form>
         ) : (

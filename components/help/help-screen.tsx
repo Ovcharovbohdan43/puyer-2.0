@@ -3,6 +3,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { t } from "@/lib/i18n";
 import { filterHelpArticles, helpArticles, helpCategories, type HelpArticle } from "@/lib/help/articles";
 import { HELP_TOPICS, MAX_HELP_MESSAGE, MAX_HELP_NAME } from "@/lib/help/input";
@@ -218,7 +219,7 @@ export function HelpScreen({ signedIn, email, name, tickets }: HelpScreenProps) 
                     disabled={pending}
                     className="rounded-lg bg-[#006C49] px-4 py-2 text-[12px] font-semibold text-white disabled:opacity-60"
                   >
-                    {pending ? copy.sending : copy.submit}
+                    <PuyerBusyText busy={pending} busyLabel={copy.sending} idle={copy.submit} />
                   </button>
                 </form>
               )}

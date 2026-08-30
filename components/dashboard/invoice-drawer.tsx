@@ -8,6 +8,7 @@ import { DownloadSimpleIcon } from "@phosphor-icons/react/dist/csr/DownloadSimpl
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/csr/PencilSimple";
 import { XIcon } from "@phosphor-icons/react/dist/csr/X";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { InvoiceTimeline, type TimelineEvent } from "@/components/dashboard/invoice-timeline";
 import { PuyerLogo } from "@/components/brand/puyer-logo";
 import { StatusPill } from "@/components/dashboard/status-pill";
@@ -266,7 +267,7 @@ export function InvoiceDrawer({ invoice, remindersEnabled, onClose }: InvoiceDra
             {copy.addClientClose}
           </button>
           <button type="button" disabled={busy} className={`${dash.btnPrimary} flex-1 disabled:opacity-50`} onClick={sendReminder}>
-            {copy.sendReminder}
+            <PuyerBusyText busy={busy} busyLabel={t("header").loading} idle={copy.sendReminder} />
           </button>
         </div>
       </Modal>

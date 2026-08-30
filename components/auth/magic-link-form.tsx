@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import type { AuthIntent } from "@/lib/auth/return-to";
 import { t } from "@/lib/i18n";
 import { isValidEmail } from "@/lib/invoices/validate";
@@ -223,13 +224,17 @@ export function MagicLinkForm({
         disabled={busy}
         className="rounded bg-puyer-green py-3 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
       >
-        {busy
-          ? copy.sending
-          : isRegister
-            ? copy.register
-            : method === "password"
-              ? copy.continuePassword
-              : copy.continueEmail}
+        <PuyerBusyText
+          busy={busy}
+          busyLabel={copy.sending}
+          idle={
+            isRegister
+              ? copy.register
+              : method === "password"
+                ? copy.continuePassword
+                : copy.continueEmail
+          }
+        />
       </button>
       {!isRegister ? (
         <button

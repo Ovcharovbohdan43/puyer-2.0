@@ -7,6 +7,7 @@ import { CheckCircleIcon } from "@phosphor-icons/react/dist/csr/CheckCircle";
 import { LightningIcon } from "@phosphor-icons/react/dist/csr/Lightning";
 import { ReceiptIcon } from "@phosphor-icons/react/dist/csr/Receipt";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { useBuilderSession } from "@/components/invoice-builder/builder-session";
 import { t } from "@/lib/i18n";
 
@@ -185,7 +186,7 @@ export function PricingSection() {
                       : "landing-btn--ghost border border-[#e2e8f0] text-black"
                   }`}
                 >
-                  {pending === plan.id ? billing.redirecting : plan.cta}
+                  <PuyerBusyText busy={pending === plan.id} busyLabel={billing.redirecting} idle={plan.cta} />
                 </button>
               </article>
             );

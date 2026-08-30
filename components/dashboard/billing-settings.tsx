@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { dash as ui } from "@/lib/dashboard/chrome";
 import { t } from "@/lib/i18n";
 
@@ -86,16 +87,16 @@ export function BillingSettings({
           {canCheckout ? (
             <>
               <button type="button" disabled={pending !== null} onClick={() => void checkout("PRO")} className={`${ui.btnPrimary} disabled:opacity-60`}>
-                {pending === "pro" ? copy.redirecting : copy.subscribePro}
+                <PuyerBusyText busy={pending === "pro"} busyLabel={copy.redirecting} idle={copy.subscribePro} />
               </button>
               <button type="button" disabled={pending !== null} onClick={() => void checkout("BUSINESS")} className={`${ui.btnSecondary} disabled:opacity-60`}>
-                {pending === "business" ? copy.redirecting : copy.subscribeBusiness}
+                <PuyerBusyText busy={pending === "business"} busyLabel={copy.redirecting} idle={copy.subscribeBusiness} />
               </button>
             </>
           ) : null}
           {hasCustomer ? (
             <button type="button" disabled={pending !== null} onClick={() => void openPortal()} className={`${ui.btnSecondary} disabled:opacity-60`}>
-              {pending === "portal" ? copy.redirecting : copy.manage}
+              <PuyerBusyText busy={pending === "portal"} busyLabel={copy.redirecting} idle={copy.manage} />
             </button>
           ) : null}
         </div>

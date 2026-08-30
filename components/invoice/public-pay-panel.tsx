@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { t } from "@/lib/i18n";
 
 type PublicPayPanelProps = {
@@ -86,7 +87,7 @@ export function PublicPayPanel({
               onClick={() => void startPay()}
               className="flex h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#1e293b] text-[16px] leading-6 font-semibold text-[#f8f9ff] hover:bg-[#0f172a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e293b] disabled:cursor-wait disabled:opacity-60"
             >
-              {pending ? connect.paying : pay.payInvoice}
+              <PuyerBusyText busy={pending} busyLabel={connect.paying} idle={pay.payInvoice} />
               {pending ? null : <ArrowIcon />}
             </button>
           ) : paid ? null : hasBankTransfer ? (

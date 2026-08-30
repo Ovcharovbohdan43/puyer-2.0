@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { AddClientFields } from "@/components/dashboard/add-client-fields";
 import { ClientDrawer } from "@/components/dashboard/client-drawer";
 import { KpiSparkline } from "@/components/dashboard/kpi-sparkline";
@@ -142,7 +143,7 @@ export function ClientsScreen({
             onPhone={setPhone}
           />
           <button type="submit" disabled={busy} className={`${dash.btnPrimary} self-start disabled:opacity-50`}>
-            {copy.addClientSave}
+            <PuyerBusyText busy={busy} busyLabel={t("header").loading} idle={copy.addClientSave} />
           </button>
         </form>
       ) : null}

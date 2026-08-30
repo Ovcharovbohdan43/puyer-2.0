@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
 import { PuyerLogo } from "@/components/brand/puyer-logo";
 import { t } from "@/lib/i18n";
@@ -107,7 +108,7 @@ export function InviteAcceptScreen({ token, orgName, inviteEmail, sessionEmail }
                 disabled={pending}
                 className="rounded-lg bg-[#006C49] px-4 py-2 text-[14px] font-semibold text-white"
               >
-                {copy.sendLink}
+                <PuyerBusyText busy={pending} busyLabel={t("header").loading} idle={copy.sendLink} />
               </button>
               {sent ? <p className="text-[14px] text-[#006C49]">{copy.linkSent}</p> : null}
             </form>
@@ -118,7 +119,7 @@ export function InviteAcceptScreen({ token, orgName, inviteEmail, sessionEmail }
               onClick={() => void accept()}
               className="rounded-lg bg-[#006C49] px-4 py-2 text-[14px] font-semibold text-white"
             >
-              {copy.accept}
+              <PuyerBusyText busy={pending} busyLabel={t("header").loading} idle={copy.accept} />
             </button>
           ) : (
             <div className="flex flex-col gap-2">

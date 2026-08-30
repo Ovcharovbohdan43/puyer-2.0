@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { dash as ui } from "@/lib/dashboard/chrome";
 import { t } from "@/lib/i18n";
 
@@ -97,7 +98,7 @@ export function StripeSettings({ isOwner, status, chargesEnabled, canConnect, em
           <div className="flex flex-wrap gap-3">
             {status !== "CONNECTED" ? (
               <button type="button" disabled={pending} onClick={() => void onboard()} className={`${ui.btnPrimary} disabled:opacity-60`}>
-                {pending ? copy.connecting : copy.connect}
+                <PuyerBusyText busy={pending} busyLabel={copy.connecting} idle={copy.connect} />
               </button>
             ) : null}
             {status === "CONNECTED" || status === "ACTION_REQUIRED" || status === "CONNECTING" ? (

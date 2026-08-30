@@ -5,6 +5,7 @@ import { flushSync } from "react-dom";
 import Link from "next/link";
 
 import { PuyerLogo } from "@/components/brand/puyer-logo";
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
 import { CURRENCIES } from "@/lib/invoices/currencies";
 import { timezoneChoices } from "@/lib/onboarding/options";
@@ -365,7 +366,7 @@ export function OnboardingScreen({
                 disabled={pending}
                 className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-xl bg-[#006C49] px-5 text-[13px] font-semibold text-white disabled:opacity-60"
               >
-                {pending ? copy.saving : lastStep ? copy.finish : copy.continue}
+                <PuyerBusyText busy={pending} busyLabel={copy.saving} idle={lastStep ? copy.finish : copy.continue} />
               </button>
             </div>
           </form>

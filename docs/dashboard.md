@@ -20,6 +20,8 @@ Drawer Edit goes to `/invoices/:id/edit` for unpaid invoices (including sent/vie
 
 There is **no** moon/sun control in the app. Visiting the dashboard forces `html[data-theme=light]`.
 
+Navigating between app routes shows a centered forest-green spinner (`PuyerRouteLoading`). Buttons that wait on the network show the same spinner next to their pending copy.
+
 ## How to use
 
 ```bash
@@ -76,18 +78,19 @@ npm run lint
 
 ## Modules
 
-- `app/(dashboard)/*`, `components/dashboard/*`
+- `app/(dashboard)/*`, `components/dashboard/*`, `components/brand/puyer-spinner.tsx`
 - `lib/dashboard/*`, `lib/clients/list-view.ts`, `lib/clients/input.ts`, `lib/auth/protected-routes.ts`, `proxy.ts`
 - `messages/en.json` (`dashboard`)
 - `public/app/*.svg`
 
 ## Version
 
-1.2.17 — 2026-08-30
+1.2.18 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Brand-green spinner on dashboard route loads and pending actions.
 [2026-08-30] – Changed: Settings is a full account page (profile, email, password, deletion) with Stripe embedded.
 [2026-08-30] – Added: Payments empty state with illustration and next-step links.
 [2026-08-30] – Added: First-login `/onboarding` gate before the app shell.

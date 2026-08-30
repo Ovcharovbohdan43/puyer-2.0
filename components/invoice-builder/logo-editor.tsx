@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { PuyerBusyText, PuyerSpinner } from "@/components/brand/puyer-spinner";
 import { Modal } from "@/components/ui/modal";
 import { floodClearBackground } from "@/lib/invoices/logo-bg";
 import { clampLogoScale, LOGO_SCALE_MAX, LOGO_SCALE_MIN } from "@/lib/invoices/logo";
@@ -215,9 +216,16 @@ function LogoEditorSession({
             }}
           />
         ) : (
-          <p className="flex h-full items-center justify-center text-[13px] text-puyer-muted">
-            {error ? copy.logoEmpty : copy.logoLoading}
-          </p>
+          <div className="flex h-full flex-col items-center justify-center gap-2 text-[13px] text-puyer-muted">
+            {error ? (
+              copy.logoEmpty
+            ) : (
+              <>
+                <PuyerSpinner size={24} />
+                {copy.logoLoading}
+              </>
+            )}
+          </div>
         )}
       </div>
       <label className="mt-4 flex flex-col gap-1 text-[14px] font-medium text-[#0b1c30]">
@@ -267,7 +275,7 @@ function LogoEditorSession({
           onClick={() => void apply()}
           disabled={!working || busy}
         >
-          {busy ? copy.logoApplying : copy.logoApply}
+          <PuyerBusyText busy={busy} busyLabel={copy.logoApplying} idle={copy.logoApply} />
         </button>
       </div>
     </Modal>

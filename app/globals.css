@@ -768,3 +768,36 @@ html[data-theme="dark"] .app-shell {
     view-transition-name: none;
   }
 }
+
+@keyframes puyer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.puyer-spinner {
+  display: block;
+  flex-shrink: 0;
+  color: var(--puyer-green);
+  animation: puyer-spin 0.75s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.puyer-spinner--inherit {
+  color: currentColor;
+}
+
+.puyer-loading {
+  display: flex;
+  min-height: min(60dvh, 28rem);
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .puyer-spinner {
+    animation-duration: 1.6s;
+  }
+}

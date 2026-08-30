@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { t } from "@/lib/i18n";
 
 export type TeamMemberRow = {
@@ -146,7 +147,7 @@ export function TeamScreen({
             disabled={pending}
             className="rounded-lg bg-[#006C49] px-4 py-2 text-[12px] font-semibold text-white disabled:opacity-60"
           >
-            {copy.invite}
+            <PuyerBusyText busy={pending} busyLabel={t("header").loading} idle={copy.invite} />
           </button>
         </form>
       ) : null}

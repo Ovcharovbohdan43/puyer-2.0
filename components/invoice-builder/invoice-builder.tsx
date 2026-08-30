@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { PuyerBusyText, PuyerSpinner } from "@/components/brand/puyer-spinner";
 import { useBuilderSession } from "@/components/invoice-builder/builder-session";
 import { CurrencySelect } from "@/components/invoice-builder/currency-select";
 import { InvoicePreview } from "@/components/invoice-builder/invoice-preview";
@@ -683,7 +684,7 @@ export function InvoiceBuilder({
           className="builder-cta flex flex-1 items-center justify-center gap-1 rounded bg-puyer-green py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => void persistIfValid()}
         >
-          {persisting ? copy.saving : copy.save}
+          <PuyerBusyText busy={Boolean(persisting)} busyLabel={copy.saving} idle={copy.save} />
         </button>
       ) : null}
       <button
@@ -692,8 +693,18 @@ export function InvoiceBuilder({
         className="builder-cta flex flex-1 cursor-pointer items-center justify-center gap-1 rounded bg-puyer-green py-4 text-[12px] font-semibold tracking-[0.6px] text-white disabled:cursor-not-allowed disabled:opacity-50"
         onClick={() => void runDownloadOrShare("download")}
       >
-        <FigmaIcon src="/landing/download.svg" alt="" width={12} height={12} />
-        {busy === "preparing" ? copy.preparing : busy === "ready" ? copy.ready : copy.downloadPdf}
+        {busy === "preparing" || busy === "ready" ? (
+          <PuyerBusyText
+            busy
+            busyLabel={busy === "preparing" ? copy.preparing : copy.ready}
+            idle={copy.downloadPdf}
+          />
+        ) : (
+          <>
+            <FigmaIcon src="/landing/download.svg" alt="" width={12} height={12} />
+            {copy.downloadPdf}
+          </>
+        )}
       </button>
       <div className="relative">
         <button
@@ -703,7 +714,11 @@ export function InvoiceBuilder({
           className="builder-cta flex cursor-pointer items-center justify-center rounded bg-puyer-green px-[17px] py-[15px] text-white disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => void runDownloadOrShare("share")}
         >
-          <FigmaIcon src="/landing/share.svg" alt="" width={15} height={17} />
+          {busy ? (
+            <PuyerSpinner size={16} tone="inherit" />
+          ) : (
+            <FigmaIcon src="/landing/share.svg" alt="" width={15} height={17} />
+          )}
         </button>
         {shareOpen ? (
           <div className="absolute bottom-full right-0 mb-2 w-48 rounded border border-[#e2e8f0] bg-white p-2 shadow-lg">

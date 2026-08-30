@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
 import { StripeSettings } from "@/components/dashboard/stripe-settings";
 import { dash as ui } from "@/lib/dashboard/chrome";
@@ -202,7 +203,7 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
           {profileError ? <p className="text-[12px] text-[#DC2626]">{profileError}</p> : null}
           {profileMessage ? <p className="text-[12px] text-[#006C49]">{profileMessage}</p> : null}
           <button type="button" disabled={profileBusy} onClick={() => void saveProfile()} className={`${ui.btnPrimary} w-fit disabled:opacity-60`}>
-            {profileBusy ? copy.saving : copy.saveProfile}
+            <PuyerBusyText busy={profileBusy} busyLabel={copy.saving} idle={copy.saveProfile} />
           </button>
         </section>
 
@@ -225,7 +226,7 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
           {emailError ? <p className="text-[12px] text-[#DC2626]">{emailError}</p> : null}
           {emailMessage ? <p className="text-[12px] text-[#006C49]">{emailMessage}</p> : null}
           <button type="button" disabled={emailBusy} onClick={() => void changeEmail()} className={`${ui.btnPrimary} w-fit disabled:opacity-60`}>
-            {emailBusy ? copy.sending : copy.sendEmailChange}
+            <PuyerBusyText busy={emailBusy} busyLabel={copy.sending} idle={copy.sendEmailChange} />
           </button>
         </section>
 
@@ -255,7 +256,7 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
           {passwordError ? <p className="text-[12px] text-[#DC2626]">{passwordError}</p> : null}
           {passwordMessage ? <p className="text-[12px] text-[#006C49]">{passwordMessage}</p> : null}
           <button type="button" disabled={passwordBusy} onClick={() => void changePassword()} className={`${ui.btnPrimary} w-fit disabled:opacity-60`}>
-            {passwordBusy ? copy.saving : copy.savePassword}
+            <PuyerBusyText busy={passwordBusy} busyLabel={copy.saving} idle={copy.savePassword} />
           </button>
         </section>
 
@@ -298,7 +299,7 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
               ) : null}
               {deleteError ? <p className="text-[12px] text-[#DC2626]">{deleteError}</p> : null}
               <button type="button" disabled={deleteBusy} onClick={() => void submitDeletion("cancel")} className={`${ui.btnSecondary} w-fit disabled:opacity-60`}>
-                {deleteBusy ? copy.saving : copy.cancelDeletion}
+                <PuyerBusyText busy={deleteBusy} busyLabel={copy.saving} idle={copy.cancelDeletion} />
               </button>
             </>
           ) : (
@@ -318,7 +319,7 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
                 onClick={() => void submitDeletion("request")}
                 className="inline-flex h-10 w-fit items-center rounded-lg bg-[#b42318] px-4 text-[14px] font-semibold text-white disabled:opacity-60"
               >
-                {deleteBusy ? copy.saving : copy.requestDeletion}
+                <PuyerBusyText busy={deleteBusy} busyLabel={copy.saving} idle={copy.requestDeletion} />
               </button>
             </>
           )}
