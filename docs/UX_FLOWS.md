@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.35 — 2026-08-30
+> **Version:** 1.0.36 — 2026-08-30
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -81,6 +81,15 @@ More sheet: Reports, Settings, Team, Billing, Notifications, Help, Sign out.
 Logo (auth) → `/dashboard` (unsaved modal if builder dirty).
 
 Sign out (sidebar, More sheet, Settings, error boundary) → `POST /api/auth/signout` (clears Auth cookies) → `/login`.
+
+### Settings `/settings`
+
+```
+Sidebar Settings
+→ UI: Account settings — profile (name, timezone, owner business), change email (confirm link), optional password, Stripe Connect, links to Billing/Team/Notifications/Help, deletion request
+→ SERVER: PATCH /api/account/profile, POST /api/account/email, POST /api/account/password, POST /api/account/deletion
+→ SUCCESS: toasts/inline copy; email change waits for confirm; deletion emails user + support inbox
+```
 
 ### Help `/help`
 
@@ -378,6 +387,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ## Changelog
 
 ```
+[2026-08-30] – Added: `/settings` account profile, email change, optional password, deletion request.
 [2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
 [2026-08-30] – Added: Temporary/permanent user or workspace bans; official reason email; `/banned`.
 [2026-08-30] – Added: Illustrated empty state on `/payments`.

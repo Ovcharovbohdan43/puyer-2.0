@@ -8,7 +8,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 
 - Public login is `/login`: split layout, email magic link (Sign in / Create account). Both columns use a white canvas. There is no theme toggle on this page. The right panel is `public/auth/login-hero.png`. The form links to Terms and Privacy. Download/Share on the landing builder still use a modal.
 - Sign out is in the app sidebar, mobile More sheet, Settings, and the dashboard error boundary. It `POST`s `/api/auth/signout` so `@supabase/ssr` can clear httpOnly cookies, then sends the browser to `/login`.
-- `POST /api/auth/otp` calls `signInWithOtp({ email })` only. No passwords. Hosted Auth renders the Magic Link mailer template and sends it over Resend SMTP. HTML in git is applied with `npm run auth:push-templates`, not by committing `config.toml`. The optional Send Email hook is an alternative, not a second path.
+- `POST /api/auth/otp` calls `signInWithOtp({ email })`. Settings can set an optional password; `/login` can `POST /api/auth/password` (`signInWithPassword`). Register stays magic-link.
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
 - `GET /auth/callback` and `GET /verify` copy query params to `/auth/confirm` and **do not** consume the token. The user clicks **Continue to Puyer**, which `POST`s `/auth/confirm/complete` (`token` / `token_hash` / PKCE `code`). Email scanners that only GET the link no longer burn it. GoTrue’s `token=` query is accepted (not only `token_hash`).
 - Public Supabase helpers live in `utils/supabase/*`. `lib/auth/browser.ts` and `lib/auth/server.ts` wrap them so marketing still loads when keys are missing (`trySupabasePublicEnv()`).
@@ -79,7 +79,7 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 - `prisma/schema.prisma`, `lib/db/prisma.ts`
 - `utils/supabase/*`, `lib/auth/*`, `lib/authorization/*`, `lib/identity/*`, `lib/errors`, `lib/observability`, `lib/audit`
-- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/auth/confirm/page.tsx`, `app/(auth)/verify/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`, `app/api/auth/signout/route.ts`
+- `proxy.ts`, `app/api/auth/otp/route.ts`, `app/api/auth/password/route.ts`, `app/(auth)/auth/callback/route.ts`, `app/(auth)/auth/confirm/page.tsx`, `app/(auth)/verify/route.ts`, `app/(auth)/login/page.tsx`, `app/api/auth/send-email/route.ts`, `app/api/auth/signout/route.ts`
 - `lib/email/auth-templates.ts`, `lib/email/layout.ts`, `lib/email/hosted-auth-templates.ts`, `lib/email/send-email-hook.ts`, `lib/auth/login-path.ts`, `supabase/templates/*`, `scripts/push-auth-email-templates.mjs`
 - `components/auth/*`
 - `app/(dashboard)/*`, `app/(onboarding)/*`, `components/dashboard/*`
@@ -87,11 +87,12 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.21 — 2026-08-30
+1.0.22 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Optional password and email-change from Settings; login can use password.
 [2026-08-30] – Added: Account/workspace bans redirect to `/banned` and send an official reason email.
 [2026-08-30] – Added: First-login `/onboarding` before the dashboard when `onboardingCompletedAt` is null.
 [2026-08-29] – Changed: `/help` is public; app routes still require a session.

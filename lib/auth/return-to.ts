@@ -1,4 +1,4 @@
-const ALLOWED_RETURN_TO = new Set(["/dashboard", "/invoices/new", "/pricing"]);
+const ALLOWED_RETURN_TO = new Set(["/dashboard", "/invoices/new", "/pricing", "/settings"]);
 
 export type AuthIntent = "login" | "download" | "share" | "subscribe";
 

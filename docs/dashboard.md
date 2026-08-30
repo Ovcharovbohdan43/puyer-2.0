@@ -35,7 +35,8 @@ Unauthenticated visits to `/dashboard`, `/invoices`, `/clients`, `/payments`, `/
 - Overview Create Invoice / sidebar New Invoice → `/invoices/new`
 - Overview Add Client → modal with name, email (required), and phone; stay on Overview
 - Overview Reminder → Pro: automatic schedule copy; Free: upgrade + `/billing`
-- Overview Connect Stripe → `/settings`
+- Overview Connect Stripe → `/settings` (account page includes Connect)
+- Settings → profile, email change, optional password, deletion request, Stripe
 - Overview View All or a recent row → `/invoices` or `/invoices?invoice=`
 - Invoices Filter cycles All → Pending → Paid → Overdue
 - Click an invoice row → right preview drawer; close clears `?invoice=`
@@ -82,11 +83,12 @@ npm run lint
 
 ## Version
 
-1.2.16 — 2026-08-30
+1.2.17 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Changed: Settings is a full account page (profile, email, password, deletion) with Stripe embedded.
 [2026-08-30] – Added: Payments empty state with illustration and next-step links.
 [2026-08-30] – Added: First-login `/onboarding` gate before the app shell.
 [2026-08-29] – Fixed: Revenue Trends curve stays inside the card; KPI and trend charts animate in (reduced-motion off).

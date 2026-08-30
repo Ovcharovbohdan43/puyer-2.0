@@ -54,11 +54,12 @@ Playwright `e2e/pay-path.spec.ts` expects `/onboarding` to redirect to `/login` 
 
 ## Version
 
-1.0.1 — 2026-08-30
+1.0.2 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Changed: Name, timezone, and business details can be edited later in Account settings.
 [2026-08-30] – Fixed: Timezone select and Use this device sit on one aligned row.
 [2026-08-30] – Added: Stepped workspace onboarding after first sign-in.
 ```

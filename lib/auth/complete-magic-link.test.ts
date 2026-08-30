@@ -18,7 +18,14 @@ describe("magic link params", () => {
 
   it("tries the URL type first, then magiclink and email", () => {
     expect(otpTypesToTry("magiclink")[0]).toBe("magiclink");
-    expect(otpTypesToTry("signup")).toEqual(["signup", "magiclink", "email"]);
+    expect(otpTypesToTry("signup")).toEqual([
+      "signup",
+      "magiclink",
+      "email",
+      "email_change",
+      "recovery",
+    ]);
+    expect(otpTypesToTry("email_change")[0]).toBe("email_change");
     expect(otpTypesToTry(null)[0]).toBe("magiclink");
   });
 });

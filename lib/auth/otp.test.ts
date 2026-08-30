@@ -36,6 +36,7 @@ describe("auth return path", () => {
   it("rejects open redirects", () => {
     expect(sanitizeReturnTo("https://evil.example")).toBe("/dashboard");
     expect(sanitizeReturnTo("/")).toBe("/dashboard");
+    expect(sanitizeReturnTo("/settings")).toBe("/settings");
     expect(sanitizeReturnTo("/pricing")).toBe("/pricing");
     expect(sanitizeReturnTo("/dashboard")).toBe("/dashboard");
     expect(sanitizeReturnTo("/invite/" + "ab".repeat(32))).toBe("/invite/" + "ab".repeat(32));

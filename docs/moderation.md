@@ -22,7 +22,10 @@ Enforcement: `requireSession` and dashboard / onboarding / login layouts call `f
 
 Email: `sendBanNoticeEmail` uses the stored reason, temporary end date, Help Center, and `support@puyer.org` (or `HELP_INBOX`). If Resend is unset, the ban still saves and a warning is logged.
 
-Ops API (not in the product UI): `POST /api/admin/bans` with `Authorization: Bearer $PLATFORM_ADMIN_SECRET` (32+ characters).
+Ops API (not in the product UI): `Authorization: Bearer $PLATFORM_ADMIN_SECRET` (32+ characters).
+
+- `GET /api/admin/bans?target=USER` or `?target=ORGANIZATION` — list accounts (email/name/workspace, up to 2000). Used by the ops script so you do not paste UUIDs.
+- `POST /api/admin/bans` — apply or lift a ban.
 
 ```json
 {
@@ -43,7 +46,7 @@ SQL: [`supabase/migrations/20260830140000_account_bans.sql`](../supabase/migrati
 
 1. Apply the migration and `npx prisma generate`.
 2. Set `PLATFORM_ADMIN_SECRET` and `EMAIL_FROM` / Resend so notices send.
-3. POST the JSON above. The recipient gets the official letter; they see `/banned` after sign-in.
+3. GET the list or POST the JSON above. The recipient gets the official letter; they see `/banned` after sign-in.
 
 ## Examples
 
@@ -73,10 +76,11 @@ npm run typecheck
 
 ## Version
 
-1.0.0 — 2026-08-30
+1.0.1 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: GET /api/admin/bans?target=USER|ORGANIZATION for the ops account list.
 [2026-08-30] – Added: User and organization bans (temporary/permanent) with stored reason, notice email, `/banned`, and admin API.
 ```

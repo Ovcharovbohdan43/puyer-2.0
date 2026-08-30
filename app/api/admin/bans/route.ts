@@ -2,11 +2,25 @@ import { NextResponse } from "next/server";
 
 import { handleRoute } from "@/lib/http/route";
 import { clientIp } from "@/lib/http/ip";
-import { applyAccountBan, assertPlatformAdmin, liftAccountBan } from "@/lib/moderation/bans";
+import { applyAccountBan, assertPlatformAdmin, liftAccountBan, listAdminAccounts } from "@/lib/moderation/bans";
 import { ValidationError } from "@/lib/errors";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
 
 export const runtime = "nodejs";
+
+export async function GET(request: Request) {
+  return handleRoute(async () => {
+    assertPlatformAdmin(request);
+    await requireRateLimit("platform-admin", clientIp(request));
+    const target = new URL(request.url).searchParams.get("target");
+    const targetType = target === "ORGANIZATION" ? "ORGANIZATION" : target === "USER" ? "USER" : null;
+    if (!targetType) {
+      throw new ValidationError("target must be USER or ORGANIZATION.");
+    }
+    const accounts = await listAdminAccounts(targetType);
+    return NextResponse.json({ ok: true, accounts });
+  }, request);
+}
 
 function parseDate(value: unknown): Date | null {
   if (typeof value !== "string" || !value.trim()) {

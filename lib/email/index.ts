@@ -13,6 +13,7 @@ import { appBaseUrl } from "@/lib/stripe/client";
 import type { ReminderKind } from "@/lib/reminders/evaluate";
 import { reminderBodyLines, reminderFromAddress } from "@/lib/reminders/message";
 import { inviteAcceptUrl, inviteFromAddress } from "@/lib/team/invite-email";
+import { deletionAckText, deletionInboxText } from "@/lib/account/notice";
 import { banNoticeParagraphs, banNoticeSubject, banNoticeText } from "@/lib/moderation/notice";
 
 export async function sendReminderEmail(input: {
@@ -249,5 +250,46 @@ export async function sendBanNoticeEmail(input: {
       ctaUrl: helpCenterUrl(),
     }),
     idempotencyKey: input.idempotencyKey,
+  });
+}
+
+export async function sendAccountDeletionEmails(input: {
+  requestId: string;
+  email: string;
+  name: string;
+  reason: string;
+  organizationName: string;
+}) {
+  const from = helpFromAddress();
+  const inbox = helpInboxAddress();
+  await deliverEmail({
+    to: inbox,
+    from,
+    subject: `Account deletion request (${input.requestId.slice(0, 8)})`,
+    text: deletionInboxText(input),
+    html: puyerEmailHtml({
+      preview: "Account deletion request",
+      heading: "Account deletion request",
+      bodyHtml:
+        puyerParagraph(`User: ${input.name} <${input.email}>`) +
+        puyerParagraph(`Workspace: ${input.organizationName}`) +
+        puyerParagraph(`Reference: ${input.requestId}`) +
+        puyerParagraph(input.reason),
+    }),
+    idempotencyKey: `account-deletion-inbox:${input.requestId}`,
+  });
+  return deliverEmail({
+    to: input.email,
+    from,
+    subject: "We received your Puyer account deletion request",
+    text: deletionAckText({ name: input.name, requestId: input.requestId }),
+    html: puyerEmailHtml({
+      preview: "We received your account deletion request",
+      heading: "Deletion request received",
+      bodyHtml: puyerParagraph(deletionAckText({ name: input.name, requestId: input.requestId })),
+      ctaLabel: "Open Help Center",
+      ctaUrl: helpCenterUrl(),
+    }),
+    idempotencyKey: `account-deletion-ack:${input.requestId}`,
   });
 }

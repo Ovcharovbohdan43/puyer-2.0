@@ -24,8 +24,10 @@ export function MagicLinkForm({
 }: MagicLinkFormProps) {
   const copy = t("auth");
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  const [method, setMethod] = useState<"link" | "password">("link");
   const [screen, setScreen] = useState<"form" | "inbox">("form");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [resendUntil, setResendUntil] = useState(0);
@@ -41,6 +43,35 @@ export function MagicLinkForm({
 
   const remainingCooldown = Math.max(0, Math.ceil((resendUntil - now) / 1000));
   const isRegister = mode === "register";
+
+  async function signInWithPassword() {
+    if (busy) {
+      return;
+    }
+    if (!isValidEmail(email) || password.length < 12) {
+      setEmailError(copy.passwordFailed);
+      return;
+    }
+    setBusy(true);
+    setEmailError(null);
+    try {
+      const response = await fetch("/api/auth/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const payload = (await response.json()) as { ok?: boolean; error?: string };
+      if (!response.ok) {
+        setEmailError(payload.error ?? copy.passwordFailed);
+        return;
+      }
+      window.location.assign("/dashboard");
+    } catch {
+      setEmailError(copy.passwordFailed);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function sendMagicLink() {
     if (busy) {
@@ -116,6 +147,10 @@ export function MagicLinkForm({
       className="flex flex-col gap-5"
       onSubmit={(event) => {
         event.preventDefault();
+        if (!isRegister && method === "password") {
+          void signInWithPassword();
+          return;
+        }
         void sendMagicLink();
       }}
     >
@@ -166,13 +201,48 @@ export function MagicLinkForm({
         {emailError ? <span className="text-[12px] text-[#b91c1c]">{emailError}</span> : null}
       </label>
 
+      {!isRegister && method === "password" ? (
+        <label className="flex flex-col gap-1">
+          <span className="text-[16px] font-bold leading-6 text-puyer-ink">{copy.password}</span>
+          <input
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              setEmailError(null);
+            }}
+            className="rounded border border-puyer-border bg-puyer-card px-[9px] py-[11px] text-[16px] text-puyer-ink"
+            placeholder={copy.passwordPlaceholder}
+          />
+        </label>
+      ) : null}
+
       <button
         type="submit"
         disabled={busy}
         className="rounded bg-puyer-green py-3 text-[12px] font-semibold tracking-[0.6px] text-white disabled:opacity-50"
       >
-        {busy ? copy.sending : isRegister ? copy.register : copy.continueEmail}
+        {busy
+          ? copy.sending
+          : isRegister
+            ? copy.register
+            : method === "password"
+              ? copy.continuePassword
+              : copy.continueEmail}
       </button>
+      {!isRegister ? (
+        <button
+          type="button"
+          className="text-[12px] font-semibold text-puyer-ink underline-offset-2 hover:underline"
+          onClick={() => {
+            setMethod(method === "password" ? "link" : "password");
+            setEmailError(null);
+          }}
+        >
+          {method === "password" ? copy.useMagicLink : copy.usePassword}
+        </button>
+      ) : null}
       <p className="text-[12px] leading-4 text-puyer-muted">
         {copy.legalLead}{" "}
         <Link href="/terms" className="font-medium text-puyer-ink underline-offset-2 hover:underline">

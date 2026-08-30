@@ -22,7 +22,7 @@ export function otpTypesToTry(type: string | null): EmailOtpType[] {
   if (type && OTP_TYPES.has(type)) {
     ordered.push(type as EmailOtpType);
   }
-  for (const fallback of ["magiclink", "email", "signup"] as const) {
+  for (const fallback of ["magiclink", "email", "signup", "email_change", "recovery"] as const) {
     if (!ordered.includes(fallback)) {
       ordered.push(fallback);
     }

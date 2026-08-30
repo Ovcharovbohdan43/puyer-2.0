@@ -7,7 +7,7 @@ Rate-limit every listed surface, validate uploads before they touch Storage, kee
 ## Description
 
 - Rate limits: named policies in `lib/rate-limit/policies.ts`. In-process sliding window by default. If `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are set, a fixed-window `INCR`/`EXPIRE NX` pipeline is used (Context7 `/websites/upstash_redis`, 2026-08-28). Redis errors fail open to in-process memory so Stripe webhooks are not blocked by an outage.
-- Surfaces: magic link (email + IP), public invoice GET, public PDF, auth PDF, pay session, invoice/client writes, send/share mark-sent, **manual reminder**, team, **help contact**, notifications, Connect/platform Stripe, webhooks (300/min/IP so Stripe retries still succeed), **logo upload**, **platform admin bans**.
+- Surfaces: magic link (email + IP), **password login**, public invoice GET, public PDF, auth PDF, pay session, invoice/client writes, send/share mark-sent, **manual reminder**, team, **help contact**, notifications, Connect/platform Stripe, webhooks (300/min/IP so Stripe retries still succeed), **logo upload**, **platform admin bans**, **account profile/email/password/deletion**.
 - CSRF: mutating requests with an `Origin` header must match the request host or `NEXT_PUBLIC_APP_URL`. Missing Origin (webhooks, curl) is allowed.
 - Uploads: `lib/uploads/validate.ts` — JPEG/PNG/WebP, 2 MB, sanitized names, magic-byte sniff. `POST /api/logos` writes to public `org-logos` after that gate (service role).
 - Logs: JSON lines, secret field names (including IBAN/bank keys), and `sk_` / `pk_` / `whsec_` / `Bearer` values redacted. API errors include `x-request-id`.
@@ -52,11 +52,12 @@ E2E: `npm run test:e2e`. Magic-link completion needs a real inbox; CI does not s
 
 ## Version
 
-1.0.8 — 2026-08-30
+1.0.9 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Account settings and password-login rate limits.
 [2026-08-30] – Added: `platform-admin` limit for Trust & Safety bans.
 [2026-08-30] – Added: `logo-upload` limit and Storage write for `POST /api/logos`.
 [2026-08-29] – Added: `help-contact-ip` and `help-contact-email` limits for `POST /api/help`.

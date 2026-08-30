@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { banNoticeSubject, banNoticeText } from "@/lib/moderation/notice";
-import { clipBanReason, isBanInForce, isUsableBanReason } from "@/lib/moderation/status";
+import { clipBanReason, isBanInForce, isUsableBanReason, formatAdminAccountLabel } from "@/lib/moderation/status";
 
 describe("isBanInForce", () => {
   it("treats an active permanent ban as in force", () => {
@@ -41,6 +41,17 @@ describe("isBanInForce", () => {
     expect(isUsableBanReason("short")).toBe(false);
     expect(isUsableBanReason("  Abuse of invoicing to send spam.  ")).toBe(true);
     expect(clipBanReason("  two   spaces  ")).toBe("two spaces");
+  });
+
+  it("builds an ops list label with an active-ban marker", () => {
+    expect(
+      formatAdminAccountLabel({
+        title: "ada@example.com (Ada)",
+        detail: "Acme",
+        banned: true,
+      }),
+    ).toBe("ada@example.com (Ada) — Acme — BAN");
+    expect(formatAdminAccountLabel({ title: "Ada Ltd", detail: "FREE", banned: false })).toBe("Ada Ltd — FREE");
   });
 });
 

@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.16  
+> **Version:** 1.4.17  
 > **Date:** 2026-08-30  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -103,7 +103,7 @@ The **code** must enforce this. Documentation is not enough.
 | UI | Tailwind CSS + shadcn/ui | Fast, accessible, consistent tokens, dark/light |
 | DB | **Supabase Postgres** | User-mandated. Managed Postgres, Auth, Storage, RLS, backups |
 | ORM | Prisma | Migrations, relations, type-safe queries, transaction APIs |
-| Auth | Supabase Auth + `@supabase/ssr`, **email magic link only** (`signInWithOtp`) | Spec: email-first, no passwords. Current SSR clients, not legacy auth helpers |
+| Auth | Supabase Auth + `@supabase/ssr`, **email magic link default** (`signInWithOtp`); optional password after Settings | Spec: email-first. Current SSR clients, not legacy auth helpers |
 | Files | Supabase Storage | Logos + generated PDFs. Signed URLs. No files in Postgres |
 | Jobs | **Inngest** | Durable, idempotent, retries, cron, works on Vercel without a second runtime |
 | Rate limit / cache | Upstash Redis | Serverless-native, used for rate limits and short-lived locks |
@@ -115,7 +115,7 @@ The **code** must enforce this. Documentation is not enough.
 | Tests | Vitest (unit/integration) + Playwright (e2e) | Required coverage listed in §16 |
 | Hosting | **Vercel** (app) + **Supabase** (data plane) + **Inngest Cloud** (orchestration) | See §4 |
 
-**Not in v1:** passwords, OAuth social login (may add later), destination charges, marketplace features, platform refunds, microservices.
+**Not in v1:** OAuth social login (may add later), destination charges, marketplace features, platform refunds, microservices. Passwords are **optional** after sign-in (Settings); magic link remains the default.
 
 ### Context7 (mandatory)
 
@@ -991,7 +991,7 @@ Do not start a later phase until the previous phase’s tests/typecheck are gree
 ### Phase 1 — Identity and tenancy
 
 - `@supabase/ssr`: `createBrowserClient` / `createServerClient` in `utils/supabase/*`. Cookie adapter uses Next `request.cookies.getAll()` / `setAll` (Context7 `/supabase/supabase` Next.js prompt). `parseCookieHeader` is for non-Next runtimes.
-- Magic link only: `signInWithOtp({ email })` — do not copy password examples from SSR snippets
+- Magic link is the default: `signInWithOtp({ email })`. Settings can set an optional password; `/login` also offers `signInWithPassword`.
 - Public `/login` is a split page (email form + invoice hero). Download/Share still use the landing modal.
 - User / Organization / Member / BusinessProfile
 - Session refresh in Next.js 16 `proxy.ts` (deprecated filename: `middleware.ts`) via `updateSession` + `auth.getClaims()`. Do not login-gate public marketing routes.
@@ -1333,6 +1333,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Fixed: Help finds the Resend key by scanning env names for `re_`; skip logs include `resendNames`.
   Docs: docs/help.md.
+
+[2026-08-30] – Added: Account settings (profile, email change, optional password, deletion request).
+  Docs: docs/account.md, docs/auth.md, docs/UX_FLOWS.md.
 
 [2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
   Docs: docs/invoice-builder.md, docs/UX_FLOWS.md, docs/invoices.md, docs/stripe-connect.md.

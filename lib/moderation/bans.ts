@@ -8,7 +8,7 @@ import { writeAuditLog } from "@/lib/audit";
 import { prisma } from "@/lib/db/prisma";
 import { sendBanNoticeEmail } from "@/lib/email";
 import { ForbiddenError, UnauthorizedError, ValidationError } from "@/lib/errors";
-import { isBanInForce, isUsableBanReason, clipBanReason } from "@/lib/moderation/status";
+import { isBanInForce, isUsableBanReason, clipBanReason, formatAdminAccountLabel } from "@/lib/moderation/status";
 import { logger } from "@/lib/observability/logger";
 
 const UUID_RE =
@@ -69,6 +69,57 @@ export async function assertNotBanned(userId: string): Promise<void> {
   if (ban) {
     throw new BannedError();
   }
+}
+
+export type AdminAccountListItem = {
+  id: string;
+  label: string;
+};
+
+export async function listAdminAccounts(targetType: BanTargetType): Promise<AdminAccountListItem[]> {
+  const now = new Date();
+  if (targetType === "USER") {
+    const rows = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 2000,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        memberships: { select: { organization: { select: { name: true } } } },
+        bans: { where: { status: "ACTIVE" }, select: { kind: true, status: true, endsAt: true } },
+      },
+    });
+    return rows.map((row) => {
+      const title = row.name ? `${row.email} (${row.name})` : row.email;
+      const orgs = row.memberships.map((m) => m.organization.name).filter(Boolean).join(", ");
+      const banned = row.bans.some((ban) => isBanInForce(ban, now));
+      return { id: row.id, label: formatAdminAccountLabel({ title, detail: orgs || undefined, banned }) };
+    });
+  }
+  const rows = await prisma.organization.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 2000,
+    select: {
+      id: true,
+      name: true,
+      plan: true,
+      members: { select: { user: { select: { email: true } } } },
+      bans: { where: { status: "ACTIVE" }, select: { kind: true, status: true, endsAt: true } },
+    },
+  });
+  return rows.map((row) => {
+    const emails = row.members.map((m) => m.user.email).join(", ");
+    const banned = row.bans.some((ban) => isBanInForce(ban, now));
+    return {
+      id: row.id,
+      label: formatAdminAccountLabel({
+        title: row.name,
+        detail: `${row.plan}${emails ? ` · ${emails}` : ""}`,
+        banned,
+      }),
+    };
+  });
 }
 
 export async function applyAccountBan(input: {

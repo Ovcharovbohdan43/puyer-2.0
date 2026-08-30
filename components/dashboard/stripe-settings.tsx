@@ -11,9 +11,10 @@ type StripeSettingsProps = {
   status: string;
   chargesEnabled: boolean;
   canConnect: boolean;
+  embedded?: boolean;
 };
 
-export function StripeSettings({ isOwner, status, chargesEnabled, canConnect }: StripeSettingsProps) {
+export function StripeSettings({ isOwner, status, chargesEnabled, canConnect, embedded = false }: StripeSettingsProps) {
   const copy = t("connect");
   const dash = t("dashboard");
   const billing = t("billing");
@@ -73,10 +74,12 @@ export function StripeSettings({ isOwner, status, chargesEnabled, canConnect }: 
     }
   }
 
-  return (
-    <main className={`${ui.page} mx-auto flex max-w-xl flex-col gap-6 px-6 py-16`}>
-      <p className="text-[12px] font-semibold text-[#006C49]">{dash.nav.settings}</p>
-      <h1 className="text-[24px] leading-8 font-semibold text-[#111827]">{copy.title}</h1>
+  const inner = (
+    <>
+      {embedded ? null : <p className="text-[12px] font-semibold text-[#006C49]">{dash.nav.settings}</p>}
+      <h2 className={embedded ? "text-[18px] font-semibold text-[#111827]" : "text-[24px] leading-8 font-semibold text-[#111827]"}>
+        {copy.title}
+      </h2>
       <p className="text-[14px] leading-5 text-[#6B7280]">{copy.body}</p>
       <p className="text-[14px] text-[#111827]">
         {label}
@@ -91,40 +94,46 @@ export function StripeSettings({ isOwner, status, chargesEnabled, canConnect }: 
             </a>
           </div>
         ) : (
-        <div className="flex flex-wrap gap-3">
-          {status !== "CONNECTED" ? (
-            <button type="button" disabled={pending} onClick={() => void onboard()} className={`${ui.btnPrimary} disabled:opacity-60`}>
-              {pending ? copy.connecting : copy.connect}
-            </button>
-          ) : null}
-          {status === "CONNECTED" || status === "ACTION_REQUIRED" || status === "CONNECTING" ? (
-            confirmDisconnect ? (
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  disabled={pending}
-                  onClick={() => void disconnect()}
-                  className="rounded-lg bg-[#b42318] px-4 py-2 text-[14px] font-semibold text-white"
-                >
-                  {copy.disconnectConfirm}
-                </button>
-                <button type="button" onClick={() => setConfirmDisconnect(false)} className={ui.btnSecondary}>
-                  {copy.disconnectCancel}
-                </button>
-              </div>
-            ) : (
-              <button type="button" disabled={pending} onClick={() => setConfirmDisconnect(true)} className={ui.btnSecondary}>
-                {copy.disconnect}
+          <div className="flex flex-wrap gap-3">
+            {status !== "CONNECTED" ? (
+              <button type="button" disabled={pending} onClick={() => void onboard()} className={`${ui.btnPrimary} disabled:opacity-60`}>
+                {pending ? copy.connecting : copy.connect}
               </button>
-            )
-          ) : null}
-        </div>
+            ) : null}
+            {status === "CONNECTED" || status === "ACTION_REQUIRED" || status === "CONNECTING" ? (
+              confirmDisconnect ? (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => void disconnect()}
+                    className="rounded-lg bg-[#b42318] px-4 py-2 text-[14px] font-semibold text-white"
+                  >
+                    {copy.disconnectConfirm}
+                  </button>
+                  <button type="button" onClick={() => setConfirmDisconnect(false)} className={ui.btnSecondary}>
+                    {copy.disconnectCancel}
+                  </button>
+                </div>
+              ) : (
+                <button type="button" disabled={pending} onClick={() => setConfirmDisconnect(true)} className={ui.btnSecondary}>
+                  {copy.disconnect}
+                </button>
+              )
+            ) : null}
+          </div>
         )
       ) : (
         <p className="text-[12px] text-[#6B7280]">{copy.ownerOnly}</p>
       )}
       {error ? <p className="text-[12px] text-[#DC2626]">{error}</p> : null}
-      <SignOutButton className="text-[13px] font-medium text-[#6B7280]" />
-    </main>
+      {embedded ? null : <SignOutButton className="text-[13px] font-medium text-[#6B7280]" />}
+    </>
   );
+
+  if (embedded) {
+    return <div className="flex flex-col gap-4">{inner}</div>;
+  }
+
+  return <main className={`${ui.page} mx-auto flex max-w-xl flex-col gap-6 px-6 py-16`}>{inner}</main>;
 }

@@ -31,7 +31,7 @@ describe("hosted Auth email templates", () => {
     const dir = join(process.cwd(), "supabase", "templates");
     for (const spec of HOSTED_AUTH_TEMPLATES) {
       const html = readFileSync(join(dir, spec.file), "utf8");
-      if (spec.file === "magic_link.html") {
+      if (spec.file === "magic_link.html" || spec.file === "email_change.html") {
         expect(html, spec.file).toContain("{{ .TokenHash }}");
         expect(html, spec.file).toContain("/auth/confirm");
       } else {

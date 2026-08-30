@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { StripeSettings } from "@/components/dashboard/stripe-settings";
+import { AccountSettingsScreen } from "@/components/dashboard/account-settings-screen";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
+import { loadOpenDeletionRequest } from "@/lib/account/service";
 import { can } from "@/lib/entitlements";
 import { planFromOrganization } from "@/lib/entitlements/load";
 import { logger } from "@/lib/observability/logger";
@@ -24,7 +25,17 @@ export default async function SettingsPage({
   } catch {
     logger.warn("settings_workspace_unavailable");
     return (
-      <StripeSettings isOwner={false} status="NOT_CONNECTED" chargesEnabled={false} canConnect={false} />
+      <AccountSettingsScreen
+        email={session.email}
+        name=""
+        timezone="UTC"
+        isOwner={false}
+        businessName=""
+        businessAddress=""
+        deletionOpen={false}
+        deletionCreatedAt={null}
+        stripe={{ isOwner: false, status: "NOT_CONNECTED", chargesEnabled: false, canConnect: false }}
+      />
     );
   }
 
@@ -37,19 +48,35 @@ export default async function SettingsPage({
     redirect("/settings");
   }
 
-  const connection = await loadConnectionForSettings(membership.organizationId);
+  const [connection, deletion] = await Promise.all([
+    loadConnectionForSettings(membership.organizationId),
+    loadOpenDeletionRequest(session.id),
+  ]);
   let canConnect = false;
   try {
     canConnect = can({ plan: planFromOrganization(membership.organization) }, "STRIPE_PAYMENTS");
   } catch {
     logger.warn("settings_plan_unavailable");
   }
+
+  const profile = membership.organization.businessProfile;
+
   return (
-    <StripeSettings
+    <AccountSettingsScreen
+      email={membership.user.email || session.email}
+      name={membership.user.name ?? ""}
+      timezone={membership.user.timezone || "UTC"}
       isOwner={membership.role === "OWNER"}
-      status={connection.status}
-      chargesEnabled={connection.chargesEnabled}
-      canConnect={canConnect}
+      businessName={profile?.businessName ?? ""}
+      businessAddress={profile?.businessAddress ?? ""}
+      deletionOpen={Boolean(deletion)}
+      deletionCreatedAt={deletion?.createdAt.toISOString().slice(0, 10) ?? null}
+      stripe={{
+        isOwner: membership.role === "OWNER",
+        status: connection.status,
+        chargesEnabled: connection.chargesEnabled,
+        canConnect,
+      }}
     />
   );
 }
