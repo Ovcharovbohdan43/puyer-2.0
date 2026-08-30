@@ -1,15 +1,18 @@
 import Link from "next/link";
 
+import { ReportsPeriodExport } from "@/components/dashboard/reports-period-export";
 import { TrendBars } from "@/components/dashboard/trend-bars";
 import { dash } from "@/lib/dashboard/chrome";
 import { t } from "@/lib/i18n";
+import type { InvoiceListRow } from "@/lib/invoices/list-view";
 import { insightMessage, type PresentedReport } from "@/lib/reports/present";
 
 type ReportsScreenProps = {
   report: PresentedReport;
+  invoices: InvoiceListRow[];
 };
 
-export function ReportsScreen({ report }: ReportsScreenProps) {
+export function ReportsScreen({ report, invoices }: ReportsScreenProps) {
   const copy = t("reports");
   const dashCopy = t("dashboard");
   const billing = t("billing");
@@ -30,6 +33,7 @@ export function ReportsScreen({ report }: ReportsScreenProps) {
           <h1 className={dash.title}>{dashCopy.nav.reports}</h1>
           <p className={dash.subtitle}>{copy.intro}</p>
         </div>
+        <ReportsPeriodExport invoices={invoices} />
       </div>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">

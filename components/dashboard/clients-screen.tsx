@@ -14,6 +14,8 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGl
 import { UsersIcon } from "@phosphor-icons/react/dist/csr/Users";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/csr/WarningCircle";
 import { dash, clientInitials, downloadCsv } from "@/lib/dashboard/chrome";
+import { exportFilename } from "@/lib/exports/csv";
+import { clientExportRows } from "@/lib/exports/tables";
 import { kpiSparkSpecs, sparkMonthlyFromInvoices } from "@/lib/dashboard/kpi-sparkline";
 import {
   computeClientKpis,
@@ -222,10 +224,22 @@ export function ClientsScreen({
             type="button"
             className={dash.btnSecondary}
             onClick={() =>
-              downloadCsv("clients.csv", [
-                [copy.colClient, copy.colEmail, copy.colOutstandingAmount, copy.colLastInvoice, copy.colStatus],
-                ...rows.map((row) => [row.name, row.email, row.outstanding, row.lastInvoiceDate ?? "", row.status]),
-              ])
+              downloadCsv(
+                exportFilename("clients"),
+                clientExportRows(rows, {
+                  client: copy.colClient,
+                  email: copy.colEmail,
+                  phone: copy.clientPhone,
+                  address: copy.clientAddress,
+                  tax: copy.clientTax,
+                  outstanding: copy.colOutstandingAmount,
+                  lastInvoice: copy.colLastInvoice,
+                  invoices: copy.colInvoice,
+                  status: copy.colStatus,
+                  notes: copy.clientNotes,
+                  added: copy.clientAdded,
+                }),
+              )
             }
           >
             {copy.exportCsv}

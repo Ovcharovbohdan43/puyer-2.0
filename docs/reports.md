@@ -2,11 +2,12 @@
 
 ## Purpose
 
-Show workspace invoice totals for every plan, and Business-only analytics (trends, overdue rate, payment time, clients, currencies, forecast, insights, creator breakdown). Snapshots are written by an Inngest job for monthly history.
+Show workspace invoice totals for every plan, and Business-only analytics (trends, overdue rate, payment time, clients, currencies, forecast, insights, creator breakdown). Snapshots are written by an Inngest job for monthly history. Every plan can download a CSV for a chosen issue-date range.
 
 ## Description
 
 - **Base (Free / Pro / Business):** lifetime revenue, paid in the last 30 days, outstanding, overdue. Same currency rule as Overview KPIs: never mix currencies; use the most common invoice currency.
+- **Period CSV (every plan):** From/To on `/reports` (default: first day of the current UTC month through today). Download includes period totals (paid / outstanding / overdue among invoices *issued* in that window, dominant currency) plus one row per invoice. Filename `puyer-report-{from}-{to}.csv` with a UTF-8 BOM.
 - **Advanced (Business):** last 6 months of paid totals, overdue rate among issued invoices, average days from send/issue to first successful Connect payment, client ranking, per-currency breakdown, next-month forecast (mean of the last 3 complete months), payment-time insight vs last month, invoices grouped by `createdByUserId`.
 - `/reports` and Overview load one tenant-scoped invoice query. Advanced fields are `null` unless `can(ADVANCED_REPORTS)`. The monthly chart is a full-height SVG area with a vertical forest→mint gradient (`components/dashboard/trend-bars.tsx`). Cubic handles are clamped so the line cannot dip under the plot; the path draws in on load.
 - `ReportSnapshot` stores JSON metrics for the current UTC month. Money in JSON is **strings** (bigint-safe). Daily cron `0 2 * * *` fans out `puyer/report.snapshot`. Completed months on the trend chart prefer the latest snapshot; the current month stays live.
@@ -18,7 +19,7 @@ Re-checked Context7 `/prisma/web` (Json + composite unique upsert) and `/website
 ## How to use
 
 1. Apply [`supabase/migrations/20260828240000_report_snapshots.sql`](../supabase/migrations/20260828240000_report_snapshots.sql). `npx prisma generate`.
-2. Sign in → `/reports`. Free/Pro see four KPI cards plus a Business upgrade CTA. Business sees the full page.
+2. Sign in → `/reports`. Free/Pro see four KPI cards plus a Business upgrade CTA. Business sees the full page. From/To + **Download report** is on every plan.
 3. Local snapshots: `INNGEST_DEV=1` and/or `npx inngest-cli@latest dev` so `/api/inngest` can run the daily cron (or invoke the function from the Inngest Dev Server).
 
 ## Examples
@@ -39,29 +40,32 @@ Browser:
 
 - `/reports` while signed in shows live KPIs from this workspace.
 - Free/Pro: upgrade CTA to `/billing`. Business: trends and tables without the CTA.
+- Download report for a custom From/To; CSV opens with period totals then invoice rows.
 - Overview Revenue Trends shows last-6-month paid totals on every plan. Insights stay behind the Business gate (no fake 14-day copy).
 
 ## Limitations
 
 - Forecast is a 3-month arithmetic mean of paid invoice totals in the dominant currency, not a statistical model.
+- Period CSV uses **issue date**, not payment date. Outstanding/overdue in that file are current statuses of invoices issued in the window.
 - Average payment time needs a `SUCCEEDED` `InvoicePayment.paidAt`. Manually marked PAID invoices without a payment row are excluded from that average.
 - Team analytics is “who created the invoice,” not Phase 8 seats.
 - Mixed-currency KPI cards still hide non-dominant currencies on every plan; Business shows the breakdown table.
 
 ## Modules
 
-- `lib/reports/**`, `lib/jobs/reports.ts`
-- `app/(dashboard)/reports/page.tsx`, `components/dashboard/reports-screen.tsx`, `components/dashboard/trend-bars.tsx`
+- `lib/reports/**`, `lib/jobs/reports.ts`, `lib/exports/**`
+- `app/(dashboard)/reports/page.tsx`, `components/dashboard/reports-screen.tsx`, `components/dashboard/reports-period-export.tsx`, `components/dashboard/trend-bars.tsx`
 - `app/(dashboard)/dashboard/page.tsx`, `components/dashboard/overview-screen.tsx`
 - `prisma/schema.prisma`, `supabase/migrations/20260828240000_report_snapshots.sql`
 
 ## Version
 
-1.0.5 — 2026-08-29
+1.0.6 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: `/reports` From/To date range and CSV download (period totals + issued invoices).
 [2026-08-29] – Fixed: Trend chart cubic handles stay inside the plot; the line draws in on load.
 [2026-08-29] – Changed: Monthly revenue chart stretches to the card and uses an SVG linearGradient fill.
 [2026-08-28] – Added: Base reports for all plans, Business analytics, monthly ReportSnapshot job, tenant isolation tests.

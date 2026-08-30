@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.36 — 2026-08-30
+> **Version:** 1.0.37 — 2026-08-30
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -337,7 +337,9 @@ Customer Portal = Puyer subscription only. Never connected-account invoice money
 | Client Create Invoice | click | `/invoices/new?client=` |
 | Payments empty | none | Illustrated empty state; Create invoice / Connect Stripe |
 | Payments row | click | payment drawer; copy: paid through **connected Stripe**, not Puyer |
-| Reports Business-only | click | upgrade modal (`/reports` advanced tables). Overview Revenue Trends is not gated. |
+| Invoices Export | click | CSV of search/status/date-filtered invoices (all matching rows, not the current page) |
+| Clients Export | click | CSV of the filtered client list |
+| Reports Download report | click | CSV for From/To (issue dates); period totals + invoice rows |
 | Reminders as Free | click | upgrade to Pro modal |
 | Team as Free/Pro | click | upgrade to Business modal |
 
@@ -459,4 +461,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Added: Browser tab uses the square Puyer ring favicon.
 [2026-08-29] – Changed: Payer portal has theme toggle; dashboard no longer overwrites `puyer-theme`. Signed-in template/client builder matches this contract. Payments rows open a drawer.
 [2026-08-29] – Added: Help Center at `/help` (search + contact form). Footer and app nav link there.
+[2026-08-30] – Added: Invoice/client CSV export; `/reports` period download.
 ```

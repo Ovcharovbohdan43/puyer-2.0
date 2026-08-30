@@ -1,3 +1,5 @@
+import { toCsv } from "@/lib/exports/csv";
+
 /** Shared class names for the light dashboard chrome. */
 
 export const dash = {
@@ -18,6 +20,8 @@ export const dash = {
   iconBad: "flex size-9 shrink-0 items-center justify-center rounded-full bg-[#FEECEC]",
   input:
     "h-[38px] w-full rounded-lg border border-[#E5E7EB] bg-white py-2 pr-4 pl-10 text-[14px] text-[#111827] outline-none placeholder:text-[#9CA3AF] focus:border-[#006C49]",
+  dateInput:
+    "h-[38px] rounded-lg border border-[#E5E7EB] bg-white px-3 text-[14px] text-[#111827] outline-none focus:border-[#006C49]",
   btnPrimary:
     "inline-flex h-10 items-center justify-center gap-1 rounded-lg bg-[#006C49] px-4 text-[14px] font-semibold text-white hover:brightness-110",
   btnSecondary:
@@ -54,10 +58,7 @@ export function clientInitials(name: string): string {
 }
 
 export function downloadCsv(filename: string, rows: string[][]): void {
-  const body = rows
-    .map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(","))
-    .join("\n");
-  const blob = new Blob([body], { type: "text/csv;charset=utf-8" });
+  const blob = new Blob([toCsv(rows)], { type: "text/csv;charset=utf-8" });
   const href = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = href;

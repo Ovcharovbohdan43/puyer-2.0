@@ -7,7 +7,7 @@ Public and signed-in Help Center at `/help`: searchable guides plus a contact fo
 ## Description
 
 - `/help` is **not** a protected route. Guests see marketing chrome; signed-in users see the app shell (sidebar Help, More sheet Help).
-- Articles: product guides in `messages/en.json` (`help.guides`) plus the landing FAQ (`faq.items`). Client-side search filters title, body, and category.
+- Articles: product guides in `messages/en.json` (`help.guides`) plus the landing FAQ (`faq.items`). Client-side search filters title, body, and category. Guides include exporting invoices, clients, and period reports.
 - `POST /api/help`: origin check (`handleRoute`), rate limits `help-contact-ip` and `help-contact-email` (5 / 15 minutes), validates name / email / topic / message (max 4000 chars, control characters stripped).
 - Delivery: Resend HTTP API. The API key is read from Linux `/proc/self/environ` (Vercel) merged with non-empty `process.env`, then any `re_…` value is used. This bypasses Next inlining an empty `RESEND_API_KEY`. Skip logs include `resendNames` and `linuxEnvKeys`. From uses `EMAIL_FROM` when `help@` is only the example mailbox.
 - Persistence: `SupportRequest` (OPEN/CLOSED). Optional `userId` / `organizationId` when signed in. RLS: authenticated users may select rows where `userId = auth.uid()`; writes go through Prisma (`puyer_prisma`).
@@ -54,11 +54,12 @@ Playwright `e2e/pay-path.spec.ts` loads `/help` as a public page.
 
 ## Version
 
-1.0.8 — 2026-08-29
+1.0.9 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Help guide for CSV export of invoices, clients, and period reports.
 [2026-08-29] – Changed: Help confirmation email and `/help` success state include reference, topic, and next steps.
 [2026-08-29] – Changed: GET `/api/help` reports `namedChars` / `startsWithRe` when `RESEND_API_KEY` exists but is not a `re_` key.
 [2026-08-29] – Added: GET `/api/help` reports whether a Resend key is visible (no secret values).

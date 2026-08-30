@@ -416,6 +416,12 @@
         "category": "Team",
         "title": "Invite a teammate",
         "body": "Business owners invite members from Team. Invites expire in seven days. Members work on invoices and clients; billing and Stripe stay with the owner."
+      },
+      {
+        "id": "export-csv",
+        "category": "Reports",
+        "title": "Export invoices, clients, and reports",
+        "body": "On Invoices, set From and To (issue dates) then Export for a CSV of the filtered list. Clients Export includes contact fields and outstanding totals. Reports Download report uses a date range (defaults to this month) and includes period totals plus every invoice issued in that window."
       }
     ]
   },
@@ -710,6 +716,9 @@
     "emptyInvoices": "No invoices yet. Create one to get started.",
     "searchClients": "Search clients...",
     "exportCsv": "Export",
+    "periodFrom": "From",
+    "periodTo": "To",
+    "colCurrency": "Currency",
     "paginationShowing": "Showing {from} to {to} of {total} results",
     "colEmail": "Email",
     "colOutstandingAmount": "Outstanding amount",
@@ -845,6 +854,10 @@
   },
   "reports": {
     "intro": "Totals use invoices in this workspace. Mixed currencies are not added together — cards use the most common currency.",
+    "periodHint": "Download a CSV for invoices issued in this date range, with paid, outstanding, and overdue totals in the most common currency.",
+    "downloadReport": "Download report",
+    "exportPeriod": "Report period",
+    "exportIssued": "Issued invoices",
     "kpiRevenue": "Total revenue",
     "kpiPaid": "Paid (30d)",
     "kpiOutstanding": "Outstanding",

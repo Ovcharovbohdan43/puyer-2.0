@@ -9,8 +9,12 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGl
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/csr/WarningCircle";
 
 import { InvoiceDrawer } from "@/components/dashboard/invoice-drawer";
+import { PeriodRangeFields } from "@/components/dashboard/period-range";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { dash, downloadCsv } from "@/lib/dashboard/chrome";
+import { exportFilename } from "@/lib/exports/csv";
+import { filterByIsoDate } from "@/lib/exports/period";
+import { invoiceExportRows } from "@/lib/exports/tables";
 import { t } from "@/lib/i18n";
 import {
   computeWorkspaceKpis,
@@ -30,8 +34,13 @@ export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: Invoi
   const selected = invoices.find((invoice) => invoice.id === selectedId) ?? null;
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ListStatusFilter>("ALL");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [page, setPage] = useState(0);
-  const rows = useMemo(() => filterInvoiceRows(invoices, query, status), [invoices, query, status]);
+  const rows = useMemo(() => {
+    const filtered = filterInvoiceRows(invoices, query, status);
+    return filterByIsoDate(filtered, (invoice) => invoice.date, from, to);
+  }, [invoices, query, status, from, to]);
   const kpis = useMemo(() => computeWorkspaceKpis(invoices), [invoices]);
   const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   const pageIndex = Math.min(page, pageCount - 1);
@@ -105,7 +114,7 @@ export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: Invoi
           </article>
         </section>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <label className="relative block w-full sm:w-[280px]">
             <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[#6B7280]">
               <MagnifyingGlassIcon size={16} weight="bold" aria-hidden />
@@ -121,7 +130,21 @@ export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: Invoi
               className={dash.input}
             />
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
+            <PeriodRangeFields
+              from={from}
+              to={to}
+              fromLabel={copy.periodFrom}
+              toLabel={copy.periodTo}
+              onFrom={(value) => {
+                setFrom(value);
+                setPage(0);
+              }}
+              onTo={(value) => {
+                setTo(value);
+                setPage(0);
+              }}
+            />
             <button
               type="button"
               className={dash.btnSecondary}
@@ -136,17 +159,18 @@ export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: Invoi
               type="button"
               className={dash.btnSecondary}
               onClick={() =>
-                downloadCsv("invoices.csv", [
-                  [copy.colInvoice, copy.colClient, copy.colDate, copy.colDueDate, copy.colAmount, copy.colStatus],
-                  ...rows.map((row) => [
-                    row.invoiceNumber,
-                    row.clientName,
-                    row.date,
-                    row.dueDate,
-                    row.amount,
-                    row.displayStatus,
-                  ]),
-                ])
+                downloadCsv(
+                  exportFilename("invoices", from && to ? from : undefined, from && to ? to : undefined),
+                  invoiceExportRows(rows, {
+                    invoice: copy.colInvoice,
+                    client: copy.colClient,
+                    date: copy.colDate,
+                    due: copy.colDueDate,
+                    amount: copy.colAmount,
+                    currency: copy.colCurrency,
+                    status: copy.colStatus,
+                  }),
+                )
               }
             >
               {copy.exportCsv}
