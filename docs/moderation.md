@@ -76,11 +76,12 @@ npm run typecheck
 
 ## Version
 
-1.0.1 — 2026-08-30
+1.0.2 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Fixed: Ops account list typecheck (`isBanInForce` does not require `reason`).
 [2026-08-30] – Added: GET /api/admin/bans?target=USER|ORGANIZATION for the ops account list.
 [2026-08-30] – Added: User and organization bans (temporary/permanent) with stored reason, notice email, `/banned`, and admin API.
 ```

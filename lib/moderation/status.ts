@@ -1,14 +1,17 @@
 export type BanKind = "TEMPORARY" | "PERMANENT";
 export type BanStatus = "ACTIVE" | "LIFTED";
 
-export type BanRecord = {
+export type BanForceFields = {
   kind: BanKind;
   status: BanStatus;
-  reason: string;
   endsAt: Date | null;
 };
 
-export function isBanInForce(ban: BanRecord, now = new Date()): boolean {
+export type BanRecord = BanForceFields & {
+  reason: string;
+};
+
+export function isBanInForce(ban: BanForceFields, now = new Date()): boolean {
   if (ban.status !== "ACTIVE") {
     return false;
   }

@@ -9,7 +9,6 @@ describe("isBanInForce", () => {
       isBanInForce({
         kind: "PERMANENT",
         status: "ACTIVE",
-        reason: "Terms of Service violation involving abuse of invoicing.",
         endsAt: null,
       }),
     ).toBe(true);
@@ -20,7 +19,6 @@ describe("isBanInForce", () => {
       isBanInForce({
         kind: "TEMPORARY",
         status: "LIFTED",
-        reason: "Terms of Service violation involving abuse of invoicing.",
         endsAt: new Date("2099-01-01T00:00:00.000Z"),
       }),
     ).toBe(false);
@@ -29,7 +27,6 @@ describe("isBanInForce", () => {
         {
           kind: "TEMPORARY",
           status: "ACTIVE",
-          reason: "Terms of Service violation involving abuse of invoicing.",
           endsAt: new Date("2020-01-01T00:00:00.000Z"),
         },
         new Date("2026-08-30T00:00:00.000Z"),
