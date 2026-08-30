@@ -9,8 +9,8 @@ Give signed-in users a full **Settings** page: profile, sign-in email, optional 
 `/settings` is no longer Stripe-only. The page has:
 
 1. **Profile** — name, timezone; owners also edit business name and address (same fields as onboarding).
-2. **Sign-in email** — `supabase.auth.updateUser({ email })`. Auth sends a confirmation to the new address (`email_change` template → `/auth/confirm?token_hash=&type=email_change`). `public.User.email` syncs from `auth.users` after confirm (`sync_user_email_from_auth`).
-3. **Optional password** — 12–128 characters, letter + number. Stored by Supabase Auth. Login still offers a magic link first; **Sign in with password** posts to `POST /api/auth/password` (`signInWithPassword`).
+2. **Sign-in email** — `supabase.auth.updateUser({ email })`. Auth sends a confirmation to the **new** address (`email_change` template → `/auth/confirm?token_hash=&type=email_change`). Puyer also emails the **current** address that a change was requested. `public.User.email` syncs from `auth.users` after confirm (`sync_user_email_from_auth`).
+3. **Optional password** — 12–128 characters, letter + number. Stored by Supabase Auth. After a successful change, Puyer emails this address. Login still offers a magic link first; **Sign in with password** posts to `POST /api/auth/password` (`signInWithPassword`).
 4. **Payment settings** — existing Connect Stripe block, embedded on this page.
 5. **More** — Billing, Notifications, Team, Help.
 6. **Delete account** — a **request**, not instant delete. Reason 12–2000 characters. Emails go to the user and `HELP_INBOX`. Status `OPEN` until canceled or later processed. One open request per user.
@@ -58,6 +58,7 @@ Browser:
 - `currentPassword` is sent when the user fills it; first-time set can leave it blank.
 - Magic link remains the default sign-in. Register is still email-link only.
 - Hosted `email_change` HTML is not applied until `auth:push-templates`.
+- Password-change and email-change-request notices need `RESEND_API_KEY` + `EMAIL_FROM` (same as other Puyer mail). Auth confirmation of the new inbox is still GoTrue.
 
 ## Modules
 
@@ -69,10 +70,11 @@ Browser:
 
 ## Version
 
-1.0.0 — 2026-08-30
+1.0.1 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Notice to the current inbox when email change is requested; notice after password change.
 [2026-08-30] – Added: Account settings (profile, email change, optional password, deletion request).
 ```

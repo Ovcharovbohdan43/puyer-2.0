@@ -388,6 +388,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ## Changelog
 
 ```
+[2026-08-30] – Added: Owner emails for Pro/Business, cancel, and failed renewal; password and email-change notices.
 [2026-08-30] – Added: Brand-green spinner on route transitions and pending buttons.
 [2026-08-30] – Added: `/settings` account profile, email change, optional password, deletion request.
 [2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.

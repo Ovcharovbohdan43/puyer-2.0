@@ -4,6 +4,7 @@ import { parseAccountPasswordBody } from "@/lib/account/input";
 import { writeAuditLog } from "@/lib/audit";
 import { createServerSupabaseClient } from "@/lib/auth/server";
 import { requireOrganization } from "@/lib/authorization";
+import { sendPasswordChangedEmail } from "@/lib/email";
 import { ValidationError } from "@/lib/errors";
 import { handleRoute, requireApiSession } from "@/lib/http/route";
 import { logger } from "@/lib/observability/logger";
@@ -42,6 +43,15 @@ export async function POST(request: Request) {
       entityType: "User",
       entityId: user.id,
     });
+    try {
+      await sendPasswordChangedEmail({
+        to: user.email,
+        recipientName: membership.user.name ?? "",
+        idempotencyKey: `password-changed:${user.id}:${Date.now()}`,
+      });
+    } catch {
+      logger.warn("password_changed_email_failed");
+    }
     return NextResponse.json({ ok: true });
   }, request);
 }

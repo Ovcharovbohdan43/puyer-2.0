@@ -14,6 +14,13 @@ import type { ReminderKind } from "@/lib/reminders/evaluate";
 import { reminderBodyLines, reminderFromAddress } from "@/lib/reminders/message";
 import { inviteAcceptUrl, inviteFromAddress } from "@/lib/team/invite-email";
 import { deletionAckText, deletionInboxText } from "@/lib/account/notice";
+import {
+  billingNoticeCopy,
+  emailChangeRequestedCopy,
+  passwordChangedCopy,
+  type BillingNoticeKind,
+  type BillingSnapshot,
+} from "@/lib/email/lifecycle";
 import { banNoticeParagraphs, banNoticeSubject, banNoticeText } from "@/lib/moderation/notice";
 
 export async function sendReminderEmail(input: {
@@ -291,5 +298,99 @@ export async function sendAccountDeletionEmails(input: {
       ctaUrl: helpCenterUrl(),
     }),
     idempotencyKey: `account-deletion-ack:${input.requestId}`,
+  });
+}
+
+function accountMailFrom(): string {
+  const general = envString("EMAIL_FROM");
+  if (general.includes("@")) {
+    return general;
+  }
+  return `Puyer <${helpInboxAddress()}>`;
+}
+
+async function sendBrandedNotice(input: {
+  to: string;
+  idempotencyKey: string;
+  copy: {
+    subject: string;
+    heading: string;
+    preview: string;
+    paragraphs: string[];
+    ctaLabel: string;
+    ctaUrl: string;
+  };
+}) {
+  return deliverEmail({
+    to: input.to,
+    from: accountMailFrom(),
+    subject: input.copy.subject,
+    text: `${input.copy.paragraphs.join("\n\n")}\n${input.copy.ctaUrl}`,
+    html: puyerEmailHtml({
+      preview: input.copy.preview,
+      heading: input.copy.heading,
+      bodyHtml: input.copy.paragraphs.map((line) => puyerParagraph(line)).join(""),
+      ctaLabel: input.copy.ctaLabel,
+      ctaUrl: input.copy.ctaUrl,
+    }),
+    idempotencyKey: input.idempotencyKey,
+  });
+}
+
+export async function sendPasswordChangedEmail(input: {
+  to: string;
+  recipientName: string;
+  idempotencyKey: string;
+}) {
+  return sendBrandedNotice({
+    to: input.to,
+    idempotencyKey: input.idempotencyKey,
+    copy: passwordChangedCopy({
+      recipientName: input.recipientName,
+      settingsUrl: `${appBaseUrl()}/settings`,
+      supportEmail: helpInboxAddress(),
+    }),
+  });
+}
+
+export async function sendEmailChangeRequestedEmail(input: {
+  to: string;
+  recipientName: string;
+  newEmail: string;
+  idempotencyKey: string;
+}) {
+  return sendBrandedNotice({
+    to: input.to,
+    idempotencyKey: input.idempotencyKey,
+    copy: emailChangeRequestedCopy({
+      recipientName: input.recipientName,
+      newEmail: input.newEmail,
+      settingsUrl: `${appBaseUrl()}/settings`,
+      supportEmail: helpInboxAddress(),
+    }),
+  });
+}
+
+export async function sendBillingNoticeEmail(input: {
+  to: string;
+  recipientName: string;
+  workspaceName: string;
+  kind: BillingNoticeKind;
+  plan: BillingSnapshot["plan"];
+  previousPlan?: BillingSnapshot["plan"];
+  idempotencyKey: string;
+}) {
+  return sendBrandedNotice({
+    to: input.to,
+    idempotencyKey: input.idempotencyKey,
+    copy: billingNoticeCopy({
+      kind: input.kind,
+      plan: input.plan,
+      previousPlan: input.previousPlan,
+      recipientName: input.recipientName,
+      workspaceName: input.workspaceName,
+      billingUrl: `${appBaseUrl()}/billing`,
+      supportEmail: helpInboxAddress(),
+    }),
   });
 }

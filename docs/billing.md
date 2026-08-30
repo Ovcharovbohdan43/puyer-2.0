@@ -13,6 +13,7 @@ Sell **Puyer** Pro and Business on the **platform** Stripe account. This is a se
 - Table Editor grants: set `Organization.plan` (`FREE` / `PRO` / `BUSINESS`), `planSource` to `MANUAL`, and `subscriptionStatus` (`ACTIVE`, `TRIALING`, `PAST_DUE`, `CANCELED`, …). Platform webhooks do not overwrite a `MANUAL` row.
 - `past_due` keeps Pro/Business for **7 days** after `currentPeriodEnd`, then locks to Free. Manual `CANCELED` / `UNPAID` locks to Free immediately.
 - `/billing/success` is UX copy only (`billingRedirectIsAuthoritative() === false`).
+- Owners get a branded email when Pro/Business becomes active, when the plan changes, when cancellation is scheduled or completes, and when a renewal payment fails. Manual Table Editor grants (`planSource=MANUAL`) do not send these. Monthly `invoice.paid` on the same plan does not re-send.
 - Server `requireEntitlement` gates Connect onboarding. Public Pay returns a generic “unavailable” message if the workspace is Free (no upgrade leak).
 - Connect `customer.subscription.*` events are ignored so they cannot update `Organization.plan`.
 
@@ -63,18 +64,19 @@ Browser:
 
 ## Modules
 
-- `lib/stripe/platform/**`, `lib/entitlements/**`, `lib/stripe/webhooks/ingest.ts`
+- `lib/stripe/platform/**`, `lib/entitlements/**`, `lib/stripe/webhooks/ingest.ts`, `lib/email/lifecycle.ts`
 - `app/api/stripe/platform/**`, `app/(dashboard)/billing/**`
 - `components/dashboard/billing-settings.tsx`, `components/marketing/pricing-section.tsx`
 - `prisma/schema.prisma`, `supabase/migrations/20260828220000_platform_subscriptions.sql`
 
 ## Version
 
-1.0.3 — 2026-08-29
+1.0.4 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Owner emails for Pro/Business activation, plan change, cancel, and failed renewal.
 [2026-08-29] – Added: Organization.planSource + subscriptionStatus so Table Editor can grant plan type and billing status.
 [2026-08-28] – Changed: Local webhook CLI points at the combined listen command in stripe-connect.md.
 [2026-08-28] – Added: Platform subscription Checkout, Customer Portal, webhook sync, entitlement matrix, Billing UI, pricing Checkout.

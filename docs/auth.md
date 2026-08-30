@@ -87,11 +87,12 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.22 — 2026-08-30
+1.0.23 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Settings emails after password change and when an email change is requested.
 [2026-08-30] – Added: Optional password and email-change from Settings; login can use password.
 [2026-08-30] – Added: Account/workspace bans redirect to `/banned` and send an official reason email.
 [2026-08-30] – Added: First-login `/onboarding` before the dashboard when `onboardingCompletedAt` is null.

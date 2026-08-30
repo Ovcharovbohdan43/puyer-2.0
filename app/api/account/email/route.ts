@@ -6,6 +6,7 @@ import { writeAuditLog } from "@/lib/audit";
 import { createServerSupabaseClient } from "@/lib/auth/server";
 import { requireOrganization } from "@/lib/authorization";
 import { prisma } from "@/lib/db/prisma";
+import { sendEmailChangeRequestedEmail } from "@/lib/email";
 import { ValidationError } from "@/lib/errors";
 import { handleRoute, requireApiSession } from "@/lib/http/route";
 import { logger } from "@/lib/observability/logger";
@@ -59,6 +60,16 @@ export async function POST(request: Request) {
       entityType: "User",
       entityId: user.id,
     });
+    try {
+      await sendEmailChangeRequestedEmail({
+        to: user.email,
+        recipientName: membership.user.name ?? "",
+        newEmail: email,
+        idempotencyKey: `email-change-requested:${user.id}:${email.toLowerCase()}`,
+      });
+    } catch {
+      logger.warn("email_change_notice_failed");
+    }
     return NextResponse.json({ ok: true });
   }, request);
 }

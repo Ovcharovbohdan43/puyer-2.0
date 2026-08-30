@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db/prisma";
 import { effectivePlan } from "@/lib/entitlements";
 import { logger } from "@/lib/observability/logger";
 import { getStripe } from "@/lib/stripe/client";
+import { notifyBillingOwners } from "@/lib/stripe/platform/notices";
 import { platformPriceToPlan } from "@/lib/stripe/platform/prices";
 
 export async function applyPlatformSubscriptionEvent(event: Stripe.Event): Promise<void> {
@@ -77,6 +78,29 @@ async function upsertFromSubscription(
   const periodStart = unixToDate(item?.current_period_start);
   const periodEnd = unixToDate(item?.current_period_end);
   const prices = platformPriceToPlan();
+  const previousRow = await prisma.subscription.findUnique({
+    where: { organizationId },
+    select: {
+      status: true,
+      stripePriceId: true,
+      cancelAtPeriodEnd: true,
+      currentPeriodEnd: true,
+    },
+  });
+  const previous = previousRow
+    ? {
+        plan: effectivePlan(
+          {
+            status: previousRow.status,
+            stripePriceId: previousRow.stripePriceId,
+            currentPeriodEnd: previousRow.currentPeriodEnd,
+          },
+          prices,
+        ),
+        status: previousRow.status,
+        cancelAtPeriodEnd: previousRow.cancelAtPeriodEnd,
+      }
+    : null;
   const plan = effectivePlan({ status, stripePriceId: priceId, currentPeriodEnd: periodEnd }, prices);
 
   try {
@@ -126,6 +150,17 @@ async function upsertFromSubscription(
     }
     throw error;
   }
+
+  await notifyBillingOwners({
+    organizationId,
+    stripeEventId,
+    previous,
+    next: {
+      plan,
+      status,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    },
+  });
 
   await writeAuditLog({
     organizationId,
