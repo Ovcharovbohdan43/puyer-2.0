@@ -123,6 +123,6 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 [2026-08-29] – Changed: Dashboard `/invoices/{id}/edit` stays available after send/view.
 [2026-08-30] – Changed: Payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
 [2026-08-30] – Added: Company logo with crop, size, and background-removal preview before apply.
-[2026-08-30] – Fixed: PDF logo aligns left with the business name (cache `layout: 12`).
+[2026-08-30] – Changed: Logo editor chunk loads only when Add/Edit logo is opened.
 [2026-08-29] – Changed: Signed-in “Use this template” opens `/invoices/new?template=`; the builder lists saved clients.
 ```

@@ -1,12 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { PuyerBusyText, PuyerSpinner } from "@/components/brand/puyer-spinner";
 import { useBuilderSession } from "@/components/invoice-builder/builder-session";
 import { CurrencySelect } from "@/components/invoice-builder/currency-select";
 import { InvoicePreview } from "@/components/invoice-builder/invoice-preview";
-import { LogoEditor } from "@/components/invoice-builder/logo-editor";
 import { ACCENT_COLORS, type InvoiceTemplate, type PaymentChannel } from "@/components/invoice-builder/types";
 import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { Modal } from "@/components/ui/modal";
@@ -20,6 +20,11 @@ import { hasDetailsBuilderErrors, hasBuilderErrors, validateBuilder, type Builde
 import { ensureLogoUploaded } from "@/lib/invoices/upload-logo";
 import { downloadPdfResponse } from "@/lib/pdf/browser-download";
 import { t } from "@/lib/i18n";
+
+const LogoEditor = dynamic(
+  () => import("@/components/invoice-builder/logo-editor").then((mod) => ({ default: mod.LogoEditor })),
+  { ssr: false },
+);
 
 type MobileTab = "edit" | "preview";
 type BusyState = null | "preparing" | "ready";
@@ -270,35 +275,37 @@ export function InvoiceBuilder({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={state.logoUrl} alt="" className="mt-2 h-12 w-auto object-contain" />
         ) : null}
-        <LogoEditor
-          open={logoEditorOpen}
-          source={logoSource}
-          scale={state.logoScale}
-          onClose={() => {
-            setLogoEditorOpen(false);
-            setLogoSource(null);
-          }}
-          onApply={(blob, scale) => {
-            void (async () => {
-              const local = URL.createObjectURL(blob);
-              const next = { ...state, logoUrl: local, logoScale: scale };
-              if (authenticated) {
-                try {
-                  const uploaded = await ensureLogoUploaded(next);
-                  setState(uploaded);
-                  URL.revokeObjectURL(local);
-                } catch {
-                  setState(next);
-                  toast(copy.logoUploadFailed);
-                }
-              } else {
-                setState(next);
-              }
+        {logoEditorOpen || logoSource ? (
+          <LogoEditor
+            open={logoEditorOpen}
+            source={logoSource}
+            scale={state.logoScale}
+            onClose={() => {
               setLogoEditorOpen(false);
               setLogoSource(null);
-            })();
-          }}
-        />
+            }}
+            onApply={(blob, scale) => {
+              void (async () => {
+                const local = URL.createObjectURL(blob);
+                const next = { ...state, logoUrl: local, logoScale: scale };
+                if (authenticated) {
+                  try {
+                    const uploaded = await ensureLogoUploaded(next);
+                    setState(uploaded);
+                    URL.revokeObjectURL(local);
+                  } catch {
+                    setState(next);
+                    toast(copy.logoUploadFailed);
+                  }
+                } else {
+                  setState(next);
+                }
+                setLogoEditorOpen(false);
+                setLogoSource(null);
+              })();
+            }}
+          />
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-1">

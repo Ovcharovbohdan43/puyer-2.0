@@ -1369,6 +1369,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Fixed: PDF invoice logo is left-aligned like the HTML preview.
   Docs: docs/pdf.md, docs/invoice-logos.md, docs/invoice-builder.md.
+
+[2026-08-30] – Fixed: Landing LCP — first HTML includes the hero; builder JS loads after paint.
+  Docs: docs/landing.md, docs/invoice-builder.md.
 ```
 
 ---

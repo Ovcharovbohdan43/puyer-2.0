@@ -1,4 +1,7 @@
+import dynamic from "next/dynamic";
+
 import { FaqSection } from "@/components/marketing/faq-section";
+import { LandingBuilderPlaceholder } from "@/components/marketing/landing-builder-placeholder";
 import { LandingReveal } from "@/components/marketing/landing-reveal";
 import { LandingStudioShot } from "@/components/marketing/landing-studio-shot";
 import { PricingSection } from "@/components/marketing/pricing-section";
@@ -10,8 +13,12 @@ import { HowItWorks } from "@/components/marketing/how-it-works";
 import { WhyBenefits } from "@/components/marketing/why-benefits";
 import { StripeFlow } from "@/components/marketing/stripe-flow";
 import { TrustBar } from "@/components/marketing/trust-bar";
-import { InvoiceBuilder } from "@/components/invoice-builder/invoice-builder";
 import { t } from "@/lib/i18n";
+
+const InvoiceBuilder = dynamic(
+  () => import("@/components/invoice-builder/invoice-builder").then((mod) => ({ default: mod.InvoiceBuilder })),
+  { ssr: false, loading: () => <LandingBuilderPlaceholder /> },
+);
 
 export function LandingPage() {
   const hero = t("hero");
