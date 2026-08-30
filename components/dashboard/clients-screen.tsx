@@ -212,7 +212,7 @@ export function ClientsScreen({
         <div className="flex gap-2">
           <button
             type="button"
-            className={dash.btnSecondary}
+            className={`${dash.btnSecondary} min-w-0 flex-1 sm:flex-none`}
             onClick={() => {
               setStatus((current) => nextClientFilter(current));
               setPage(0);
@@ -222,7 +222,7 @@ export function ClientsScreen({
           </button>
           <button
             type="button"
-            className={dash.btnSecondary}
+            className={`${dash.btnSecondary} min-w-0 flex-1 sm:flex-none`}
             onClick={() =>
               downloadCsv(
                 exportFilename("clients"),

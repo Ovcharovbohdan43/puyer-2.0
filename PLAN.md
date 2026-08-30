@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.18  
+> **Version:** 1.4.19  
 > **Date:** 2026-08-30  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -1357,6 +1357,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Added: CSV export for invoices and clients; dated report download on `/reports`.
   Docs: docs/reports.md, docs/dashboard.md, docs/invoices.md, docs/UX_FLOWS.md.
+
+[2026-08-30] – Fixed: Period From/To and list export actions fit a phone-width toolbar.
+  Docs: docs/dashboard.md, docs/UX_FLOWS.md.
 ```
 
 ---

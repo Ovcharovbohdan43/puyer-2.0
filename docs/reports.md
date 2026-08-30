@@ -7,7 +7,7 @@ Show workspace invoice totals for every plan, and Business-only analytics (trend
 ## Description
 
 - **Base (Free / Pro / Business):** lifetime revenue, paid in the last 30 days, outstanding, overdue. Same currency rule as Overview KPIs: never mix currencies; use the most common invoice currency.
-- **Period CSV (every plan):** From/To on `/reports` (default: first day of the current UTC month through today). Download includes period totals (paid / outstanding / overdue among invoices *issued* in that window, dominant currency) plus one row per invoice. Filename `puyer-report-{from}-{to}.csv` with a UTF-8 BOM.
+- **Period CSV (every plan):** From/To on `/reports` (default: first day of the current UTC month through today). On a phone the two date fields share one shrinking row. Download includes period totals (paid / outstanding / overdue among invoices *issued* in that window, dominant currency) plus one row per invoice. Filename `puyer-report-{from}-{to}.csv` with a UTF-8 BOM.
 - **Advanced (Business):** last 6 months of paid totals, overdue rate among issued invoices, average days from send/issue to first successful Connect payment, client ranking, per-currency breakdown, next-month forecast (mean of the last 3 complete months), payment-time insight vs last month, invoices grouped by `createdByUserId`.
 - `/reports` and Overview load one tenant-scoped invoice query. Advanced fields are `null` unless `can(ADVANCED_REPORTS)`. The monthly chart is a full-height SVG area with a vertical forest→mint gradient (`components/dashboard/trend-bars.tsx`). Cubic handles are clamped so the line cannot dip under the plot; the path draws in on load.
 - `ReportSnapshot` stores JSON metrics for the current UTC month. Money in JSON is **strings** (bigint-safe). Daily cron `0 2 * * *` fans out `puyer/report.snapshot`. Completed months on the trend chart prefer the latest snapshot; the current month stays live.
@@ -60,11 +60,12 @@ Browser:
 
 ## Version
 
-1.0.6 — 2026-08-30
+1.0.7 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Fixed: Period From/To shrink on a phone instead of overflowing the toolbar.
 [2026-08-30] – Added: `/reports` From/To date range and CSV download (period totals + issued invoices).
 [2026-08-29] – Fixed: Trend chart cubic handles stay inside the plot; the line draws in on load.
 [2026-08-29] – Changed: Monthly revenue chart stretches to the card and uses an SVG linearGradient fill.

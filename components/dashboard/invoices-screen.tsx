@@ -114,8 +114,8 @@ export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: Invoi
           </article>
         </section>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <label className="relative block w-full sm:w-[280px]">
+        <div className="flex flex-col gap-3">
+          <label className="relative block w-full lg:max-w-[280px]">
             <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[#6B7280]">
               <MagnifyingGlassIcon size={16} weight="bold" aria-hidden />
             </span>
@@ -132,6 +132,7 @@ export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: Invoi
           </label>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
             <PeriodRangeFields
+              className="sm:max-w-md sm:flex-1"
               from={from}
               to={to}
               fromLabel={copy.periodFrom}
@@ -145,36 +146,38 @@ export function InvoicesScreen({ invoices, remindersEnabled }: { invoices: Invoi
                 setPage(0);
               }}
             />
-            <button
-              type="button"
-              className={dash.btnSecondary}
-              onClick={() => {
-                setStatus((current) => nextListFilter(current));
-                setPage(0);
-              }}
-            >
-              {filterLabel}
-            </button>
-            <button
-              type="button"
-              className={dash.btnSecondary}
-              onClick={() =>
-                downloadCsv(
-                  exportFilename("invoices", from && to ? from : undefined, from && to ? to : undefined),
-                  invoiceExportRows(rows, {
-                    invoice: copy.colInvoice,
-                    client: copy.colClient,
-                    date: copy.colDate,
-                    due: copy.colDueDate,
-                    amount: copy.colAmount,
-                    currency: copy.colCurrency,
-                    status: copy.colStatus,
-                  }),
-                )
-              }
-            >
-              {copy.exportCsv}
-            </button>
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+              <button
+                type="button"
+                className={`${dash.btnSecondary} w-full sm:w-auto`}
+                onClick={() => {
+                  setStatus((current) => nextListFilter(current));
+                  setPage(0);
+                }}
+              >
+                {filterLabel}
+              </button>
+              <button
+                type="button"
+                className={`${dash.btnSecondary} w-full sm:w-auto`}
+                onClick={() =>
+                  downloadCsv(
+                    exportFilename("invoices", from && to ? from : undefined, from && to ? to : undefined),
+                    invoiceExportRows(rows, {
+                      invoice: copy.colInvoice,
+                      client: copy.colClient,
+                      date: copy.colDate,
+                      due: copy.colDueDate,
+                      amount: copy.colAmount,
+                      currency: copy.colCurrency,
+                      status: copy.colStatus,
+                    }),
+                  )
+                }
+              >
+                {copy.exportCsv}
+              </button>
+            </div>
           </div>
         </div>
 

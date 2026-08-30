@@ -21,7 +21,7 @@ export const dash = {
   input:
     "h-[38px] w-full rounded-lg border border-[#E5E7EB] bg-white py-2 pr-4 pl-10 text-[14px] text-[#111827] outline-none placeholder:text-[#9CA3AF] focus:border-[#006C49]",
   dateInput:
-    "h-[38px] rounded-lg border border-[#E5E7EB] bg-white px-3 text-[14px] text-[#111827] outline-none focus:border-[#006C49]",
+    "box-border h-[38px] w-full min-w-0 max-w-full rounded-lg border border-[#E5E7EB] bg-white px-2 text-[13px] text-[#111827] outline-none focus:border-[#006C49] sm:px-3 sm:text-[14px]",
   btnPrimary:
     "inline-flex h-10 items-center justify-center gap-1 rounded-lg bg-[#006C49] px-4 text-[14px] font-semibold text-white hover:brightness-110",
   btnSecondary:

@@ -9,16 +9,17 @@ type PeriodRangeFieldsProps = {
   toLabel: string;
   onFrom: (value: string) => void;
   onTo: (value: string) => void;
+  className?: string;
 };
 
-export function PeriodRangeFields({ from, to, fromLabel, toLabel, onFrom, onTo }: PeriodRangeFieldsProps) {
+export function PeriodRangeFields({ from, to, fromLabel, toLabel, onFrom, onTo, className }: PeriodRangeFieldsProps) {
   return (
-    <div className="flex flex-wrap items-end gap-2">
-      <label className="flex flex-col gap-1">
+    <div className={`grid w-full min-w-0 grid-cols-2 gap-2 ${className ?? ""}`}>
+      <label className="flex min-w-0 flex-col gap-1">
         <span className="text-[12px] font-medium text-[#6B7280]">{fromLabel}</span>
         <input type="date" value={from} onChange={(event) => onFrom(event.target.value)} className={dash.dateInput} />
       </label>
-      <label className="flex flex-col gap-1">
+      <label className="flex min-w-0 flex-col gap-1">
         <span className="text-[12px] font-medium text-[#6B7280]">{toLabel}</span>
         <input type="date" value={to} onChange={(event) => onTo(event.target.value)} className={dash.dateInput} />
       </label>

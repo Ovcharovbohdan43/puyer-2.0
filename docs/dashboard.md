@@ -10,7 +10,7 @@ Sources: light forest-green product frames (Clients, Reports, Payment reminders)
 
 Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications, Help). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications, Help.
 
-Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines with a short rise-in animation), a full-bleed Revenue Trends SVG (smooth path clamped inside the plot so a sharp dip cannot fall under the month labels, vertical forest→mint gradient, `preserveAspectRatio="none"`, line draw + fill fade on load), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, issue-date From/To, Filter, Export (CSV of the visible filtered list, UTF-8 BOM), three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
+Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines with a short rise-in animation), a full-bleed Revenue Trends SVG (smooth path clamped inside the plot so a sharp dip cannot fall under the month labels, vertical forest→mint gradient, `preserveAspectRatio="none"`, line draw + fill fade on load), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, issue-date From/To in a two-column grid that shrinks on a phone, Filter and Export on one row, CSV of the visible filtered list (UTF-8 BOM), three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
 
 Clients: search, Filter, Export (CSV of the filtered list, including phone, address, tax, notes), four KPI cards with the same fade sparklines as Home, paginated table. **Add Client** collects name, email (required for reminders), and optional phone. Clicking a row sets `?client=` to the client UUID and opens a 400px right drawer with preview (contact, outstanding, notes), invoice history, Create Invoice, Edit, and Delete (confirm modal). Delete is blocked while the client still has invoices. Create Invoice in the table does not open the drawer. Long client names and addresses truncate or wrap; they do not stretch the left rail or the right drawer. On a narrow screen the invoice and client tables scroll horizontally (`table-auto`); amount and status cells do not wrap, so badges cannot cover figures.
 
@@ -64,7 +64,7 @@ npm run lint
 - Open `/payments` with no Stripe charges → illustrated empty state (Create invoice / Connect Stripe)
 - Open `/payments` with synced charges → table + row drawer
 - A long client name truncates in the table, drawer, and does not widen the left sidebar
-- Narrow viewport: Recent Invoices and Clients tables scroll sideways; status pills stay off amounts
+- Narrow viewport: From/To stay in two equal columns without overflowing; Filter and Export sit on one row; invoice and client tables scroll sideways; status pills stay off amounts
 - Client drawer lists invoices; Create Invoice / Edit / Delete work (delete blocked if invoices exist)
 - Mobile viewport: bottom tabs; More sheet lists Reports / Settings / Team / Billing / Notifications / Help
 - Sidebar icons stay readable when idle (not faint mixed-color SVGs)
@@ -90,11 +90,12 @@ npm run lint
 
 ## Version
 
-1.2.19 — 2026-08-30
+1.2.20 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Fixed: Invoice/report date fields and Filter/Export sit in a shrinking two-column toolbar on a phone.
 [2026-08-30] – Added: Invoice/client CSV export and a dated report download on `/reports`.
 [2026-08-30] – Added: Brand-green spinner on dashboard route loads and pending actions.
 [2026-08-30] – Changed: Settings is a full account page (profile, email, password, deletion) with Stripe embedded.

@@ -264,6 +264,11 @@ html[data-theme="dark"] textarea:-webkit-autofill {
   caret-color: var(--foreground);
 }
 
+input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
+}
+
 html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   opacity: 0.7;

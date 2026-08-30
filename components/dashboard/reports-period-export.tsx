@@ -23,7 +23,7 @@ export function ReportsPeriodExport({ invoices }: { invoices: InvoiceListRow[] }
   );
 
   return (
-    <div className="flex flex-col items-stretch gap-3 lg:items-end">
+    <div className="flex w-full min-w-0 flex-col items-stretch gap-3 lg:max-w-md lg:items-end">
       <PeriodRangeFields
         from={from}
         to={to}
@@ -32,10 +32,10 @@ export function ReportsPeriodExport({ invoices }: { invoices: InvoiceListRow[] }
         onFrom={setFrom}
         onTo={setTo}
       />
-      <p className="max-w-sm text-right text-[13px] text-[#6B7280]">{copy.periodHint}</p>
+      <p className="text-left text-[13px] text-[#6B7280] lg:text-right">{copy.periodHint}</p>
       <button
         type="button"
-        className={dash.btnOutline}
+        className={`${dash.btnOutline} w-full sm:w-auto`}
         onClick={() =>
           downloadCsv(
             exportFilename("puyer-report", range.from, range.to),

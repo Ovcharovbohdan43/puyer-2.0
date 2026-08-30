@@ -10,4 +10,10 @@ describe("dashboard table chrome", () => {
     expect(dash.tableScroll).toContain("overflow-x-auto");
     expect(dash.cellNowrap).toBe("whitespace-nowrap");
   });
+
+  it("lets date fields shrink on a narrow toolbar instead of overflowing", () => {
+    expect(dash.dateInput).toContain("w-full");
+    expect(dash.dateInput).toContain("min-w-0");
+    expect(dash.dateInput).toContain("max-w-full");
+  });
 });

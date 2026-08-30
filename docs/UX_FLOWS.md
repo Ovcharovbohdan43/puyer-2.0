@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.37 — 2026-08-30
+> **Version:** 1.0.38 — 2026-08-30
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -462,4 +462,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Payer portal has theme toggle; dashboard no longer overwrites `puyer-theme`. Signed-in template/client builder matches this contract. Payments rows open a drawer.
 [2026-08-29] – Added: Help Center at `/help` (search + contact form). Footer and app nav link there.
 [2026-08-30] – Added: Invoice/client CSV export; `/reports` period download.
+[2026-08-30] – Fixed: Invoice and report date fields fit a narrow viewport.
 ```
