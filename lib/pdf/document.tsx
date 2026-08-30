@@ -5,7 +5,7 @@ import type { BuilderState } from "@/components/invoice-builder/types";
 import type { Currency } from "@/lib/invoices/currencies";
 import type { InvoiceTotals } from "@/lib/invoices/calculate";
 import { formatInvoiceDate } from "@/lib/invoices/dates";
-import { formatBankTransfer, hasBankTransfer } from "@/lib/invoices/bank-transfer";
+import { formatBankTransfer, showsInvoiceBankTransfer } from "@/lib/invoices/bank-transfer";
 import { formatMajorMoney, formatMoney } from "@/lib/invoices/money";
 import { INVOICE_PLATFORM_DISCLAIMER } from "@/lib/invoices/disclaimer";
 import { INVOICE_NAVY, invoiceTemplateSkin } from "@/lib/invoices/template-layout";
@@ -56,8 +56,9 @@ export function InvoicePdfDocument({
   const styles = makeStyles(accent, skin);
   const money = (minor: bigint) => formatMoney(minor, currency.symbol, currency.exponent);
   const unit = (value: string) => formatMajorMoney(value, currency.symbol, currency.exponent);
-  const bankBlock = formatBankTransfer(state);
-  const showPayment = hasBankTransfer(state) || Boolean(state.paymentDetails.trim());
+  const showBank = showsInvoiceBankTransfer(state);
+  const bankBlock = showBank ? formatBankTransfer(state) : "";
+  const showPayment = showBank || Boolean(state.paymentDetails.trim());
   const showNotes = Boolean(state.notes.trim());
 
   return (
@@ -159,7 +160,7 @@ export function InvoicePdfDocument({
               </View>
             ) : null}
             {state.paymentDetails.trim() ? <FlowText style={styles.notes}>{state.paymentDetails}</FlowText> : null}
-            {hasBankTransfer(state) ? (
+            {showBank ? (
               <Text style={styles.remit}>
                 {`Please include invoice number #${state.invoiceNumber} in remittance.`}
               </Text>

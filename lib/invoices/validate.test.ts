@@ -4,13 +4,21 @@ import { createDefaultBuilderState } from "@/components/invoice-builder/types";
 import { hasBuilderErrors, isValidEmail, prepareBuilderState, validateBuilder } from "@/lib/invoices/validate";
 
 describe("validateBuilder", () => {
-  it("accepts the default preview invoice", () => {
-    const errors = validateBuilder(createDefaultBuilderState());
+  it("accepts the default preview invoice once a payment channel is chosen", () => {
+    const state = createDefaultBuilderState();
+    state.paymentChannel = "STRIPE";
+    const errors = validateBuilder(state);
     expect(hasBuilderErrors(errors)).toBe(false);
+  });
+
+  it("requires a payment channel", () => {
+    const errors = validateBuilder(createDefaultBuilderState());
+    expect(errors.paymentChannel).toBe("paymentChannel");
   });
 
   it("ignores an extra blank line item", () => {
     const state = createDefaultBuilderState();
+    state.paymentChannel = "STRIPE";
     state.items.push({ id: "blank", description: "", quantity: "1", unitPrice: "0.00" });
     expect(hasBuilderErrors(validateBuilder(state))).toBe(false);
   });
@@ -47,6 +55,7 @@ describe("validateBuilder", () => {
 
   it("strips bank details from the payload when storage consent is off", () => {
     const state = createDefaultBuilderState();
+    state.paymentChannel = "BANK";
     state.bankIban = "DE89370400440532013000";
     state.storeBankDetailsConsent = false;
     const prepared = prepareBuilderState(state);
@@ -61,6 +70,16 @@ describe("validateBuilder", () => {
     const prepared = prepareBuilderState(state);
     expect(prepared.logoUrl).toBe("");
     expect(prepared.logoScale).toBe(40);
+  });
+
+  it("strips bank details when the channel is Stripe", () => {
+    const state = createDefaultBuilderState();
+    state.paymentChannel = "STRIPE";
+    state.bankIban = "DE89370400440532013000";
+    state.storeBankDetailsConsent = true;
+    const prepared = prepareBuilderState(state);
+    expect(prepared.bankIban).toBe("");
+    expect(prepared.storeBankDetailsConsent).toBe(false);
   });
 });
 

@@ -26,11 +26,25 @@ test("landing builder payment fields are on step two", async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/#builder");
   await expect(page.getByRole("button", { name: "Download PDF" })).toHaveCount(0);
-  await expect(page.getByText("Bank transfer (outside Stripe)")).toHaveCount(0);
+  await expect(page.getByText("How should recipients pay?")).toHaveCount(0);
   await page.getByRole("button", { name: "Next" }).click();
   await expect(page.getByRole("button", { name: "Download PDF" })).toBeVisible();
+  await expect(page.getByText("How should recipients pay?")).toBeVisible();
+  await expect(page.getByText("Bank transfer (outside Stripe)")).toHaveCount(0);
+  await page.getByRole("radio", { name: /Bank transfer details/ }).click();
   await expect(page.getByText("Bank transfer (outside Stripe)")).toBeVisible();
   await page.getByRole("button", { name: "Back" }).click();
   await expect(page.getByPlaceholder("Client Name")).toBeVisible();
   await expect(page.getByRole("button", { name: "Download PDF" })).toHaveCount(0);
+});
+
+test("choosing Stripe without a connected account warns that clients cannot pay", async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.goto("/#builder");
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("radio", { name: /Card payments/ }).click();
+  await expect(page.getByRole("heading", { name: "Stripe is not connected" })).toBeVisible();
+  await expect(
+    page.getByText("Recipients will not be able to pay this invoice online until Stripe is connected"),
+  ).toBeVisible();
 });

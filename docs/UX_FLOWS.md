@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.34 — 2026-08-30
+> **Version:** 1.0.35 — 2026-08-30
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -223,7 +223,8 @@ Temporary number e.g. `INV-2026-001` is **preview only**. Server issues the real
 | Qty / price / tax | input | Recalculate line, subtotal, discount, tax, total. Preview live |
 | Discount type/value | change | Custom list (None / Percentage / Fixed). Closes on outside click, Escape, or choice. Recalculate. Inline error if invalid |
 | Tax % | change | Recalculate tax + total |
-| Bank transfer | type | Optional IBAN / account fields. Preview updates. Not saved unless the storage-consent checkbox is checked |
+| Bank transfer | type | Shown only after **Outside Stripe**. Optional IBAN / account fields. Preview updates. Not saved unless the storage-consent checkbox is checked |
+| Payment channel | Stripe / Outside Stripe | Required before Save/PDF. Stripe without a connected charge-enabled account → modal: client cannot pay online until Stripe is connected |
 | Bank storage consent | checkbox | Required to send/store bank details. Unchecked: on-screen only; saved invoice/PDF omit them; no reuse on reload |
 | Notes | type | Issuer notes only. A small Puyer platform disclaimer is always printed under Notes and cannot be edited or removed |
 | Template icons | click | Keep data, switch visual only. All templates free. Same Figma invoice skeleton; Minimal = sparse paint; Professional = grey table + navy Total due; Premium = accent stripe + accent table header |
@@ -377,6 +378,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ## Changelog
 
 ```
+[2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
 [2026-08-30] – Added: Temporary/permanent user or workspace bans; official reason email; `/banned`.
 [2026-08-30] – Added: Illustrated empty state on `/payments`.
 [2026-08-30] – Added: Company logo on invoices (crop, size, background removal) before apply.

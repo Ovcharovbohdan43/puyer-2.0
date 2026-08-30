@@ -7,6 +7,7 @@ import {
   emptyBankTransfer,
   hasBankTransfer,
   paymentDetailsForStorage,
+  showsInvoiceBankTransfer,
   splitPaymentDetails,
 } from "@/lib/invoices/bank-transfer";
 
@@ -33,6 +34,7 @@ describe("bank transfer storage consent", () => {
 
   it("does not persist bank fields without explicit consent", () => {
     const state = createDefaultBuilderState();
+    state.paymentChannel = "BANK";
     state.bankIban = "DE89370400440532013000";
     state.bankAccountHolder = "Acme";
     state.storeBankDetailsConsent = false;
@@ -41,10 +43,19 @@ describe("bank transfer storage consent", () => {
 
   it("persists bank fields only when consent is true", () => {
     const state = createDefaultBuilderState();
+    state.paymentChannel = "BANK";
     state.bankIban = "DE89370400440532013000";
     state.storeBankDetailsConsent = true;
     const stored = paymentDetailsForStorage(state);
     expect(stored).toContain("IBAN: DE89370400440532013000");
     expect(stored).toContain("Payment due within 30 days.");
+  });
+
+  it("hides bank details on the invoice until the bank channel is chosen", () => {
+    const state = createDefaultBuilderState();
+    state.bankIban = "DE89370400440532013000";
+    expect(showsInvoiceBankTransfer(state)).toBe(false);
+    state.paymentChannel = "BANK";
+    expect(showsInvoiceBankTransfer(state)).toBe(true);
   });
 });

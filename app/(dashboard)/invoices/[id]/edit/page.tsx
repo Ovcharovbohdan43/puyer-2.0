@@ -7,6 +7,8 @@ import { listClients } from "@/lib/clients/persist";
 import { invoiceToBuilderState } from "@/lib/invoices/builder-state";
 import { isEditableStatus } from "@/lib/invoices/status";
 import { t } from "@/lib/i18n";
+import { loadConnectionForSettings } from "@/lib/stripe/connect/service";
+import { canCollectInvoiceStripePayments } from "@/lib/stripe/connect/status";
 
 export default async function EditInvoicePage({
   params,
@@ -15,9 +17,11 @@ export default async function EditInvoicePage({
 }) {
   const session = await requireSession();
   const { id } = await params;
-  const { invoice } = await requireInvoiceAccess(session, id);
+  const { invoice, membership } = await requireInvoiceAccess(session, id);
   const clients = await listClients(session).catch(() => []);
   const copy = t("dashboard");
+  const connection = await loadConnectionForSettings(membership.organizationId);
+  const stripePaymentsReady = canCollectInvoiceStripePayments(connection.status, connection.chargesEnabled);
 
   if (!isEditableStatus(invoice.status)) {
     return (
@@ -35,6 +39,7 @@ export default async function EditInvoicePage({
     <div className="bg-[#F6F7F6] py-8">
       <WorkspaceSession initial={invoiceToBuilderState(invoice)} invoiceId={invoice.id} publicId={invoice.publicId}>
         <InvoiceBuilder
+          stripePaymentsReady={stripePaymentsReady}
           clients={clients.map((client) => ({
             id: client.id,
             name: client.name,

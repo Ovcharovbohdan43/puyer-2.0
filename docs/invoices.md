@@ -12,7 +12,7 @@ Every invoice prints a small platform disclaimer under Notes (`lib/invoices/disc
 
 Issuers may add a **company logo** (crop, size, remove a flat background in a preview editor). See [`invoice-logos.md`](./invoice-logos.md). The invoice stores `logoUrl` + `logoScale`; files live in Storage, not in Postgres.
 
-Issuers may add **bank transfer** details (outside Stripe). Those fields are stored on the invoice only when `storeBankDetailsConsent` is true. The server strips IBAN/account fields without that flag (`paymentDetailsForStorage`). Without consent they appear only in the live preview and must be re-entered later. Puyer does not confirm bank payments.
+Issuers choose a **payment channel** first: Stripe or bank transfer outside Stripe. Bank fields appear only after **Outside Stripe**. Stripe without a connected, charge-enabled account opens a warning that recipients cannot pay online until Stripe is connected. Issuers may add **bank transfer** details. Those fields are stored on the invoice only when `storeBankDetailsConsent` is true. The server strips IBAN/account fields without that flag or when the channel is not bank (`paymentDetailsForStorage`). Without consent they appear only in the live preview and must be re-entered later. Puyer does not confirm bank payments.
 
 Invoice numbers come from `InvoiceSequence` with `SELECT … FOR UPDATE` inside a Repeatable Read transaction. The format is `INV-{year}-{pad4}`. Public links use a 16-byte `base64url` `publicId`, not the invoice number.
 
@@ -77,11 +77,12 @@ Browser:
 
 ## Version
 
-1.0.17 — 2026-08-30
+1.0.18 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Changed: Invoice Builder requires Stripe vs bank-transfer before bank fields; Stripe-not-connected warning modal.
 [2026-08-30] – Added: Company logo snapshot (`logoUrl`, `logoScale`) on invoices.
 [2026-08-29] – Fixed: Sent and viewed invoices stay editable; paid/canceled stay locked without a “Coming next” stub.
 [2026-08-29] – Changed: Creating or updating a client requires a valid email (reminders destination) and accepts phone.

@@ -100,4 +100,22 @@ describe("InvoicePreview", () => {
     expect(html).toContain("https://cdn.example/logo.png");
     expect(html).toContain("height:45px");
   });
+
+  it("does not print bank details until the bank channel is chosen", () => {
+    const state = createDefaultBuilderState();
+    state.paymentChannel = "STRIPE";
+    state.bankIban = "DE89370400440532013000";
+    const currency = getCurrency(state.currency);
+    const totals = totalsForInvoice(
+      state.items,
+      currency.exponent,
+      state.discountType,
+      state.discountValue,
+      state.taxRate,
+    );
+    const html = renderToStaticMarkup(
+      <InvoicePreview state={state} currency={currency} totals={totals} zoom={1} />,
+    );
+    expect(html).not.toContain("DE89370400440532013000");
+  });
 });

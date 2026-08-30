@@ -21,8 +21,9 @@ Leaving `/` for `/pricing` (or any non-hash route) while the builder is dirty op
 1. Open `/`.
 2. Click **Create Invoice** in the header or hero.
 3. Edit business, **logo** (preview editor: crop, size, remove background), client, line items, tax, discount, template, accent.
-4. Preview updates on every change (desktop split; mobile Edit/Preview tabs). On the landing page the form is two steps: invoice details, then payment and notes. `/invoices/new` and edit stay a single form.
-5. Click Download or Share to hit validation + registration modal.
+4. Choose **how recipients pay**: Stripe or outside Stripe. Bank transfer fields appear only after outside Stripe. If Stripe is not connected, a modal warns that the client cannot pay online until Stripe is connected.
+5. Preview updates on every change (desktop split; mobile Edit/Preview tabs). On the landing page the form is two steps: invoice details, then payment and notes. `/invoices/new` and edit stay a single form.
+6. Click Download or Share to hit validation + registration modal.
 
 ## Examples
 
@@ -53,7 +54,9 @@ Browser:
 - Theme moon/sun restyles builder chrome, modals, and the live invoice preview.
 - Dark theme: form fields stay themed; invoice paper uses tokens; zebra/table fills use `bg-puyer-soft`.
 - Notes always prints a small Puyer platform disclaimer under the issuer’s notes (not editable).
-- Bank transfer fields are optional. A checkbox must be checked before Save/PDF if those details should be stored. Unchecked: details stay on-screen only, are not sent/saved, and must be re-entered later.
+- Bank transfer fields stay hidden until **Outside Stripe** is selected. They are optional. A checkbox must be checked before Save/PDF if those details should be stored. Unchecked: details stay on-screen only, are not sent/saved, and must be re-entered later.
+- Save/PDF requires Stripe or bank transfer to be chosen.
+- Choosing Stripe when the workspace is not connected (or charges are not enabled) opens **Stripe is not connected**. Connect Stripe goes to Settings (signed-in) or Login (guest). Continue keeps Stripe. Use bank transfer switches channel.
 - Line items: Qty, Price, and Amount stay in separate columns; `$2,500.00` does not cover `2500.00`.
 - A long address without spaces wraps inside the paper; **Invoice** and `#INV-…` stay visible.
 
@@ -62,7 +65,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 ```
 - Currency control shows `USD ($)` when closed; full names only in the dropdown.
 - Currency list closes on outside click, Escape, or choosing a currency.
-- Landing: Download PDF is not on step 1; click Next first.
+- Landing: Download PDF is not on step 1; click Next first. Step 2 asks Stripe vs outside Stripe before bank fields.
 - Discount uses the same custom list as Currency: outside click, Escape, or a choice closes it. Tax % matches that control height.
 - Address and notes fields have no resize handle.
 
@@ -83,7 +86,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 
 ## Version
 
-1.2.19 — 2026-08-30
+1.2.20 — 2026-08-30
 
 ## Changelog
 
@@ -118,6 +121,7 @@ npm run test:e2e -- e2e/builder-preview.spec.ts
 [2026-08-29] – Changed: Invoice preview drops Terms & conditions so bank details use full width.
 [2026-08-29] – Changed: Filled Total due uses the selected accent color (preview and PDF).
 [2026-08-29] – Changed: Dashboard `/invoices/{id}/edit` stays available after send/view.
+[2026-08-30] – Changed: Payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
 [2026-08-30] – Added: Company logo with crop, size, and background-removal preview before apply.
 [2026-08-29] – Changed: Signed-in “Use this template” opens `/invoices/new?template=`; the builder lists saved clients.
 ```

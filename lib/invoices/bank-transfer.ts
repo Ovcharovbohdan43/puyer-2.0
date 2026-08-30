@@ -1,4 +1,4 @@
-import type { BuilderState } from "@/components/invoice-builder/types";
+import type { BuilderState, PaymentChannel } from "@/components/invoice-builder/types";
 
 export const BANK_TRANSFER_HEADING = "Bank transfer (outside Stripe)";
 export const BANK_FIELD_MAX = 200;
@@ -56,6 +56,19 @@ export function bankTransferFromState(state: BankTransferDetails): BankTransferD
 export function hasBankTransfer(state: BankTransferDetails): boolean {
   const bank = bankTransferFromState(state);
   return LABELS.some(([key]) => bank[key] !== "");
+}
+
+export function paymentChannelFromStoredBank(hasBank: boolean): PaymentChannel {
+  return hasBank ? "BANK" : "STRIPE";
+}
+
+export function showsInvoiceBankTransfer(
+  state: BankTransferDetails & { paymentChannel?: PaymentChannel },
+): boolean {
+  if (state.paymentChannel !== "BANK") {
+    return false;
+  }
+  return hasBankTransfer(state);
 }
 
 export function bankTransferRows(state: BankTransferDetails): Array<{ label: string; value: string }> {
@@ -118,7 +131,7 @@ export function paymentDetailsForStorage(state: BuilderState): string {
   const parsed = splitPaymentDetails(state.paymentDetails);
   const fromFields = bankTransferFromState(state);
   const bank = hasBankTransfer(fromFields) ? fromFields : parsed.bank;
-  if (state.storeBankDetailsConsent !== true || !hasBankTransfer(bank)) {
+  if (state.paymentChannel !== "BANK" || state.storeBankDetailsConsent !== true || !hasBankTransfer(bank)) {
     return parsed.extra;
   }
   return composePaymentDetails(bank, parsed.extra);

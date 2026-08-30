@@ -7,6 +7,8 @@ import { t } from "@/lib/i18n";
 import { emptyWorkspaceBuilderState } from "@/lib/invoices/builder-state";
 import { parseInvoiceTemplate } from "@/lib/invoices/template-layout";
 import { logger } from "@/lib/observability/logger";
+import { loadConnectionForSettings } from "@/lib/stripe/connect/service";
+import { canCollectInvoiceStripePayments } from "@/lib/stripe/connect/status";
 
 export default async function NewInvoicePage({
   searchParams,
@@ -21,6 +23,9 @@ export default async function NewInvoicePage({
     const clients = await listClients(session);
     const presetClient = clients.find((client) => client.id === query.client);
     const template = parseInvoiceTemplate(query.template);
+
+    const connection = await loadConnectionForSettings(membership.organizationId);
+    const stripePaymentsReady = canCollectInvoiceStripePayments(connection.status, connection.chargesEnabled);
 
     const initial = emptyWorkspaceBuilderState({
       businessName: profile?.businessName || membership.user.name || session.email,
@@ -37,6 +42,7 @@ export default async function NewInvoicePage({
       <div className="bg-[#F6F7F6] py-8">
         <WorkspaceSession initial={initial}>
           <InvoiceBuilder
+            stripePaymentsReady={stripePaymentsReady}
             clients={clients.map((client) => ({
               id: client.id,
               name: client.name,

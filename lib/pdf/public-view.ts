@@ -1,7 +1,7 @@
 import type { Invoice, InvoiceItem, InvoiceTemplate, Plan } from "@prisma/client";
 
 import type { BuilderState } from "@/components/invoice-builder/types";
-import { emptyBankTransfer, hasBankTransfer, splitPaymentDetails } from "@/lib/invoices/bank-transfer";
+import { emptyBankTransfer, hasBankTransfer, paymentChannelFromStoredBank, splitPaymentDetails } from "@/lib/invoices/bank-transfer";
 import { invoiceToBuilderState } from "@/lib/invoices/builder-state";
 
 export type PublicInvoiceView = {
@@ -92,6 +92,7 @@ export function publicBuilderState(view: PublicInvoiceView): BuilderState {
     taxRate: view.taxRate,
     notes: view.notes,
     paymentDetails: extra,
+    paymentChannel: paymentChannelFromStoredBank(hasBankTransfer(bank)),
     storeBankDetailsConsent: hasBankTransfer(bank),
     ...emptyBankTransfer(),
     ...bank,

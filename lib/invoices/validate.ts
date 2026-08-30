@@ -18,10 +18,11 @@ export type BuilderErrors = {
   items?: string;
   discount?: string;
   tax?: string;
+  paymentChannel?: string;
   lines: Record<string, LineErrors>;
 };
 
-export function hasBuilderErrors(errors: BuilderErrors): boolean {
+export function hasDetailsBuilderErrors(errors: BuilderErrors): boolean {
   if (
     errors.businessName ||
     errors.clientName ||
@@ -34,6 +35,10 @@ export function hasBuilderErrors(errors: BuilderErrors): boolean {
     return true;
   }
   return Object.values(errors.lines).some((line) => Boolean(line.description || line.quantity || line.unitPrice));
+}
+
+export function hasBuilderErrors(errors: BuilderErrors): boolean {
+  return Boolean(errors.paymentChannel) || hasDetailsBuilderErrors(errors);
 }
 
 /** Accept "20%", "20,5", and ordinary decimals. */
@@ -67,10 +72,12 @@ export function isBlankBuilderLine(item: BuilderLine): boolean {
 export function prepareBuilderState(state: BuilderState): BuilderState {
   const items = state.items.filter((item) => !isBlankBuilderLine(item));
   const bank = bankTransferFromState(state);
-  const consented = state.storeBankDetailsConsent === true;
+  const bankChannel = state.paymentChannel === "BANK";
+  const consented = bankChannel && state.storeBankDetailsConsent === true;
   return {
     ...state,
     ...(consented ? bank : emptyBankTransfer()),
+    paymentChannel: state.paymentChannel,
     businessName: state.businessName.trim(),
     clientName: state.clientName.trim(),
     taxRate: normalizePercentInput(state.taxRate || "0"),
@@ -195,6 +202,10 @@ export function validateBuilder(state: BuilderState): BuilderErrors {
 
   if (validLineCount < 1) {
     errors.items = "items";
+  }
+
+  if (prepared.paymentChannel === "UNSET") {
+    errors.paymentChannel = "paymentChannel";
   }
 
   return errors;

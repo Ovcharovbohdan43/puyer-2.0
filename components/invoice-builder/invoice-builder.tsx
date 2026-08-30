@@ -6,7 +6,7 @@ import { useBuilderSession } from "@/components/invoice-builder/builder-session"
 import { CurrencySelect } from "@/components/invoice-builder/currency-select";
 import { InvoicePreview } from "@/components/invoice-builder/invoice-preview";
 import { LogoEditor } from "@/components/invoice-builder/logo-editor";
-import { ACCENT_COLORS, type InvoiceTemplate } from "@/components/invoice-builder/types";
+import { ACCENT_COLORS, type InvoiceTemplate, type PaymentChannel } from "@/components/invoice-builder/types";
 import { FigmaIcon } from "@/components/marketing/figma-icon";
 import { Modal } from "@/components/ui/modal";
 import { SimpleSelect } from "@/components/ui/select-menu";
@@ -15,7 +15,7 @@ import { totalsForInvoice, type DiscountType } from "@/lib/invoices/calculate";
 import { getCurrency, type Currency } from "@/lib/invoices/currencies";
 import { formatMoney } from "@/lib/invoices/money";
 import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
-import { hasBuilderErrors, validateBuilder, type BuilderErrors } from "@/lib/invoices/validate";
+import { hasDetailsBuilderErrors, hasBuilderErrors, validateBuilder, type BuilderErrors } from "@/lib/invoices/validate";
 import { ensureLogoUploaded } from "@/lib/invoices/upload-logo";
 import { downloadPdfResponse } from "@/lib/pdf/browser-download";
 import { t } from "@/lib/i18n";
@@ -33,14 +33,26 @@ const TEMPLATES: { id: InvoiceTemplate; icon: string; width: number; height: num
 export function InvoiceBuilder({
   paged = false,
   clients = [],
+  stripePaymentsReady = false,
 }: {
   paged?: boolean;
   clients?: { id: string; name: string; address: string }[];
+  stripePaymentsReady?: boolean;
 }) {
   const copy = t("builder");
   const toast = useToast();
-  const { state, setState, authenticated, openAuth, persist, persisting, publicUrl, invoiceId, onCopyPublicLink } =
-    useBuilderSession();
+  const {
+    state,
+    setState,
+    authenticated,
+    openAuth,
+    persist,
+    persisting,
+    publicUrl,
+    invoiceId,
+    onCopyPublicLink,
+    requestNavigate,
+  } = useBuilderSession();
   const [mobileTab, setMobileTab] = useState<MobileTab>("edit");
   const [zoom, setZoom] = useState(1);
   const [fullscreen, setFullscreen] = useState(false);
@@ -52,6 +64,7 @@ export function InvoiceBuilder({
   const [landingStep, setLandingStep] = useState<LandingFormStep>(1);
   const [logoEditorOpen, setLogoEditorOpen] = useState(false);
   const [logoSource, setLogoSource] = useState<File | string | null>(null);
+  const [stripeWarnOpen, setStripeWarnOpen] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const currency = getCurrency(state.currency);
@@ -79,7 +92,11 @@ export function InvoiceBuilder({
   const showErrors = (next: BuilderErrors) => {
     setErrors(next);
     if (paged) {
-      setLandingStep(1);
+      if (hasDetailsBuilderErrors(next)) {
+        setLandingStep(1);
+      } else if (next.paymentChannel) {
+        setLandingStep(2);
+      }
     }
     setErrorTick((tick) => tick + 1);
     toast(copy.errors.summary);
@@ -486,8 +503,62 @@ export function InvoiceBuilder({
     </div>
   );
 
+  const choosePaymentChannel = (channel: Exclude<PaymentChannel, "UNSET">) => {
+    setState((current) => ({ ...current, paymentChannel: channel }));
+    if (errors.paymentChannel) {
+      setErrors({ ...errors, paymentChannel: undefined });
+    }
+    if (channel === "STRIPE" && !stripePaymentsReady) {
+      setStripeWarnOpen(true);
+      return;
+    }
+    setStripeWarnOpen(false);
+  };
+
+  const channelBtnClass = (active: boolean) =>
+    `flex-1 rounded border px-4 py-3 text-left ${
+      active ? "border-[#0b1c30] bg-[#eff4ff]" : "border-[#e2e8f0] bg-white"
+    }`;
+
   const formPayment = (
     <div className="flex min-w-0 flex-col gap-6">
+      <div className="flex flex-col gap-3">
+        <span className={labelClass}>{copy.paymentChannel}</span>
+        <p className="text-[12px] leading-4 text-[#45464d]">{copy.paymentChannelHint}</p>
+        <div
+          role="radiogroup"
+          aria-label={copy.paymentChannel}
+          data-invalid={errors.paymentChannel ? "true" : undefined}
+          className={`flex flex-col gap-2 sm:flex-row ${errors.paymentChannel ? "rounded border border-[#b91c1c] p-2" : ""}`}
+        >
+          <button
+            type="button"
+            role="radio"
+            aria-checked={state.paymentChannel === "STRIPE"}
+            className={channelBtnClass(state.paymentChannel === "STRIPE")}
+            onClick={() => choosePaymentChannel("STRIPE")}
+          >
+            <span className="block text-[14px] font-semibold text-[#0b1c30]">{copy.paymentChannelStripe}</span>
+            <span className="mt-1 block text-[12px] leading-4 text-[#45464d]">{copy.paymentChannelStripeHint}</span>
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={state.paymentChannel === "BANK"}
+            className={channelBtnClass(state.paymentChannel === "BANK")}
+            onClick={() => choosePaymentChannel("BANK")}
+          >
+            <span className="block text-[14px] font-semibold text-[#0b1c30]">{copy.paymentChannelBank}</span>
+            <span className="mt-1 block text-[12px] leading-4 text-[#45464d]">{copy.paymentChannelBankHint}</span>
+          </button>
+        </div>
+        {errors.paymentChannel ? <span className={errorClass}>{copy.errors.paymentChannel}</span> : null}
+        {state.paymentChannel === "STRIPE" && !stripePaymentsReady ? (
+          <p className="text-[12px] leading-4 text-[#b45309]">{copy.stripeNotConnectedHint}</p>
+        ) : null}
+      </div>
+
+      {state.paymentChannel === "BANK" ? (
       <div className="flex flex-col gap-3">
         <span className={labelClass}>{copy.bankSection}</span>
         <p className="text-[12px] leading-4 text-[#45464d]">{copy.bankSectionHint}</p>
@@ -526,6 +597,7 @@ export function InvoiceBuilder({
           <p className="text-[12px] leading-4 text-[#b45309]">{copy.bankStorageDeclined}</p>
         ) : null}
       </div>
+      ) : null}
 
       <label className="flex flex-col gap-1">
         <span className={labelClass}>{copy.paymentDetails}</span>
@@ -826,6 +898,43 @@ export function InvoiceBuilder({
             onClick={() => setPendingCurrency(null)}
           >
             {copy.currencyCancel}
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        open={stripeWarnOpen}
+        title={copy.stripeNotConnectedTitle}
+        onClose={() => setStripeWarnOpen(false)}
+      >
+        <p className="text-[14px] leading-5 text-[#45464d]">{copy.stripeNotConnectedBody}</p>
+        <div className="mt-6 flex flex-col gap-2">
+          <button
+            type="button"
+            className="rounded bg-puyer-green py-[9px] text-[12px] font-semibold tracking-[0.6px] text-white"
+            onClick={() => {
+              setStripeWarnOpen(false);
+              requestNavigate(authenticated ? "/settings" : "/login");
+            }}
+          >
+            {copy.stripeNotConnectedConnect}
+          </button>
+          <button
+            type="button"
+            className="rounded border border-[#e2e8f0] py-[9px] text-[12px] font-semibold tracking-[0.6px]"
+            onClick={() => setStripeWarnOpen(false)}
+          >
+            {copy.stripeNotConnectedContinue}
+          </button>
+          <button
+            type="button"
+            className="rounded py-[9px] text-[12px] font-semibold tracking-[0.6px] text-[#0b1c30]"
+            onClick={() => {
+              setStripeWarnOpen(false);
+              choosePaymentChannel("BANK");
+            }}
+          >
+            {copy.stripeNotConnectedBank}
           </button>
         </div>
       </Modal>

@@ -3,6 +3,8 @@ import { emptyBankTransfer, type BankTransferDetails } from "@/lib/invoices/bank
 
 export type InvoiceTemplate = "MINIMAL" | "PROFESSIONAL" | "PREMIUM";
 
+export type PaymentChannel = "UNSET" | "STRIPE" | "BANK";
+
 export type BuilderLine = {
   id: string;
   description: string;
@@ -23,6 +25,7 @@ export type BuilderState = {
   taxRate: string;
   notes: string;
   paymentDetails: string;
+  paymentChannel: PaymentChannel;
   storeBankDetailsConsent: boolean;
   template: InvoiceTemplate;
   accentColor: string;
@@ -51,6 +54,7 @@ export function createDefaultBuilderState(): BuilderState {
     taxRate: "0",
     notes: "Thank you for your business.",
     paymentDetails: "Payment due within 30 days.",
+    paymentChannel: "UNSET",
     storeBankDetailsConsent: false,
     ...emptyBankTransfer(),
     template: "PROFESSIONAL",

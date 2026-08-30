@@ -49,3 +49,10 @@ function finalizeSnapshot(input: {
   }
   return { ...input, status };
 }
+
+export function canCollectInvoiceStripePayments(
+  status: StripeConnectionStatus,
+  chargesEnabled: boolean,
+): boolean {
+  return status === "CONNECTED" && chargesEnabled;
+}

@@ -53,7 +53,7 @@ Browser:
 - Public page Download PDF works signed out
 - A very long address without spaces stays inside the page **in both the HTML preview and the downloaded PDF**
 - Cyrillic (and other Noto-covered scripts) render as real letters in the PDF, not `?`
-- After a renderer change, download again — Storage cache keys include `layout: 10`
+- After a renderer change, download again — Storage cache keys include `layout: 11`
 - View-source / network on the public page has no `organizationId`
 
 ## Limitations
@@ -76,11 +76,12 @@ Browser:
 
 ## Version
 
-1.0.10 — 2026-08-30
+1.0.11 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Changed: PDF bank block follows the builder payment channel. Cache key `layout: 11`.
 [2026-08-28] – Added: Server PDF (A4/Letter, three templates), Storage cache, public download, rate limits.
 [2026-08-28] – Changed: Public HTML is the payer document + sidebar, not the builder preview.
 [2026-08-28] – Fixed: Long unbreakable address strings wrap in the HTML preview.

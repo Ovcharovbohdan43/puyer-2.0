@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.15  
+> **Version:** 1.4.16  
 > **Date:** 2026-08-30  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -1333,6 +1333,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Fixed: Help finds the Resend key by scanning env names for `re_`; skip logs include `resendNames`.
   Docs: docs/help.md.
+
+[2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
+  Docs: docs/invoice-builder.md, docs/UX_FLOWS.md, docs/invoices.md, docs/stripe-connect.md.
 
 [2026-08-30] – Added: User/organization bans with stored reason, official email, `/banned`.
   Docs: docs/moderation.md, docs/auth.md.

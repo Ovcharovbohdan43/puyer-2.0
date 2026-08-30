@@ -2,7 +2,7 @@ import { InvoiceBankTransfer } from "@/components/invoice/invoice-bank-transfer"
 import { InvoicePlatformDisclaimer } from "@/components/invoice/invoice-platform-disclaimer";
 import { formatInvoiceDate } from "@/lib/invoices/dates";
 import { formatMajorMoney, formatMoney } from "@/lib/invoices/money";
-import { hasBankTransfer } from "@/lib/invoices/bank-transfer";
+import { showsInvoiceBankTransfer } from "@/lib/invoices/bank-transfer";
 import { invoiceTemplateSkin } from "@/lib/invoices/template-layout";
 import type { Currency } from "@/lib/invoices/currencies";
 import type { InvoiceTotals } from "@/lib/invoices/calculate";
@@ -26,7 +26,8 @@ export function InvoicePreview({ state, currency, totals, zoom }: InvoicePreview
   const taxLabel = state.taxRate.trim() === "" ? "0" : state.taxRate;
   const money = (minor: bigint) => formatMoney(minor, currency.symbol, currency.exponent);
   const unit = (value: string) => formatMajorMoney(value, currency.symbol, currency.exponent);
-  const showPayment = hasBankTransfer(state) || Boolean(state.paymentDetails.trim());
+  const showBank = showsInvoiceBankTransfer(state);
+  const showPayment = showBank || Boolean(state.paymentDetails.trim());
   const showNotes = Boolean(state.notes.trim());
   const markColor = skin.markUsesAccent ? accent : "var(--invoice-accent)";
 
@@ -150,7 +151,7 @@ export function InvoicePreview({ state, currency, totals, zoom }: InvoicePreview
       {showPayment ? (
         <div className="mt-10 min-w-0">
           <p className="text-[11px] font-semibold tracking-[0.8px] text-puyer-ink uppercase">Payment instructions</p>
-          {hasBankTransfer(state) ? (
+          {showBank ? (
             <div className="mt-2 rounded border border-puyer-border bg-puyer-soft p-3">
               <InvoiceBankTransfer state={state} className="mt-0" />
             </div>
@@ -160,7 +161,7 @@ export function InvoicePreview({ state, currency, totals, zoom }: InvoicePreview
               {state.paymentDetails}
             </p>
           ) : null}
-          {hasBankTransfer(state) ? (
+          {showBank ? (
             <p className="mt-2 text-[11px] leading-4 text-puyer-muted italic">
               Please include invoice number #{state.invoiceNumber} in remittance.
             </p>

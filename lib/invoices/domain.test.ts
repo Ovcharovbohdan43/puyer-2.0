@@ -90,6 +90,7 @@ describe("tenant invoice access", () => {
 describe("server totals from builder", () => {
   it("recomputes bigint totals and does not trust client money fields", () => {
     const state = createDefaultBuilderState();
+    state.paymentChannel = "STRIPE";
     const computed = computeInvoiceFromBuilder(state);
     expect(computed.subtotalMinor).toBe(650000n);
     expect(computed.totalMinor).toBe(650000n);
@@ -99,6 +100,7 @@ describe("server totals from builder", () => {
 
   it("drops extra blank line items before totaling", () => {
     const state = createDefaultBuilderState();
+    state.paymentChannel = "STRIPE";
     const base = computeInvoiceFromBuilder(state);
     state.items.push({ id: "blank", description: "", quantity: "1", unitPrice: "0.00" });
     expect(computeInvoiceFromBuilder(state).totalMinor).toBe(base.totalMinor);

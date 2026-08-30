@@ -1,6 +1,6 @@
 import type { InvoiceItem, InvoiceTemplate } from "@prisma/client";
 
-import { emptyBankTransfer, hasBankTransfer, splitPaymentDetails } from "@/lib/invoices/bank-transfer";
+import { emptyBankTransfer, hasBankTransfer, paymentChannelFromStoredBank, splitPaymentDetails } from "@/lib/invoices/bank-transfer";
 import type { BuilderState } from "@/components/invoice-builder/types";
 import { getCurrency } from "@/lib/invoices/currencies";
 import { quantityToInput, unitPriceToInput } from "@/lib/invoices/compute";
@@ -43,6 +43,7 @@ export function invoiceToBuilderState(invoice: InvoiceLike): BuilderState {
     taxRate: invoice.taxRate,
     notes: invoice.notes,
     paymentDetails: extra,
+    paymentChannel: paymentChannelFromStoredBank(hasBankTransfer(bank)),
     storeBankDetailsConsent: hasBankTransfer(bank),
     ...bank,
     template: invoice.template,
@@ -86,6 +87,7 @@ export function emptyWorkspaceBuilderState(input: {
     taxRate: input.taxRate || "0",
     notes: "",
     paymentDetails: "",
+    paymentChannel: "UNSET",
     storeBankDetailsConsent: false,
     ...emptyBankTransfer(),
     template: input.template ?? "PROFESSIONAL",
