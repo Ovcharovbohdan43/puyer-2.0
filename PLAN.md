@@ -639,6 +639,7 @@ AuditAction:       (see §14)
 | Table | Purpose |
 |---|---|
 | **User** | Profile: email, name, avatarUrl, locale, timezone, theme, onboardingCompletedAt |
+| **AccountBan** | User or organization restriction: TEMPORARY/PERMANENT, stored reason, endsAt |
 | **Organization** | Tenant |
 | **OrganizationMember** | userId, organizationId, role, unique(user, org) |
 | **OrganizationInvite** | pending/accepted/revoked email invite; token stored hashed |
@@ -1332,6 +1333,15 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-29] – Fixed: Help finds the Resend key by scanning env names for `re_`; skip logs include `resendNames`.
   Docs: docs/help.md.
+
+[2026-08-30] – Added: User/organization bans with stored reason, official email, `/banned`.
+  Docs: docs/moderation.md, docs/auth.md.
+
+[2026-08-30] – Added: Illustrated empty state on `/payments`.
+  Docs: docs/dashboard.md, docs/stripe-connect.md, docs/UX_FLOWS.md.
+
+[2026-08-30] – Added: Company logo on invoices (in-browser crop/size/background removal; Storage).
+  Docs: docs/invoice-logos.md, docs/invoice-builder.md, docs/invoices.md, docs/pdf.md.
 
 [2026-08-30] – Added: First-login workspace onboarding (`/onboarding`) before the dashboard.
   Docs: docs/onboarding.md, docs/auth.md, docs/UX_FLOWS.md.

@@ -5,6 +5,7 @@ import type { Plan } from "@prisma/client";
 import { AppShell } from "@/components/dashboard/app-shell";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
 import { planFromOrganization } from "@/lib/entitlements/load";
+import { findActiveBanForUser } from "@/lib/moderation/bans";
 import { needsOnboarding } from "@/lib/onboarding/input";
 import { t } from "@/lib/i18n";
 
@@ -12,6 +13,9 @@ export default async function DashboardGroupLayout({ children }: { children: Rea
   const session = await getSessionOrNull();
   if (!session) {
     redirect("/login");
+  }
+  if (await findActiveBanForUser(session.id)) {
+    redirect("/banned");
   }
 
   const copy = t("dashboard");

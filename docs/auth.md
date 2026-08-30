@@ -16,6 +16,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 - Prisma uses the server connection **and** `requireSession` / `requireOrganization` / `requireOrgRole`. RLS in [`supabase/migrations/20260828120000_identity_rls_and_trigger.sql`](../supabase/migrations/20260828120000_identity_rls_and_trigger.sql) is defense in depth.
 - `requireOrganization` is idempotent: if the session is valid and `OrganizationMember` is missing, `ensureWorkspace` creates `User` + Organization (OWNER) + BusinessProfile + NotificationPreference. That covers Auth users created before `on_auth_user_created` existed. The call is memoized with React `cache()` so layout and page do not provision twice in one request; a unique-constraint race retries by re-reading membership. Cross-tenant lookups still 404 via `resolveTenantRecord`.
 - First visit: if `User.onboardingCompletedAt` is null, app routes (and signed-in `/pricing`) redirect to `/onboarding`. Owners complete a three-step workspace form; members set their name. Existing users were backfilled complete. See [`onboarding.md`](./onboarding.md).
+- Trust & Safety can restrict a user or a whole workspace (`AccountBan`, temporary or permanent). The reason is stored and emailed. Signed-in visits go to `/banned`. See [`moderation.md`](./moderation.md).
 - Authenticated Create Invoice goes to `/invoices/new` and saves through the invoice domain. Dashboard UI is the Figma app shell; see [`dashboard.md`](./dashboard.md) and [`invoices.md`](./invoices.md).
 
 ## How to use
@@ -86,11 +87,12 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.20 — 2026-08-30
+1.0.21 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Account/workspace bans redirect to `/banned` and send an official reason email.
 [2026-08-30] – Added: First-login `/onboarding` before the dashboard when `onboardingCompletedAt` is null.
 [2026-08-29] – Changed: `/help` is public; app routes still require a session.
 [2026-08-29] – Fixed: Magic links confirm on a click-through page; GoTrue `token=` is verified; scanners no longer burn the one-time code on GET.

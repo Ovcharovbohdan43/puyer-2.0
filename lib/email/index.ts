@@ -7,11 +7,13 @@ import { ValidationError } from "@/lib/errors";
 import { helpAckHtmlParagraphs, helpAckText, helpCenterUrl } from "@/lib/help/ack";
 import { helpFromAddress, helpInboxAddress } from "@/lib/help/from";
 import type { HelpTopic } from "@/lib/help/input";
+import { envString } from "@/lib/email/env";
 import { logger } from "@/lib/observability/logger";
 import { appBaseUrl } from "@/lib/stripe/client";
 import type { ReminderKind } from "@/lib/reminders/evaluate";
 import { reminderBodyLines, reminderFromAddress } from "@/lib/reminders/message";
 import { inviteAcceptUrl, inviteFromAddress } from "@/lib/team/invite-email";
+import { banNoticeParagraphs, banNoticeSubject, banNoticeText } from "@/lib/moderation/notice";
 
 export async function sendReminderEmail(input: {
   to: string;
@@ -205,5 +207,47 @@ export async function sendHelpAckEmail(input: {
       ctaUrl: helpCenterUrl(),
     }),
     idempotencyKey: `help-ack:${input.requestId}`,
+  });
+}
+
+function banNoticeFromAddress(): string {
+  const general = envString("EMAIL_FROM");
+  if (general.includes("@")) {
+    return general;
+  }
+  return `Puyer <${helpInboxAddress()}>`;
+}
+
+export async function sendBanNoticeEmail(input: {
+  to: string;
+  recipientName: string;
+  kind: "TEMPORARY" | "PERMANENT";
+  reason: string;
+  endsAt: Date | null;
+  idempotencyKey: string;
+}) {
+  const payload = {
+    recipientName: input.recipientName,
+    kind: input.kind,
+    reason: input.reason,
+    endsAt: input.endsAt,
+    helpUrl: helpCenterUrl(),
+    supportEmail: helpInboxAddress(),
+  };
+  return deliverEmail({
+    to: input.to,
+    from: banNoticeFromAddress(),
+    subject: banNoticeSubject(input.kind),
+    text: banNoticeText(payload),
+    html: puyerEmailHtml({
+      preview: banNoticeSubject(input.kind),
+      heading: "Official account notice",
+      bodyHtml: banNoticeParagraphs(payload)
+        .map((line) => puyerParagraph(line))
+        .join(""),
+      ctaLabel: "Open Help Center",
+      ctaUrl: helpCenterUrl(),
+    }),
+    idempotencyKey: input.idempotencyKey,
   });
 }

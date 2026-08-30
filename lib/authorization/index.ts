@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db/prisma";
 import { createServerSupabaseClient } from "@/lib/auth/server";
 import { hasOrgRole } from "@/lib/authorization/roles";
 import { ensureWorkspace } from "@/lib/identity/provision";
+import { assertNotBanned } from "@/lib/moderation/bans";
 
 export type SessionUser = {
   id: string;
@@ -18,6 +19,7 @@ export async function requireSession(): Promise<SessionUser> {
   if (!session) {
     throw new UnauthorizedError();
   }
+  await assertNotBanned(session.id);
   return session;
 }
 

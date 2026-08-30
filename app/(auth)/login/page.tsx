@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { LoginPageView } from "@/components/auth/login-page";
 import { getSessionOrNull } from "@/lib/authorization";
 import type { AuthIntent } from "@/lib/auth/return-to";
+import { findActiveBanForUser } from "@/lib/moderation/bans";
 import { t } from "@/lib/i18n";
 
 export const metadata: Metadata = {
@@ -26,6 +27,9 @@ export default async function LoginPage({
 }) {
   const session = await getSessionOrNull();
   if (session) {
+    if (await findActiveBanForUser(session.id)) {
+      redirect("/banned");
+    }
     redirect("/dashboard");
   }
   const params = await searchParams;

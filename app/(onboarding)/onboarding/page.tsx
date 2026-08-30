@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { getSessionOrNull, requireOrganization } from "@/lib/authorization";
 import { sanitizeReturnTo } from "@/lib/auth/return-to";
+import { findActiveBanForUser } from "@/lib/moderation/bans";
 import { needsOnboarding } from "@/lib/onboarding/input";
 
 export default async function OnboardingPage({
@@ -13,6 +14,9 @@ export default async function OnboardingPage({
   const session = await getSessionOrNull();
   if (!session) {
     redirect("/login");
+  }
+  if (await findActiveBanForUser(session.id)) {
+    redirect("/banned");
   }
   const params = await searchParams;
   const nextPath = sanitizeReturnTo(params.next);

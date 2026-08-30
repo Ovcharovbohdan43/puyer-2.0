@@ -239,7 +239,7 @@ export const termsOfService: LegalDocument = {
       blocks: [
         {
           type: "p",
-          text: "You sign in with an email magic link. Keep access to that inbox. You are responsible for activity under your account and for inviting only people who should see your workspace. We may suspend accounts that abuse the service, violate these Terms, or present a security risk.",
+          text: "You sign in with an email magic link. Keep access to that inbox. You are responsible for activity under your account and for inviting only people who should see your workspace. We may temporarily or permanently restrict accounts or workspaces that abuse the service, violate these Terms, or present a security risk. When we do, we store the reason and email it to the affected users with what they can do next.",
         },
       ],
     },

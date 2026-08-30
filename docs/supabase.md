@@ -86,6 +86,8 @@ Manual: `npm run dev`, open `/` and `/pricing`. Both must load without a login r
 - [2026-08-28] – Added: `supabase init` (`config.toml`), pinned CLI, cloud Auth health check; documented remaining DB URLs.
 - [2026-08-28] – Added: `.env.local` Prisma URLs via MCP (dedicated `puyer_prisma` role, direct 5432).
 - [2026-08-28] – Added: Invoice domain tables + RLS (`20260828180000_invoice_domain.sql`).
+- [2026-08-30] – Added: `AccountBan` (`20260830140000_account_bans.sql`).
+- [2026-08-30] – Added: Public `org-logos` bucket (`20260830120000_invoice_logos.sql`).
 - [2026-08-28] – Added: Private `invoice-pdfs` Storage bucket (`20260828190000_invoice_pdf_storage.sql`).
 - [2026-08-29] – Fixed: Document production Site URL vs Redirect URLs (www + apex). Auth cookies use `.puyer.org` so PKCE survives host switches.
 - [2026-08-29] – Fixed: Prisma runtime URL always enables PgBouncer compatibility (Postgres `42P05` on Vercel).

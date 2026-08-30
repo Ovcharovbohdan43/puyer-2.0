@@ -880,5 +880,16 @@
     "body": "Unauthenticated invoices are not saved as drafts. If you leave now, this invoice will be discarded.",
     "continueEditing": "Continue editing",
     "leave": "Leave without saving"
+  },
+  "ban": {
+    "title": "This account is restricted",
+    "lead": "Puyer has limited access to this account or workspace. This is an official notice.",
+    "permanent": "Permanent restriction",
+    "temporary": "Temporary restriction",
+    "until": "Access can resume on {date}.",
+    "checkEmail": "If you just signed in, check the email we sent for the reason and what to do next.",
+    "next": "If you think this is a mistake, contact Puyer from the same email address. Do not create a new account to avoid the restriction.",
+    "help": "Open Help Center",
+    "signOut": "Sign out"
   }
 }

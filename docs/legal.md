@@ -54,11 +54,12 @@ Browser: open `/` with a clean origin (no `puyer-cookie-consent`). Accept, reloa
 
 ## Version
 
-1.0.1 — 2026-08-29
+1.0.2 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Changed: Terms state bans can be temporary or permanent and are emailed with a stored reason.
 [2026-08-29] – Changed: Product support also runs through `/help`.
 [2026-08-29] – Added: Privacy, Terms, Cookie Policy, cookie choice window, footer legal links.
 ```

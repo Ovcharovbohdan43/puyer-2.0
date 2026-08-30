@@ -178,13 +178,22 @@ First app visit | signed-in /pricing
 → ERROR: validation 400
 ```
 
+### Account restricted `/banned`
+
+```
+Sign-in | dashboard | onboarding | mutating API
+→ CONDITION: active AccountBan on the user or a workspace they belong to
+→ TARGET: `/banned` (official notice + stored reason). APIs 403.
+→ EMAIL: official letter with reason and next steps (Help Center / support inbox)
+```
+
 ### Magic link `/auth/confirm` (via `/auth/callback` or `/verify`)
 
 ```
 Email → open link (GET does not consume token) → Continue to Puyer → session
 → Restore `authReturnTo` context (never stay on `/` after a successful login):
 
-A login          → /dashboard (then `/onboarding` if first setup is incomplete)
+A login          → /dashboard (then `/onboarding` if first setup is incomplete; `/banned` if restricted)
 B download PDF   → builder + resume download
 C share          → builder + open Share menu
 D team invite    → invitation accept screen
@@ -207,7 +216,8 @@ Temporary number e.g. `INV-2026-001` is **preview only**. Server issues the real
 |---|---|---|
 | Invoice number | display | Read-only preview number until auth create |
 | Currency | open searchable list | Closed control shows `USD ($)`. List: code · name + symbol. Click outside or Escape closes. Select code/name/symbol. Recalc display. If line items exist → warning modal Continue/Cancel |
-| Business | type | Preview updates. Unauth: manual. Auth: prefill profile; “this invoice only” vs “save as default” |
+| Business | type | Preview updates. Unauth: manual. Auth: prefill profile |
+| Logo | add / edit | Opens a preview editor (crop, size, remove flat background). PNG recommended. Applied logo appears in the live preview, PDF, and public invoice. Auth upload goes to Storage; guests keep a local preview until save |
 | Client | type / select | Unauth: free text. Auth: searchable clients + Create new client modal |
 | Add item | click | New row. Amount = qty × unit price (display). Totals + preview update |
 | Qty / price / tax | input | Recalculate line, subtotal, discount, tax, total. Preview live |
@@ -314,6 +324,7 @@ Customer Portal = Puyer subscription only. Never connected-account invoice money
 | Drawer Edit | click | `/invoices/:id/edit` (unpaid). Hidden when paid, partial, or canceled |
 | Clients row | click | **client drawer**, optional `?client=` |
 | Client Create Invoice | click | `/invoices/new?client=` |
+| Payments empty | none | Illustrated empty state; Create invoice / Connect Stripe |
 | Payments row | click | payment drawer; copy: paid through **connected Stripe**, not Puyer |
 | Reports Business-only | click | upgrade modal (`/reports` advanced tables). Overview Revenue Trends is not gated. |
 | Reminders as Free | click | upgrade to Pro modal |
@@ -366,7 +377,11 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ## Changelog
 
 ```
+[2026-08-30] – Added: Temporary/permanent user or workspace bans; official reason email; `/banned`.
+[2026-08-30] – Added: Illustrated empty state on `/payments`.
+[2026-08-30] – Added: Company logo on invoices (crop, size, background removal) before apply.
 [2026-08-30] – Added: First-login workspace onboarding (`/onboarding`) before Home.
+
 [2026-08-29] – Fixed: Overview/Reports trend line stays in the card; charts ease in on load.
 [2026-08-29] – Changed: Help request confirmation (page + ack email) includes reference, topic, and next steps.
 [2026-08-27] – Added: Complete interaction contract for Puyer.
