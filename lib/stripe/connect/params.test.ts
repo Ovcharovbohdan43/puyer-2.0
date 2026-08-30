@@ -54,8 +54,10 @@ describe("Accounts v2 create payload", () => {
       email: "owner@example.com",
       displayName: "Studio",
       currency: "USD",
-      country: "US",
+      country: "UA",
     });
+    expect(params.identity?.country).toBe("ua");
+    expect(params.defaults?.currency).toBe("usd");
     expect(() => assertMerchantOnlyAccountCreate(params)).not.toThrow();
     const link = buildAccountOnboardingLinkParams({
       accountId: "acct_123",

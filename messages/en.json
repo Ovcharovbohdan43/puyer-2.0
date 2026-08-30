@@ -515,6 +515,8 @@
     "timezone": "Timezone",
     "businessName": "Business name",
     "businessAddress": "Business address",
+    "country": "Business country",
+    "countryHint": "Stripe uses this as the account country. Invoice currency can stay USD even if this is not the United States.",
     "saveProfile": "Save profile",
     "saving": "Saving…",
     "profileSaved": "Profile saved.",
@@ -792,6 +794,9 @@
   "connect": {
     "title": "Payment settings",
     "body": "Puyer is invoicing software. Payments are processed directly through your connected Stripe account. Puyer does not hold your customers' funds or charge transaction fees.",
+    "country": "Stripe country",
+    "countryHint": "Choose the country of your Stripe account. This is not the invoice currency — you can invoice in USD from Ukraine or another region.",
+    "countryLocked": "This Stripe account was created for {country}. Disconnect, pick another country, then connect again to start a new Stripe account.",
     "connect": "Connect Stripe",
     "connecting": "Opening Stripe…",
     "connectFailed": "Could not start Stripe onboarding.",

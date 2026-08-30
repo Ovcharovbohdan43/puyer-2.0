@@ -52,6 +52,7 @@ npm run lint
 Browser:
 
 - Settings without keys: Connect shows a safe “not configured” error. The page itself must still render (no Vercel digest crash) so Sign out stays available.
+- Owner picks Stripe country before Connect; USD invoices still work for a non-US country.
 - Invoice Builder **Stripe** with a workspace that is not CONNECTED + charges enabled opens **Stripe is not connected**. Recipients still cannot Pay until Connect completes.
 - After Connect + webhook: public Pay redirects to Stripe Checkout branded as the connected business.
 - Return from Checkout with `?checkout=success` still shows unpaid until the webhook runs.
@@ -61,7 +62,7 @@ Browser:
 - Connect onboarding requires entitlement `STRIPE_PAYMENTS` (Pro/Business). Public Pay stays generic “unavailable” on Free unless the invoice includes consented bank-transfer details (informational only; Puyer does not process the transfer).
 - No refunds API. Customer Portal and platform subscriptions live in Domain A ([`billing.md`](./billing.md)).
 - WebhookEvent has RLS enabled and **no** authenticated policies on purpose (server-only; Prisma `puyer_prisma` has grants + BYPASSRLS). The linter INFO `rls_enabled_no_policy` is expected.
-- Identity country defaults to `US` on onboard; Stripe onboarding collects the rest.
+- Identity country comes from **Settings** (not guessed from USD). Stripe onboarding collects the rest. An existing connected account keeps its Stripe country until the owner disconnects and connects again.
 
 ## Modules
 
@@ -74,11 +75,12 @@ Browser:
 
 ## Version
 
-1.0.8 — 2026-08-30
+1.0.9 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Stripe Connect country is chosen in Settings, not inferred from USD.
 [2026-08-30] – Changed: Invoice Builder warns when Stripe is chosen but the workspace cannot collect charges yet.
 [2026-08-28] – Changed: Local CLI listens with `--forward-to` (platform) and `--forward-connect-to` (Connect).
 [2026-08-28] – Added: Stripe Connect onboarding, direct-charge Checkout, Connect/platform webhooks, InvoicePayment sync, Payments list, public Pay button.

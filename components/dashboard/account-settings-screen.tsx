@@ -9,6 +9,7 @@ import { StripeSettings } from "@/components/dashboard/stripe-settings";
 import { dash as ui } from "@/lib/dashboard/chrome";
 import { timezoneChoices } from "@/lib/onboarding/options";
 import { t } from "@/lib/i18n";
+import { countryChoices, parseConnectCountry } from "@/lib/regions/countries";
 
 type AccountSettingsScreenProps = {
   email: string;
@@ -17,6 +18,7 @@ type AccountSettingsScreenProps = {
   isOwner: boolean;
   businessName: string;
   businessAddress: string;
+  country: string;
   deletionOpen: boolean;
   deletionCreatedAt: string | null;
   stripe: {
@@ -24,6 +26,8 @@ type AccountSettingsScreenProps = {
     status: string;
     chargesEnabled: boolean;
     canConnect: boolean;
+    country: string;
+    identityCountry: string | null;
   };
 };
 
@@ -32,11 +36,13 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
   const dash = t("dashboard");
   const router = useRouter();
   const zones = useMemo(() => timezoneChoices(props.timezone), [props.timezone]);
+  const countries = useMemo(() => countryChoices(), []);
 
   const [name, setName] = useState(props.name);
   const [timezone, setTimezone] = useState(props.timezone);
   const [businessName, setBusinessName] = useState(props.businessName);
   const [businessAddress, setBusinessAddress] = useState(props.businessAddress);
+  const [country, setCountry] = useState(parseConnectCountry(props.country));
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -65,7 +71,7 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
       const response = await fetch("/api/account/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, timezone, businessName, businessAddress }),
+        body: JSON.stringify({ name, timezone, businessName, businessAddress, country }),
       });
       const body = (await response.json()) as { ok?: boolean; error?: string };
       if (!response.ok) {
@@ -198,6 +204,17 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
                   className="min-h-[88px] w-full resize-none rounded-lg border border-[#E5E7EB] bg-white px-3 py-2 text-[14px] text-[#111827] outline-none focus:border-[#006C49]"
                 />
               </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-[13px] text-[#6B7280]">{copy.country}</span>
+                <select value={country} onChange={(event) => setCountry(parseConnectCountry(event.target.value))} className={field}>
+                  {countries.map((choice) => (
+                    <option key={choice.code} value={choice.code}>
+                      {choice.label}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-[13px] leading-5 text-[#6B7280]">{copy.countryHint}</span>
+              </label>
             </>
           ) : null}
           {profileError ? <p className="text-[12px] text-[#DC2626]">{profileError}</p> : null}
@@ -267,6 +284,8 @@ export function AccountSettingsScreen(props: AccountSettingsScreenProps) {
             status={props.stripe.status}
             chargesEnabled={props.stripe.chargesEnabled}
             canConnect={props.stripe.canConnect}
+            country={props.stripe.country}
+            identityCountry={props.stripe.identityCountry}
           />
         </section>
 

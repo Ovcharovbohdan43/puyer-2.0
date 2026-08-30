@@ -28,6 +28,7 @@ describe("loadConnectionForSettings", () => {
     await expect(loadConnectionForSettings("org_1")).resolves.toEqual({
       status: "NOT_CONNECTED",
       chargesEnabled: false,
+      identityCountry: null,
     });
   });
 
@@ -36,6 +37,7 @@ describe("loadConnectionForSettings", () => {
     await expect(loadConnectionForSettings("org_1")).resolves.toEqual({
       status: "NOT_CONNECTED",
       chargesEnabled: false,
+      identityCountry: null,
     });
   });
 });

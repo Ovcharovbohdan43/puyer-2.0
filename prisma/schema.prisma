@@ -210,6 +210,7 @@ model BusinessProfile {
   businessName     String   @default("")
   businessAddress  String   @default("")
   defaultCurrency  String   @default("USD")
+  defaultCountry   String   @default("US")
   defaultTaxRate   String   @default("0")
   logoUrl          String?
   createdAt        DateTime @default(now())
@@ -436,6 +437,7 @@ model StripeConnection {
   chargesEnabled           Boolean                 @default(false)
   payoutsEnabled           Boolean                 @default(false)
   detailsSubmitted         Boolean                 @default(false)
+  identityCountry          String?
   lastAccountUpdatedAt     DateTime?
   createdAt                DateTime                @default(now())
   updatedAt                DateTime                @updatedAt

@@ -32,9 +32,17 @@ export default async function SettingsPage({
         isOwner={false}
         businessName=""
         businessAddress=""
+        country="US"
         deletionOpen={false}
         deletionCreatedAt={null}
-        stripe={{ isOwner: false, status: "NOT_CONNECTED", chargesEnabled: false, canConnect: false }}
+        stripe={{
+          isOwner: false,
+          status: "NOT_CONNECTED",
+          chargesEnabled: false,
+          canConnect: false,
+          country: "US",
+          identityCountry: null,
+        }}
       />
     );
   }
@@ -69,6 +77,7 @@ export default async function SettingsPage({
       isOwner={membership.role === "OWNER"}
       businessName={profile?.businessName ?? ""}
       businessAddress={profile?.businessAddress ?? ""}
+      country={profile?.defaultCountry ?? "US"}
       deletionOpen={Boolean(deletion)}
       deletionCreatedAt={deletion?.createdAt.toISOString().slice(0, 10) ?? null}
       stripe={{
@@ -76,6 +85,8 @@ export default async function SettingsPage({
         status: connection.status,
         chargesEnabled: connection.chargesEnabled,
         canConnect,
+        country: profile?.defaultCountry ?? "US",
+        identityCountry: connection.identityCountry,
       }}
     />
   );

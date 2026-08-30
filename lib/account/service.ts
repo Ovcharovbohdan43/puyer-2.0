@@ -25,6 +25,7 @@ export async function updateAccountProfile(user: SessionUser, input: AccountProf
       data: {
         businessName: input.businessName,
         businessAddress: input.businessAddress,
+        defaultCountry: input.country,
       },
     });
     await tx.organization.update({

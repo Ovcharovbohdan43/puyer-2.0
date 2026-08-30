@@ -1,6 +1,7 @@
 import { ONBOARDING_ADDRESS_MAX, ONBOARDING_NAME_MAX, ONBOARDING_TZ_MAX } from "@/lib/onboarding/input";
 import { ValidationError } from "@/lib/errors";
 import { isValidEmail } from "@/lib/invoices/validate";
+import { isConnectCountry, parseConnectCountry } from "@/lib/regions/countries";
 
 export const ACCOUNT_REASON_MIN = 12;
 export const ACCOUNT_REASON_MAX = 2000;
@@ -21,6 +22,7 @@ export type AccountProfileInput = {
   timezone: string;
   businessName: string;
   businessAddress: string;
+  country: string;
 };
 
 export function parseAccountProfileBody(body: unknown, isOwner: boolean): AccountProfileInput {
@@ -30,6 +32,7 @@ export function parseAccountProfileBody(body: unknown, isOwner: boolean): Accoun
   const timezone = timezoneRaw || "UTC";
   const businessName = clean(record.businessName, ONBOARDING_NAME_MAX);
   const businessAddress = clean(record.businessAddress, ONBOARDING_ADDRESS_MAX);
+  const country = parseConnectCountry(record.country);
 
   if (name.length < 2) {
     throw new ValidationError("Enter your name.");
@@ -40,8 +43,11 @@ export function parseAccountProfileBody(body: unknown, isOwner: boolean): Accoun
   if (isOwner && businessName.length < 2) {
     throw new ValidationError("Enter your business name.");
   }
+  if (isOwner && typeof record.country === "string" && record.country.trim() && !isConnectCountry(record.country)) {
+    throw new ValidationError("Choose a valid country.");
+  }
 
-  return { name, timezone, businessName, businessAddress };
+  return { name, timezone, businessName, businessAddress, country };
 }
 
 export function parseAccountEmailBody(body: unknown, currentEmail: string): string {

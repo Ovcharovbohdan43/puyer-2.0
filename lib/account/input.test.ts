@@ -14,6 +14,18 @@ describe("account input", () => {
     const parsed = parseAccountProfileBody({ name: "Ada Lovelace", timezone: "Europe/Kyiv" }, false);
     expect(parsed.name).toBe("Ada Lovelace");
     expect(parsed.timezone).toBe("Europe/Kyiv");
+    expect(parsed.country).toBe("US");
+  });
+
+  it("accepts a business country for owners", () => {
+    const parsed = parseAccountProfileBody(
+      { name: "Ada Lovelace", timezone: "UTC", businessName: "Ada LLC", country: "ua" },
+      true,
+    );
+    expect(parsed.country).toBe("UA");
+    expect(() =>
+      parseAccountProfileBody({ name: "Ada Lovelace", timezone: "UTC", businessName: "Ada LLC", country: "XX" }, true),
+    ).toThrow(ValidationError);
   });
 
   it("requires a business name for owners", () => {

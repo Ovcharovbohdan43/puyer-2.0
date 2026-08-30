@@ -38,7 +38,7 @@ Unauthenticated visits to `/dashboard`, `/invoices`, `/clients`, `/payments`, `/
 - Overview Add Client → modal with name, email (required), and phone; stay on Overview
 - Overview Reminder → Pro: automatic schedule copy; Free: upgrade + `/billing`
 - Overview Connect Stripe → `/settings` (account page includes Connect)
-- Settings → profile, email change, optional password, deletion request, Stripe
+- Settings → profile (including business country), email change, optional password, deletion request, Stripe
 - Overview View All or a recent row → `/invoices` or `/invoices?invoice=`
 - Invoices Filter cycles All → Pending → Paid → Overdue; From/To limits issue dates; Export downloads that list as CSV
 - Click an invoice row → right preview drawer; close clears `?invoice=`
@@ -90,11 +90,12 @@ npm run lint
 
 ## Version
 
-1.2.20 — 2026-08-30
+1.2.21 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: Settings business country for Stripe Connect.
 [2026-08-30] – Fixed: Invoice/report date fields and Filter/Export sit in a shrinking two-column toolbar on a phone.
 [2026-08-30] – Added: Invoice/client CSV export and a dated report download on `/reports`.
 [2026-08-30] – Added: Brand-green spinner on dashboard route loads and pending actions.

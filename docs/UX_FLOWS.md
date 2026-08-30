@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.38 — 2026-08-30
+> **Version:** 1.0.39 — 2026-08-30
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -335,7 +335,7 @@ Customer Portal = Puyer subscription only. Never connected-account invoice money
 | Drawer Edit | click | `/invoices/:id/edit` (unpaid). Hidden when paid, partial, or canceled |
 | Clients row | click | **client drawer**, optional `?client=` |
 | Client Create Invoice | click | `/invoices/new?client=` |
-| Payments empty | none | Illustrated empty state; Create invoice / Connect Stripe |
+| Settings Stripe country | change | Owners pick Connect country; USD invoices do not force United States |
 | Payments row | click | payment drawer; copy: paid through **connected Stripe**, not Puyer |
 | Invoices Export | click | CSV of search/status/date-filtered invoices (all matching rows, not the current page) |
 | Clients Export | click | CSV of the filtered client list |
@@ -463,4 +463,5 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Added: Help Center at `/help` (search + contact form). Footer and app nav link there.
 [2026-08-30] – Added: Invoice/client CSV export; `/reports` period download.
 [2026-08-30] – Fixed: Invoice and report date fields fit a narrow viewport.
+[2026-08-30] – Added: Settings country for Stripe Connect (not inferred from USD).
 ```

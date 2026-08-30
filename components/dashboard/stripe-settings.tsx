@@ -1,27 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
 import { PuyerBusyText } from "@/components/brand/puyer-spinner";
 import { dash as ui } from "@/lib/dashboard/chrome";
 import { t } from "@/lib/i18n";
+import { countryChoices, countryLabel, parseConnectCountry } from "@/lib/regions/countries";
 
 type StripeSettingsProps = {
   isOwner: boolean;
   status: string;
   chargesEnabled: boolean;
   canConnect: boolean;
+  country: string;
+  identityCountry: string | null;
   embedded?: boolean;
 };
 
-export function StripeSettings({ isOwner, status, chargesEnabled, canConnect, embedded = false }: StripeSettingsProps) {
+export function StripeSettings({
+  isOwner,
+  status,
+  chargesEnabled,
+  canConnect,
+  country,
+  identityCountry,
+  embedded = false,
+}: StripeSettingsProps) {
   const copy = t("connect");
   const dash = t("dashboard");
   const billing = t("billing");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(parseConnectCountry(country));
+  const choices = useMemo(() => countryChoices(), []);
+  const locked = status === "CONNECTED" || status === "ACTION_REQUIRED" || status === "CONNECTING";
+  const lockedCode = identityCountry || selectedCountry;
 
   const label =
     status === "CONNECTED"
@@ -41,7 +56,7 @@ export function StripeSettings({ isOwner, status, chargesEnabled, canConnect, em
       const response = await fetch("/api/stripe/connect/onboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: "US" }),
+        body: JSON.stringify({ country: selectedCountry }),
       });
       const body = (await response.json()) as { ok?: boolean; url?: string; error?: string };
       if (!response.ok || !body.url) {
@@ -86,6 +101,28 @@ export function StripeSettings({ isOwner, status, chargesEnabled, canConnect, em
         {label}
         {status === "CONNECTED" && chargesEnabled ? ` · ${copy.chargesEnabled}` : ""}
       </p>
+      {isOwner ? (
+        <label className="flex max-w-md flex-col gap-1">
+          <span className="text-[13px] text-[#6B7280]">{copy.country}</span>
+          <select
+            value={locked ? parseConnectCountry(lockedCode) : selectedCountry}
+            disabled={locked || pending}
+            onChange={(event) => setSelectedCountry(parseConnectCountry(event.target.value))}
+            className="h-[38px] w-full rounded-lg border border-[#E5E7EB] bg-white px-3 text-[14px] text-[#111827] outline-none focus:border-[#006C49] disabled:bg-[#F9FAFB]"
+          >
+            {choices.map((choice) => (
+              <option key={choice.code} value={choice.code}>
+                {choice.label}
+              </option>
+            ))}
+          </select>
+          <span className="text-[13px] leading-5 text-[#6B7280]">
+            {locked
+              ? copy.countryLocked.replace("{country}", countryLabel(lockedCode))
+              : copy.countryHint}
+          </span>
+        </label>
+      ) : null}
       {isOwner ? (
         !canConnect && status !== "CONNECTED" && status !== "ACTION_REQUIRED" && status !== "CONNECTING" ? (
           <div className="flex flex-col gap-3">

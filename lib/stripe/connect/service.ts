@@ -6,6 +6,7 @@ import { writeAuditLog } from "@/lib/audit";
 import { prisma } from "@/lib/db/prisma";
 import { StripeConnectionError } from "@/lib/errors";
 import { logger } from "@/lib/observability/logger";
+import { shouldCreateNewConnectedAccount } from "@/lib/regions/countries";
 import { appBaseUrl, getStripe } from "@/lib/stripe/client";
 import {
   buildAccountOnboardingLinkParams,
@@ -26,14 +27,14 @@ export async function createConnectedAccount(input: {
   const existing = await prisma.stripeConnection.findUnique({
     where: { organizationId: input.organizationId },
   });
-  if (existing?.stripeConnectedAccountId) {
-    if (existing.status === "DISCONNECTED") {
+  if (!shouldCreateNewConnectedAccount(existing, input.country)) {
+    if (existing?.status === "DISCONNECTED") {
       return prisma.stripeConnection.update({
         where: { organizationId: input.organizationId },
         data: { status: "CONNECTING" },
       });
     }
-    return existing;
+    return existing!;
   }
 
   const stripe = getStripe();
@@ -52,9 +53,11 @@ export async function createConnectedAccount(input: {
       organizationId: input.organizationId,
       stripeConnectedAccountId: account.id,
       status: "CONNECTING",
+      identityCountry: input.country,
     },
     update: {
       stripeConnectedAccountId: account.id,
+      identityCountry: input.country,
       status: "CONNECTING",
       chargesEnabled: false,
       payoutsEnabled: false,
@@ -98,6 +101,7 @@ export async function createOnboardingLink(organizationId: string) {
 export async function loadConnectionForSettings(organizationId: string): Promise<{
   status: StripeConnectionStatus;
   chargesEnabled: boolean;
+  identityCountry: string | null;
 }> {
   try {
     const connection = await prisma.stripeConnection.findUnique({
@@ -106,10 +110,11 @@ export async function loadConnectionForSettings(organizationId: string): Promise
     return {
       status: connection?.status ?? "NOT_CONNECTED",
       chargesEnabled: connection?.chargesEnabled ?? false,
+      identityCountry: connection?.identityCountry ?? null,
     };
   } catch {
     logger.warn("settings_stripe_lookup_failed");
-    return { status: "NOT_CONNECTED", chargesEnabled: false };
+    return { status: "NOT_CONNECTED", chargesEnabled: false, identityCountry: null };
   }
 }
 
