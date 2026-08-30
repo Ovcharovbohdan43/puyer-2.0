@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { banNoticeSubject, banNoticeText } from "@/lib/moderation/notice";
-import { clipBanReason, isBanInForce, isUsableBanReason, formatAdminAccountLabel } from "@/lib/moderation/status";
+import { clipBanReason, isBanInForce, isUsableBanReason, formatAdminAccountLabel, formatAdminBanListLabel } from "@/lib/moderation/status";
 
 describe("isBanInForce", () => {
   it("treats an active permanent ban as in force", () => {
@@ -49,6 +49,16 @@ describe("isBanInForce", () => {
       }),
     ).toBe("ada@example.com (Ada) — Acme — BAN");
     expect(formatAdminAccountLabel({ title: "Ada Ltd", detail: "FREE", banned: false })).toBe("Ada Ltd — FREE");
+    expect(
+      formatAdminBanListLabel({
+        who: "ada@example.com (Ada)",
+        kind: "TEMPORARY",
+        endsAt: new Date("2026-09-15T00:00:00.000Z"),
+        reason: "Repeated Terms of Service violations involving invoice spam.",
+      }),
+    ).toBe(
+      "ada@example.com (Ada) — TEMPORARY until 2026-09-15 · Repeated Terms of Service violations involving invoice spam.",
+    );
   });
 });
 

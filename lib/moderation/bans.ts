@@ -8,7 +8,7 @@ import { writeAuditLog } from "@/lib/audit";
 import { prisma } from "@/lib/db/prisma";
 import { sendBanNoticeEmail } from "@/lib/email";
 import { ForbiddenError, UnauthorizedError, ValidationError } from "@/lib/errors";
-import { isBanInForce, isUsableBanReason, clipBanReason, formatAdminAccountLabel } from "@/lib/moderation/status";
+import { isBanInForce, isUsableBanReason, clipBanReason, formatAdminAccountLabel, formatAdminBanListLabel } from "@/lib/moderation/status";
 import { logger } from "@/lib/observability/logger";
 
 const UUID_RE =
@@ -120,6 +120,46 @@ export async function listAdminAccounts(targetType: BanTargetType): Promise<Admi
       }),
     };
   });
+}
+
+export async function listAdminActiveBans(): Promise<AdminAccountListItem[]> {
+  const now = new Date();
+  const rows = await prisma.accountBan.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: { createdAt: "desc" },
+    take: 500,
+    select: {
+      id: true,
+      kind: true,
+      status: true,
+      reason: true,
+      endsAt: true,
+      targetType: true,
+      user: { select: { email: true, name: true } },
+      organization: { select: { name: true } },
+    },
+  });
+  return rows
+    .filter((row) => isBanInForce(row, now))
+    .map((row) => {
+      const who =
+        row.targetType === "USER"
+          ? row.user
+            ? row.user.name
+              ? `${row.user.email} (${row.user.name})`
+              : row.user.email
+            : "Unknown user"
+          : row.organization?.name ?? "Unknown workspace";
+      return {
+        id: row.id,
+        label: formatAdminBanListLabel({
+          who,
+          kind: row.kind,
+          endsAt: row.endsAt,
+          reason: row.reason,
+        }),
+      };
+    });
 }
 
 export async function applyAccountBan(input: {

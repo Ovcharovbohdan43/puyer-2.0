@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { handleRoute } from "@/lib/http/route";
 import { clientIp } from "@/lib/http/ip";
-import { applyAccountBan, assertPlatformAdmin, liftAccountBan, listAdminAccounts } from "@/lib/moderation/bans";
+import { applyAccountBan, assertPlatformAdmin, liftAccountBan, listAdminAccounts, listAdminActiveBans } from "@/lib/moderation/bans";
 import { ValidationError } from "@/lib/errors";
 import { requireRateLimit } from "@/lib/rate-limit/consume";
 
@@ -13,9 +13,13 @@ export async function GET(request: Request) {
     assertPlatformAdmin(request);
     await requireRateLimit("platform-admin", clientIp(request));
     const target = new URL(request.url).searchParams.get("target");
+    if (target === "ACTIVE") {
+      const accounts = await listAdminActiveBans();
+      return NextResponse.json({ ok: true, accounts });
+    }
     const targetType = target === "ORGANIZATION" ? "ORGANIZATION" : target === "USER" ? "USER" : null;
     if (!targetType) {
-      throw new ValidationError("target must be USER or ORGANIZATION.");
+      throw new ValidationError("target must be USER, ORGANIZATION, or ACTIVE.");
     }
     const accounts = await listAdminAccounts(targetType);
     return NextResponse.json({ ok: true, accounts });

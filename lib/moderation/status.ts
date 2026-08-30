@@ -44,3 +44,21 @@ export function formatAdminAccountLabel(input: {
   }
   return parts.join(" — ");
 }
+
+export function formatAdminBanListLabel(input: {
+  who: string;
+  kind: BanKind;
+  endsAt: Date | null;
+  reason: string;
+}): string {
+  const when =
+    input.kind === "TEMPORARY" && input.endsAt
+      ? `TEMPORARY until ${input.endsAt.toISOString().slice(0, 10)}`
+      : input.kind;
+  const snippet = clipBanReason(input.reason).slice(0, 80);
+  return formatAdminAccountLabel({
+    title: input.who,
+    detail: snippet ? `${when} · ${snippet}` : when,
+    banned: false,
+  });
+}

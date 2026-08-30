@@ -25,7 +25,8 @@ Email: `sendBanNoticeEmail` uses the stored reason, temporary end date, Help Cen
 Ops API (not in the product UI): `Authorization: Bearer $PLATFORM_ADMIN_SECRET` (32+ characters).
 
 - `GET /api/admin/bans?target=USER` or `?target=ORGANIZATION` — list accounts (email/name/workspace, up to 2000). Used by the ops script so you do not paste UUIDs.
-- `POST /api/admin/bans` — apply or lift a ban.
+- `GET /api/admin/bans?target=ACTIVE` — list bans currently in force (id + label). Used to lift without pasting a ban id.
+- `POST /api/admin/bans` — apply (`action: ban`) or lift (`action: lift`, `banId`).
 
 ```json
 {
@@ -38,7 +39,7 @@ Ops API (not in the product UI): `Authorization: Bearer $PLATFORM_ADMIN_SECRET` 
 }
 ```
 
-Lift: `{ "action": "lift", "banId": "<uuid>" }`. Organization bans use `targetType: "ORGANIZATION"` and `organizationId`.
+Lift: `{ "action": "lift", "banId": "<uuid>" }` (ban id from `target=ACTIVE` or from the apply response). Organization bans use `targetType: "ORGANIZATION"` and `organizationId`.
 
 SQL: [`supabase/migrations/20260830140000_account_bans.sql`](../supabase/migrations/20260830140000_account_bans.sql).
 
@@ -76,11 +77,12 @@ npm run typecheck
 
 ## Version
 
-1.0.2 — 2026-08-30
+1.0.3 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: GET /api/admin/bans?target=ACTIVE lists in-force bans for ops lift.
 [2026-08-30] – Fixed: Ops account list typecheck (`isBanInForce` does not require `reason`).
 [2026-08-30] – Added: GET /api/admin/bans?target=USER|ORGANIZATION for the ops account list.
 [2026-08-30] – Added: User and organization bans (temporary/permanent) with stored reason, notice email, `/banned`, and admin API.
