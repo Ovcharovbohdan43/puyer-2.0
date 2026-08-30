@@ -1372,6 +1372,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Fixed: Landing LCP — first HTML includes the hero; builder JS loads after paint.
   Docs: docs/landing.md, docs/invoice-builder.md.
+
+[2026-08-30] – Added: npm allowlist for Prisma, sharp, protobufjs, and unrs-resolver install scripts.
+  Docs: README.md, docs/hardening.md.
 ```
 
 ---

@@ -23,6 +23,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Do not commit secrets. Copy `.env.example` to `.env.local`.
 
+npm 11+ blocks dependency install scripts until they are listed in `package.json` `allowScripts` (Prisma engines, sharp for `next/image`, unrs-resolver for Next, protobufjs). After bumping those packages, run `npm approve-scripts --allow-scripts-pending` and approve the new versions.
+
 Supabase browser/server clients: [`docs/supabase.md`](./docs/supabase.md).  
 Magic-link auth and tenancy: [`docs/auth.md`](./docs/auth.md).
 

@@ -13,6 +13,7 @@ Rate-limit every listed surface, validate uploads before they touch Storage, kee
 - Logs: JSON lines, secret field names (including IBAN/bank keys), and `sk_` / `pk_` / `whsec_` / `Bearer` values redacted. API errors include `x-request-id`.
 - Indexes: pending invites, unread-style notification list `(userId, organizationId, createdAt)`, open invoices by `dueDate` for reminder sweep.
 - Playwright: `e2e/pay-path.spec.ts` walks landing → `/login` → pricing → `/team` login redirect → public invoice 404 (no ID leak) → pay API 404. Optional `E2E_PUBLIC_INVOICE_ID` also checks Pay and dark-theme contrast on the payer portal.
+- Install scripts: `package.json` `allowScripts` allowlists Prisma, sharp, protobufjs, and unrs-resolver so npm 11+ (Vercel) runs those postinstalls instead of warning. After bumping those packages, run `npm approve-scripts --allow-scripts-pending`.
 
 ## How to use
 
@@ -52,11 +53,12 @@ E2E: `npm run test:e2e`. Magic-link completion needs a real inbox; CI does not s
 
 ## Version
 
-1.0.9 — 2026-08-30
+1.0.10 — 2026-08-30
 
 ## Changelog
 
 ```
+[2026-08-30] – Added: npm `allowScripts` allowlist so Prisma/sharp install scripts run on Vercel.
 [2026-08-30] – Added: Account settings and password-login rate limits.
 [2026-08-30] – Added: `platform-admin` limit for Trust & Safety bans.
 [2026-08-30] – Added: `logo-upload` limit and Storage write for `POST /api/logos`.
