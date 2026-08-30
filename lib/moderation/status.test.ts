@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { banNoticeSubject, banNoticeText } from "@/lib/moderation/notice";
-import { clipBanReason, isBanInForce, isUsableBanReason, formatAdminAccountLabel, formatAdminBanListLabel } from "@/lib/moderation/status";
+import { clipBanReason, isBanInForce, isUsableBanReason, formatAdminAccountLabel, formatAdminBanListLabel, pathAfterBanCheck } from "@/lib/moderation/status";
 
 describe("isBanInForce", () => {
   it("treats an active permanent ban as in force", () => {
@@ -77,5 +77,13 @@ describe("ban notice", () => {
     expect(text).toContain("2026-09-15");
     expect(text).toContain("support@puyer.org");
     expect(text).toContain("https://puyer.org/help");
+  });
+});
+
+describe("pathAfterBanCheck", () => {
+  it("sends a signed-in user to the dashboard once the ban is not in force", () => {
+    expect(pathAfterBanCheck(true, false)).toBe("/dashboard");
+    expect(pathAfterBanCheck(true, true)).toBeNull();
+    expect(pathAfterBanCheck(false, false)).toBe("/login");
   });
 });

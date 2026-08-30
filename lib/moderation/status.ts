@@ -45,6 +45,17 @@ export function formatAdminAccountLabel(input: {
   return parts.join(" — ");
 }
 
+/** Where `/banned` should send the visitor after a fresh ban check. `null` means stay. */
+export function pathAfterBanCheck(signedIn: boolean, banned: boolean): "/login" | "/dashboard" | null {
+  if (!signedIn) {
+    return "/login";
+  }
+  if (!banned) {
+    return "/dashboard";
+  }
+  return null;
+}
+
 export function formatAdminBanListLabel(input: {
   who: string;
   kind: BanKind;

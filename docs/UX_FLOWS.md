@@ -194,6 +194,7 @@ Sign-in | dashboard | onboarding | mutating API
 → CONDITION: active AccountBan on the user or a workspace they belong to
 → TARGET: `/banned` (official notice + stored reason). APIs 403.
 → EMAIL: official letter with reason and next steps (Help Center / support inbox)
+→ LIFT / expiry: refresh `/banned` → `/dashboard` (then onboarding if first setup is incomplete). Signed-out visitors go to `/login`.
 ```
 
 ### Magic link `/auth/confirm` (via `/auth/callback` or `/verify`)
@@ -389,6 +390,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 ```
 [2026-08-30] – Added: `/settings` account profile, email change, optional password, deletion request.
 [2026-08-30] – Changed: Invoice Builder payment channel (Stripe vs bank) before bank fields; Stripe-not-connected modal.
+[2026-08-30] – Changed: `/banned` redirects to `/dashboard` (or `/login`) when the ban is no longer in force.
 [2026-08-30] – Added: Ops GET active-ban list to lift without pasting ids (`target=ACTIVE`).
 [2026-08-30] – Added: Ops GET account list for bans (`/api/admin/bans?target=`).
 [2026-08-30] – Added: Temporary/permanent user or workspace bans; official reason email; `/banned`.
