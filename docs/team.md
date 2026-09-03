@@ -7,7 +7,7 @@ Business workspaces can invite members. Owners manage seats, billing, and Stripe
 ## Description
 
 - Entitlement: `TEAM_MEMBERS` (Business). Free/Pro see `/team` with an upgrade CTA.
-- Invite: owner POSTs an email. Server stores `sha256(token)` on `OrganizationInvite`, emails `/invite/{token}` via Resend from `Puyer Team <invites@puyer.org>` (`EMAIL_FROM_INVITES` override). The accept URL uses the **request host**, not a leftover localhost `NEXT_PUBLIC_APP_URL`. TTL **7 days**. Role on invite is always **MEMBER**. If Resend is missing or rejects the send, the API returns 400 and the pending invite remains so the owner can retry.
+- Invite: owner POSTs an email. Server stores `sha256(token)` on `OrganizationInvite`, emails `/invite/{token}` via Resend from `EMAIL_FROM_INVITES` when that mailbox is not the example `invites@puyer.org`. Otherwise the From is `Puyer Team <EMAIL_FROM mailbox>` so Resend accepts a verified domain. If Resend still rejects the From, the send retries once from `EMAIL_FROM`. Accept URL uses the **request host**, not a leftover localhost `NEXT_PUBLIC_APP_URL`. TTL **7 days**. Role on invite is always **MEMBER**. If Resend is missing or rejects the send, the API returns 400 and the pending invite remains so the owner can retry.
 - Accept: signed-in email must match the invite (case-insensitive). Creates `OrganizationMember` + `NotificationPreference`, sets `User.activeOrganizationId`.
 - Permission matrix (`lib/authorization/permissions.ts`): MEMBER cannot `MANAGE_BILLING`, `MANAGE_STRIPE`, or `MANAGE_MEMBERS`. Last remaining OWNER cannot be demoted or removed.
 - Audit: `MEMBER_INVITED`, `ROLE_CHANGED`.
@@ -18,7 +18,7 @@ Re-checked Context7 `/vercel/next.js/v16.2.9` (cookies) and `/prisma/web` (compo
 ## How to use
 
 1. Apply [`supabase/migrations/20260828250000_team_invites.sql`](../supabase/migrations/20260828250000_team_invites.sql). `npx prisma generate`.
-2. Workspace must be Business (Stripe or Table Editor `planSource=MANUAL` + `plan=BUSINESS`). Owner opens `/team`, enters an email, sends invite. Production needs `RESEND_API_KEY`; `invites@puyer.org` must be on the verified Resend domain.
+2. Workspace must be Business (Stripe or Table Editor `planSource=MANUAL` + `plan=BUSINESS`). Owner opens `/team`, enters an email, sends invite. Production needs `RESEND_API_KEY` and a verified `EMAIL_FROM` (or a real `EMAIL_FROM_INVITES` mailbox on that domain).
 3. Invitee opens the link → magic link if needed → **Join workspace**.
 
 ## Examples
@@ -42,7 +42,7 @@ Without `RESEND_API_KEY`, invite send returns a 400 (pending row may already exi
 
 - Accepting an invite does not delete the invitee’s personal OWNER workspace created at signup; `activeOrganizationId` switches to the Business org. Switcher on `/team` if they have more than one membership.
 - No seat cap.
-- Invite emails are not localized. `invites@puyer.org` must be a verified Resend domain or sends fail.
+- Invite emails are not localized. Example `invites@puyer.org` is not used when `EMAIL_FROM` is a verified mailbox.
 
 ## Modules
 
@@ -53,11 +53,12 @@ Without `RESEND_API_KEY`, invite send returns a 400 (pending row may already exi
 
 ## Version
 
-1.1.0 — 2026-08-29
+1.1.2 — 2026-09-03
 
 ## Changelog
 
 ```
+[2026-09-03] – Fixed: Team invite From uses verified EMAIL_FROM when invites@ is the example mailbox; retries once if Resend rejects the From.
 [2026-08-29] – Fixed: Team invite emails use invites@puyer.org and the live request host; skipped/failed Resend is an API error, not a silent success.
 [2026-08-28] – Added: Team invites, role/remove, permission matrix, invite accept URL, active workspace switch.
 ```

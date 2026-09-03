@@ -42,7 +42,7 @@ export async function deliverEmail(message: OutboundEmail): Promise<EmailSendRes
   );
   if (error) {
     logger.error("email_provider_rejected", { errorName: error.name });
-    throw new Error("email_provider_rejected");
+    throw new Error(`email_provider_rejected:${error.name}`);
   }
   return { skipped: false, providerMessageId: data?.id ?? null };
 }

@@ -7,7 +7,7 @@ import { ValidationError } from "@/lib/errors";
 import { helpAckHtmlParagraphs, helpAckText, helpCenterUrl } from "@/lib/help/ack";
 import { helpFromAddress, helpInboxAddress } from "@/lib/help/from";
 import type { HelpTopic } from "@/lib/help/input";
-import { envString } from "@/lib/email/env";
+import { emailMailbox, envString } from "@/lib/email/env";
 import { logger } from "@/lib/observability/logger";
 import { appBaseUrl } from "@/lib/stripe/client";
 import type { ReminderKind } from "@/lib/reminders/evaluate";
@@ -126,27 +126,55 @@ export async function sendInviteEmail(input: {
   appOrigin: string;
 }) {
   const url = inviteAcceptUrl(input.appOrigin, input.token);
+  const from = inviteFromAddress();
+  const message = {
+    to: input.to,
+    subject: `Join ${input.orgName} on Puyer`,
+    text: `You were invited to the ${input.orgName} workspace on Puyer. Accept: ${url}`,
+    html: puyerEmailHtml({
+      preview: `Join ${input.orgName} on Puyer`,
+      heading: "You’re invited to Puyer",
+      bodyHtml: puyerParagraph(`You were invited to join ${input.orgName} on Puyer.`),
+      ctaLabel: "Accept invitation",
+      ctaUrl: url,
+    }),
+  };
   try {
     return await deliverEmail({
-      to: input.to,
-      from: inviteFromAddress(),
-      subject: `Join ${input.orgName} on Puyer`,
-      text: `You were invited to the ${input.orgName} workspace on Puyer. Accept: ${url}`,
-      html: puyerEmailHtml({
-        preview: `Join ${input.orgName} on Puyer`,
-        heading: "You’re invited to Puyer",
-        bodyHtml: puyerParagraph(`You were invited to join ${input.orgName} on Puyer.`),
-        ctaLabel: "Accept invitation",
-        ctaUrl: url,
-      }),
+      ...message,
+      from,
       idempotencyKey: input.idempotencyKey,
     });
   } catch (error) {
+    const verifiedMailbox =
+      emailMailbox(envString("EMAIL_FROM")) ||
+      emailMailbox(envString("EMAIL_FROM_HELP")) ||
+      emailMailbox(envString("EMAIL_FROM_REMINDERS"));
+    const retryFrom =
+      verifiedMailbox && !from.toLowerCase().includes(verifiedMailbox.toLowerCase())
+        ? `Puyer Team <${verifiedMailbox}>`
+        : null;
+    if (retryFrom) {
+      try {
+        return await deliverEmail({
+          ...message,
+          from: retryFrom,
+          idempotencyKey: `${input.idempotencyKey}:verified-from`,
+        });
+      } catch (retryError) {
+        logger.error("team_invite_email_failed", {
+          errorName: retryError instanceof Error ? retryError.message : "unknown",
+          fromRetry: true,
+        });
+        throw new ValidationError("The invitation email could not be sent. Try again in a moment.");
+      }
+    }
     if (error instanceof ValidationError) {
       throw error;
     }
     logger.error("team_invite_email_failed", {
-      errorName: error instanceof Error ? error.name : "unknown",
+      errorName: error instanceof Error ? error.message : "unknown",
+      from,
     });
     throw new ValidationError("The invitation email could not be sent. Try again in a moment.");
   }

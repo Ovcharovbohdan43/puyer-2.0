@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.42 — 2026-09-03
+> **Version:** 1.0.43 — 2026-09-03
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -459,6 +459,7 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-29] – Changed: Overview Revenue Trends is on every plan; Insights stay Business.
 
 [2026-08-29] – Fixed: Team invite emails send from invites@puyer.org with a production accept URL; failed delivery is shown to the owner.
+[2026-09-03] – Fixed: Team invite mail uses the verified EMAIL_FROM mailbox when invites@ is only the example address; retries once if Resend rejects From.
 [2026-08-29] – Fixed: Sent and viewed invoices open the builder; paid invoices stay locked.
 [2026-08-29] – Fixed: Mobile Home/Clients tables scroll so status badges do not cover amounts.
 [2026-08-29] – Added: Browser tab uses the square Puyer ring favicon.

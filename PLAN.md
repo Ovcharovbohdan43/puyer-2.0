@@ -1392,6 +1392,9 @@ Until `docs/` exists, keep the changelog in this file.
   Docs: docs/dashboard.md.
 
 [2026-09-03] – Fixed: Sidebar green wash uses globals.css so it actually paints.
+
+[2026-09-03] – Fixed: Team invites send from the verified EMAIL_FROM mailbox, not example invites@, and retry once if Resend rejects From.
+  Docs: docs/team.md, docs/UX_FLOWS.md.
 ```
 
 ---
