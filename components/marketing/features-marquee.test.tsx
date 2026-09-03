@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -21,5 +24,13 @@ describe("FeaturesMarquee", () => {
     expect(html).toContain('aria-hidden="true"');
     expect(html.split("Create professional invoices").length - 1).toBe(2);
     expect(html.split("Send them in seconds").length - 1).toBe(2);
+  });
+});
+
+describe("landing marquee CSS", () => {
+  it("does not pause feature or Why marquees on hover", () => {
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).not.toContain(".features-marquee:hover .features-marquee-track");
+    expect(css).not.toContain(".why-marquee-stack:hover .features-marquee-track");
   });
 });

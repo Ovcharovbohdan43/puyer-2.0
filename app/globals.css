@@ -632,11 +632,6 @@ html[data-theme="dark"] .app-shell {
   animation: features-marquee-scroll 36s linear infinite;
 }
 
-.features-marquee:hover .features-marquee-track,
-.why-marquee-stack:hover .features-marquee-track {
-  animation-play-state: paused;
-}
-
 .why-chip-track {
   animation-duration: 28s;
 }

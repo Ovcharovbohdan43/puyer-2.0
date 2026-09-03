@@ -1381,6 +1381,12 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-08-30] – Fixed: Landing LCP — SSR the in-viewport invoice; do not delay it with `ssr: false`.
   Docs: docs/landing.md.
+
+[2026-09-03] – Changed: Landing templates block uses invoice still images.
+  Docs: docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-09-03] – Changed: Feature and Why marquees keep scrolling on hover.
+  Docs: docs/landing.md, docs/UX_FLOWS.md.
 ```
 
 ---

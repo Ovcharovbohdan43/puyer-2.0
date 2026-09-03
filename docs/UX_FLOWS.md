@@ -3,7 +3,7 @@
 > **Status:** Canonical interaction contract.  
 > **Follow with:** [`PLAN.md`](../PLAN.md) (architecture, Stripe separation, data).  
 > **If UI and this file disagree, update this file first.**  
-> **Version:** 1.0.40 — 2026-08-30
+> **Version:** 1.0.42 — 2026-09-03
 
 This document defines what happens when the user clicks, types, submits, cancels, fails, or is blocked. Do not invent behavior. Do not treat screens as isolated pages.
 
@@ -42,7 +42,7 @@ Forbidden on System B: `application_fee_amount`, destination charges, separate c
 | Object | Action | Target |
 |---|---|---|
 | Logo `Puyer` | click | `/` (scroll top). If builder dirty → unsaved modal first |
-| Features | click | `/#features` (smooth scroll if already on `/`). Cards loop horizontally; hover pauses. |
+| Features | click | `/#features` (smooth scroll if already on `/`). Cards loop horizontally; hover does not pause. |
 | Templates | click | `/#templates` |
 | Pricing | click | `/pricing` |
 | FAQ | click | `/#faq` |
@@ -141,7 +141,7 @@ Landing → click Create Invoice → authenticated
 
 ### Features / FAQ / Templates (on `/`)
 
-In-page smooth scroll. **Use this template** → apply template on current builder (unauth) or `/invoices/new?template=` (if navigating away). Cards show live invoice previews; hover zooms the preview. Keep data. Do not register.
+In-page smooth scroll. **Use this template** → apply template on current builder (unauth) or `/invoices/new?template=` (if navigating away). Cards show invoice stills; hover zooms the image. Keep data. Do not register.
 
 FAQ accordion answers live product questions (account vs guest builder, plans, PDF after sign-in, magic link, Stripe on Pro, fees, client pay, bank transfer, reminders, team, tax %, no recurring yet).
 
@@ -425,6 +425,8 @@ Magic link: Continue with email calls `POST /api/auth/otp`. After the link, logi
 [2026-08-28] – Changed: `/login` right panel uses the invoice payment illustration PNG.
 [2026-08-29] – Changed: `/login` uses a white canvas and does not show the theme toggle.
 [2026-08-29] – Changed: Landing `#templates` cards show live invoice previews.
+[2026-09-03] – Changed: Landing `#templates` cards use invoice still images.
+[2026-09-03] – Changed: Feature and Why marquees do not pause on hover.
 [2026-08-29] – Fixed: Template invoice previews stay aligned in the card (scale from top-left).
 [2026-08-29] – Added: Hovering a template card zooms the invoice preview.
 [2026-08-29] – Changed: Minimal / Professional / Premium invoice layouts are distinct.
