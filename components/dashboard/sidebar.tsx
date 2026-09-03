@@ -22,7 +22,8 @@ export function Sidebar({ displayName, plan }: SidebarProps) {
   const planLabel = copy[planCopyKey(plan)];
 
   return (
-    <aside className="fixed top-0 left-0 z-30 hidden h-dvh w-[260px] max-w-[260px] flex-col overflow-hidden border-r border-[#E5E7EB] bg-[#FBFCFB] p-4 lg:flex">
+    <aside className={dash.sidebar}>
+      <div aria-hidden className={dash.sidebarWash} />
       <div className="px-2 pb-6">
         <Link href="/dashboard" className="inline-flex items-center">
           <PuyerLogo height={28} />

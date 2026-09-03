@@ -1387,6 +1387,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-09-03] – Changed: Feature and Why marquees keep scrolling on hover.
   Docs: docs/landing.md, docs/UX_FLOWS.md.
+
+[2026-09-03] – Added: Faint forest-green wash at the top of the dashboard sidebar.
+  Docs: docs/dashboard.md.
 ```
 
 ---

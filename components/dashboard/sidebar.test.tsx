@@ -22,6 +22,8 @@ describe("Sidebar", () => {
     expect(html).toContain("New Invoice");
     expect(html).toContain("Sign out");
     expect(html).toContain("/invoices/new");
+    expect(html).toContain("radial-gradient");
+    expect(html).toContain("rgba(0,108,73");
     expect(html).not.toContain("/app/theme.svg");
     expect(html).not.toContain("/app/kpi-revenue.svg");
   });

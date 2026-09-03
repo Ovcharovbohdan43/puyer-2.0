@@ -24,6 +24,10 @@ export const dash = {
     "box-border h-[38px] w-full min-w-0 max-w-full rounded-lg border border-[#E5E7EB] bg-white px-2 text-[13px] text-[#111827] outline-none focus:border-[#006C49] sm:px-3 sm:text-[14px]",
   btnPrimary:
     "inline-flex h-10 items-center justify-center gap-1 rounded-lg bg-[#006C49] px-4 text-[14px] font-semibold text-white hover:brightness-110",
+  sidebar:
+    "fixed top-0 left-0 z-30 hidden h-dvh w-[260px] max-w-[260px] flex-col overflow-hidden border-r border-[#E5E7EB] bg-[#FBFCFB] p-4 lg:flex",
+  sidebarWash:
+    "pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_140%_90%_at_0%_-20%,rgba(0,108,73,0.14),transparent_70%)]",
   btnSecondary:
     "inline-flex h-[38px] items-center justify-center gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3 text-[14px] font-medium text-[#374151] hover:bg-[#F9FAFB]",
   btnOutline:

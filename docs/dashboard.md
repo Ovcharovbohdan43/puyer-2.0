@@ -8,7 +8,7 @@ Sources: light forest-green product frames (Clients, Reports, Payment reminders)
 
 ## Description
 
-Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications, Help). Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications, Help.
+Light shell (`#F6F7F6` page, white cards, forest `#006C49`). Desktop sidebar is 260px (Home, Clients, Invoices, Payments, Reports; footer Settings, Team, Notifications, Help) with a faint forest wash in the top-left, like the reminder-mail header. Mobile uses a bottom tab bar (Home, Clients, Invoices, Payments, More). More opens Reports, Settings, Team, Billing, Notifications, Help.
 
 Overview: greeting, search, Create Invoice, four KPI cards (Phosphor icons + fade-only sparklines with a short rise-in animation), a full-bleed Revenue Trends SVG (smooth path clamped inside the plot so a sharp dip cannot fall under the month labels, vertical forest→mint gradient, `preserveAspectRatio="none"`, line draw + fill fade on load), Quick Actions, Insights (Business), Recent Invoices. Invoices: search, issue-date From/To in a two-column grid that shrinks on a phone, Filter and Export on one row, CSV of the visible filtered list (UTF-8 BOM), three KPIs with Phosphor icons, paginated table. Clicking a row sets `?invoice=` to the invoice UUID and opens a 400px right drawer with Download / Share / Edit, Send reminder (Pro, editable body from reminders@puyer.org), Set status, **Delete** (unpaid only, confirm modal), a document preview card, and an animated timeline. When status is `PAID`, the timeline includes **Payment Received** at the top; the track stops on the first and last node centers.
 
@@ -90,11 +90,12 @@ npm run lint
 
 ## Version
 
-1.2.22 — 2026-08-30
+1.2.23 — 2026-09-03
 
 ## Changelog
 
 ```
+[2026-09-03] – Added: Faint forest-green wash at the top of the desktop sidebar.
 [2026-08-30] – Added: Invoice drawer can delete unpaid invoices.
 [2026-08-30] – Added: Settings business country for Stripe Connect.
 [2026-08-30] – Fixed: Invoice/report date fields and Filter/Export sit in a shrinking two-column toolbar on a phone.
