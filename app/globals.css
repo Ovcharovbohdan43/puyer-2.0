@@ -620,6 +620,13 @@ html[data-theme="dark"] .app-shell {
   filter: brightness(0) invert(1);
 }
 
+.dash-sidebar {
+  background-color: #fbfcfb;
+  background-image: radial-gradient(220px 170px at 0 0, rgb(108 248 187 / 0.45), transparent 72%),
+    radial-gradient(180px 130px at 12% 0, rgb(0 108 73 / 0.1), transparent 70%);
+  background-repeat: no-repeat;
+}
+
 .features-marquee {
   overflow: hidden;
   width: 100%;

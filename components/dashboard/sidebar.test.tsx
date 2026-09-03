@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
@@ -22,8 +25,7 @@ describe("Sidebar", () => {
     expect(html).toContain("New Invoice");
     expect(html).toContain("Sign out");
     expect(html).toContain("/invoices/new");
-    expect(html).toContain("radial-gradient");
-    expect(html).toContain("rgba(0,108,73");
+    expect(html).toContain("dash-sidebar");
     expect(html).not.toContain("/app/theme.svg");
     expect(html).not.toContain("/app/kpi-revenue.svg");
   });
@@ -35,5 +37,12 @@ describe("Sidebar", () => {
     expect(html).toContain("max-w-[260px]");
     expect(html).toContain("overflow-hidden");
     expect(html).toContain("truncate");
+  });
+
+  it("paints the top wash from globals.css, not a Tailwind arbitrary background", () => {
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).toContain(".dash-sidebar");
+    expect(css).toContain("radial-gradient");
+    expect(css).toContain("108 248 187");
   });
 });

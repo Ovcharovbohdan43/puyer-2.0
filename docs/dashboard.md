@@ -96,6 +96,7 @@ npm run lint
 
 ```
 [2026-09-03] – Added: Faint forest-green wash at the top of the desktop sidebar.
+[2026-09-03] – Fixed: Sidebar wash is a real CSS radial (mint + forest), not a Tailwind arbitrary class.
 [2026-08-30] – Added: Invoice drawer can delete unpaid invoices.
 [2026-08-30] – Added: Settings business country for Stripe Connect.
 [2026-08-30] – Fixed: Invoice/report date fields and Filter/Export sit in a shrinking two-column toolbar on a phone.

@@ -23,7 +23,6 @@ export function Sidebar({ displayName, plan }: SidebarProps) {
 
   return (
     <aside className={dash.sidebar}>
-      <div aria-hidden className={dash.sidebarWash} />
       <div className="px-2 pb-6">
         <Link href="/dashboard" className="inline-flex items-center">
           <PuyerLogo height={28} />
