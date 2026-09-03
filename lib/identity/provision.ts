@@ -26,26 +26,22 @@ async function findMembership(
   tx: Prisma.TransactionClient | typeof prisma,
   userId: string,
 ): Promise<WorkspaceMembership | null> {
-  const user = await tx.user.findUnique({
-    where: { id: userId },
-    select: { activeOrganizationId: true },
-  });
-  if (user?.activeOrganizationId) {
-    const preferred = await tx.organizationMember.findUnique({
-      where: {
-        userId_organizationId: { userId, organizationId: user.activeOrganizationId },
-      },
-      include: membershipInclude,
-    });
-    if (preferred) {
-      return preferred;
-    }
-  }
-  return tx.organizationMember.findFirst({
+  const members = await tx.organizationMember.findMany({
     where: { userId },
     include: membershipInclude,
     orderBy: { createdAt: "asc" },
   });
+  if (members.length === 0) {
+    return null;
+  }
+  const preferredId = members[0]?.user.activeOrganizationId;
+  if (preferredId) {
+    const preferred = members.find((row) => row.organizationId === preferredId);
+    if (preferred) {
+      return preferred;
+    }
+  }
+  return members[0] ?? null;
 }
 
 function isUniqueConflict(error: unknown): boolean {

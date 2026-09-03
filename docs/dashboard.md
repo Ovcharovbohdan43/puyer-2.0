@@ -20,7 +20,7 @@ Drawer Edit goes to `/invoices/:id/edit` for unpaid invoices (including sent/vie
 
 There is **no** moon/sun control in the app. Visiting the dashboard forces `html[data-theme=light]`.
 
-Navigating between app routes shows a centered forest-green spinner (`PuyerRouteLoading`). Buttons that wait on the network show the same spinner next to their pending copy.
+Navigating between app routes shows a centered forest-green spinner (`PuyerRouteLoading`). The dashboard layout streams that fallback via `Suspense` while session, ban, and workspace load in parallel (memoized with `React.cache()` so the page does not repeat the same Auth/Prisma work). In-app navigations reuse the App Router client cache for 30 seconds (`experimental.staleTimes`). Buttons that wait on the network show the same spinner next to their pending copy. See [`docs/performance.md`](./performance.md).
 
 ## How to use
 
@@ -90,11 +90,12 @@ npm run lint
 
 ## Version
 
-1.2.23 — 2026-09-03
+1.2.24 — 2026-09-03
 
 ## Changelog
 
 ```
+[2026-09-03] – Changed: Dashboard layout streams behind Suspense; session/ban/workspace load in parallel and are request-cached.
 [2026-09-03] – Added: Faint forest-green wash at the top of the desktop sidebar.
 [2026-09-03] – Fixed: Sidebar wash is a real CSS radial (mint + forest), not a Tailwind arbitrary class.
 [2026-08-30] – Added: Invoice drawer can delete unpaid invoices.

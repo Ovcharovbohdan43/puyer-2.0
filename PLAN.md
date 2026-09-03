@@ -2,7 +2,7 @@
 
 > **Status:** Canonical. All subsequent implementation MUST follow this document.  
 > **If a change contradicts this plan, update this file first, then the code.**  
-> **Version:** 1.4.21  
+> **Version:** 1.4.22  
 > **Date:** 2026-08-30  
 > **Repository state at planning:** empty (greenfield). No existing infrastructure to preserve.
 
@@ -994,7 +994,7 @@ Do not start a later phase until the previous phase’s tests/typecheck are gree
 - Magic link is the default: `signInWithOtp({ email })`. Settings can set an optional password; `/login` also offers `signInWithPassword`.
 - Public `/login` is a split page (email form + invoice hero). Download/Share still use the landing modal.
 - User / Organization / Member / BusinessProfile
-- Session refresh in Next.js 16 `proxy.ts` (deprecated filename: `middleware.ts`) via `updateSession` + `auth.getClaims()`. Do not login-gate public marketing routes.
+- Session refresh in Next.js 16 `proxy.ts` (deprecated filename: `middleware.ts`) via `updateSession` + `auth.getClaims()` **only when `sb-*` cookies exist**. Anonymous marketing and webhooks skip JWKS. Protected routes with no cookies redirect to `/login` without `getClaims()`. Do not login-gate public marketing routes. See [`docs/performance.md`](./docs/performance.md).
 - Authorization helpers + RLS policies
 - Audit log foundation
 - Tests: auth, tenant isolation
@@ -1395,6 +1395,9 @@ Until `docs/` exists, keep the changelog in this file.
 
 [2026-09-03] – Fixed: Team invites send from the verified EMAIL_FROM mailbox, not example invites@, and retry once if Resend rejects From.
   Docs: docs/team.md, docs/UX_FLOWS.md.
+
+[2026-09-03] – Changed: Page loads skip anonymous Auth JWKS, memoize session/bans, stream the dashboard shell, and reuse the App Router client cache for 30s.
+  Docs: docs/performance.md, docs/auth.md, docs/dashboard.md.
 ```
 
 ---

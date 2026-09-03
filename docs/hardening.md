@@ -53,11 +53,12 @@ E2E: `npm run test:e2e`. Magic-link completion needs a real inbox; CI does not s
 
 ## Version
 
-1.0.10 — 2026-08-30
+1.0.11 — 2026-09-03
 
 ## Changelog
 
 ```
+[2026-09-03] – Changed: Proxy Auth refresh is skipped for anonymous requests (JWT still required when `sb-*` cookies exist).
 [2026-08-30] – Added: npm `allowScripts` allowlist so Prisma/sharp install scripts run on Vercel.
 [2026-08-30] – Added: Account settings and password-login rate limits.
 [2026-08-30] – Added: `platform-admin` limit for Trust & Safety bans.

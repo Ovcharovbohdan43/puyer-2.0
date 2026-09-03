@@ -1,6 +1,7 @@
 import "server-only";
 
 import { timingSafeEqual } from "node:crypto";
+import { cache } from "react";
 
 import type { AccountBan, BanKind, BanTargetType } from "@prisma/client";
 
@@ -35,34 +36,25 @@ export function assertPlatformAdmin(request: Request): void {
   }
 }
 
-export async function findActiveBanForUser(userId: string): Promise<AccountBan | null> {
-  const [userBans, memberships] = await Promise.all([
+export const findActiveBanForUser = cache(async (userId: string): Promise<AccountBan | null> => {
+  const [userBans, orgBans] = await Promise.all([
     prisma.accountBan.findMany({
       where: { userId, status: "ACTIVE" },
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
-    prisma.organizationMember.findMany({
-      where: { userId },
-      select: { organizationId: true },
+    prisma.accountBan.findMany({
+      where: {
+        status: "ACTIVE",
+        organization: { members: { some: { userId } } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
     }),
   ]);
   const now = new Date();
-  const userHit = userBans.find((ban) => isBanInForce(ban, now));
-  if (userHit) {
-    return userHit;
-  }
-  const orgIds = memberships.map((row) => row.organizationId);
-  if (orgIds.length === 0) {
-    return null;
-  }
-  const orgBans = await prisma.accountBan.findMany({
-    where: { organizationId: { in: orgIds }, status: "ACTIVE" },
-    orderBy: { createdAt: "desc" },
-    take: 20,
-  });
-  return orgBans.find((ban) => isBanInForce(ban, now)) ?? null;
-}
+  return userBans.find((ban) => isBanInForce(ban, now)) ?? orgBans.find((ban) => isBanInForce(ban, now)) ?? null;
+});
 
 export async function assertNotBanned(userId: string): Promise<void> {
   const ban = await findActiveBanForUser(userId);

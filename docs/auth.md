@@ -12,7 +12,7 @@ Email magic-link sign-in for Puyer. Supabase Auth owns the session. `public.User
 - Rate limit: 5 sends / 15 minutes / email (in-process; Upstash in Phase 9).
 - `GET /auth/callback` and `GET /verify` copy query params to `/auth/confirm` and **do not** consume the token. The user clicks **Continue to Puyer**, which `POST`s `/auth/confirm/complete` (`token` / `token_hash` / PKCE `code`). Email scanners that only GET the link no longer burn it. GoTrue’s `token=` query is accepted (not only `token_hash`).
 - Public Supabase helpers live in `utils/supabase/*`. `lib/auth/browser.ts` and `lib/auth/server.ts` wrap them so marketing still loads when keys are missing (`trySupabasePublicEnv()`).
-- Next.js 16 request gate is [`proxy.ts`](../proxy.ts) (`getClaims()` before the response is committed). `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, `/notifications`, and `/onboarding` require a session; otherwise redirect to `/login`. `/help` is public. `/?login=1` also redirects to `/login`.
+- Next.js 16 request gate is [`proxy.ts`](../proxy.ts). Anonymous requests **do not** call `getClaims()` (no JWKS wait). Protected routes with no `sb-*` cookies redirect to `/login` immediately. When Auth cookies exist, `updateSession` + `getClaims()` still run before the response is committed so tokens can refresh. `/dashboard`, `/invoices`, `/clients`, `/payments`, `/reports`, `/settings`, `/team`, `/billing`, `/notifications`, and `/onboarding` require a session; otherwise redirect to `/login`. `/help` is public. `/?login=1` also redirects to `/login`. See [`docs/performance.md`](./performance.md).
 - Prisma uses the server connection **and** `requireSession` / `requireOrganization` / `requireOrgRole`. RLS in [`supabase/migrations/20260828120000_identity_rls_and_trigger.sql`](../supabase/migrations/20260828120000_identity_rls_and_trigger.sql) is defense in depth.
 - `requireOrganization` is idempotent: if the session is valid and `OrganizationMember` is missing, `ensureWorkspace` creates `User` + Organization (OWNER) + BusinessProfile + NotificationPreference. That covers Auth users created before `on_auth_user_created` existed. The call is memoized with React `cache()` so layout and page do not provision twice in one request; a unique-constraint race retries by re-reading membership. Cross-tenant lookups still 404 via `resolveTenantRecord`.
 - First visit: if `User.onboardingCompletedAt` is null, app routes (and signed-in `/pricing`) redirect to `/onboarding`. Owners complete a three-step workspace form; members set their name. Existing users were backfilled complete. See [`onboarding.md`](./onboarding.md).
@@ -87,11 +87,12 @@ Without live keys, OTP returns a safe “not configured” or send-failure messa
 
 ## Version
 
-1.0.23 — 2026-08-30
+1.0.24 — 2026-09-03
 
 ## Changelog
 
 ```
+[2026-09-03] – Changed: Proxy refreshes Auth only when `sb-*` cookies exist; layout/page session and ban lookups are `React.cache()`’d.
 [2026-08-30] – Added: Settings emails after password change and when an email change is requested.
 [2026-08-30] – Added: Optional password and email-change from Settings; login can use password.
 [2026-08-30] – Added: Account/workspace bans redirect to `/banned` and send an official reason email.

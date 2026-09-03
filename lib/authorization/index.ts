@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import type { OrgRole } from "@prisma/client";
 
 import { ForbiddenError, UnauthorizedError } from "@/lib/errors";
@@ -14,16 +15,7 @@ export type SessionUser = {
   email: string;
 };
 
-export async function requireSession(): Promise<SessionUser> {
-  const session = await getSessionOrNull();
-  if (!session) {
-    throw new UnauthorizedError();
-  }
-  await assertNotBanned(session.id);
-  return session;
-}
-
-export async function getSessionOrNull(): Promise<SessionUser | null> {
+export const getSessionOrNull = cache(async (): Promise<SessionUser | null> => {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return null;
@@ -38,7 +30,16 @@ export async function getSessionOrNull(): Promise<SessionUser | null> {
     return null;
   }
   return { id, email };
-}
+});
+
+export const requireSession = cache(async (): Promise<SessionUser> => {
+  const session = await getSessionOrNull();
+  if (!session) {
+    throw new UnauthorizedError();
+  }
+  await assertNotBanned(session.id);
+  return session;
+});
 
 export async function requireOrganization(user: SessionUser) {
   return ensureWorkspace(user);

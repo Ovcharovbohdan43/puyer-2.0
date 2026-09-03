@@ -18,7 +18,7 @@ Let Trust & Safety restrict a **user** or an entire **organization** (temporary 
 
 One active ban per user and per organization (partial unique indexes). Applying a new ban lifts the previous active row for that target.
 
-Enforcement: `requireSession` and dashboard / onboarding / login layouts call `findActiveBanForUser`. A user ban or any membership in a banned workspace redirects to `/banned` and API writes return 403. Public invoice pages stay up so payers are not blocked. `/banned` is dynamic: if the visitor is signed in and no ban is in force, it redirects to `/dashboard`.
+Enforcement: `requireSession` and dashboard / onboarding / login layouts call `findActiveBanForUser` (React `cache()`, two parallel Prisma queries). A user ban or any membership in a banned workspace redirects to `/banned` and API writes return 403. Public invoice pages stay up so payers are not blocked. `/banned` is dynamic: if the visitor is signed in and no ban is in force, it redirects to `/dashboard`.
 
 Email: `sendBanNoticeEmail` uses the stored reason, temporary end date, Help Center, and `support@puyer.org` (or `HELP_INBOX`). If Resend is unset, the ban still saves and a warning is logged.
 
@@ -77,11 +77,12 @@ npm run typecheck
 
 ## Version
 
-1.0.4 — 2026-08-30
+1.0.5 — 2026-09-03
 
 ## Changelog
 
 ```
+[2026-09-03] – Changed: Active-ban lookup is one React `cache()` per request and two parallel Prisma queries.
 [2026-08-30] – Changed: `/banned` sends lifted or expired accounts to `/dashboard` (signed-out to `/login`).
 [2026-08-30] – Added: GET /api/admin/bans?target=ACTIVE lists in-force bans for ops lift.
 [2026-08-30] – Fixed: Ops account list typecheck (`isBanInForce` does not require `reason`).

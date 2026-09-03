@@ -21,7 +21,7 @@ Auth in Puyer is **email magic link only** (`signInWithOtp`). Browser/server/pro
 
 The dashboard “todos” `page.tsx` snippet is **not** applied. The marketing homepage stays the landing page.
 
-Session refresh does **not** redirect anonymous visitors on marketing routes (`/`, `/pricing`, `/login`). Protected app routes (`/dashboard`, `/invoices`) redirect to `/login`. See [`docs/auth.md`](./auth.md).
+Session refresh does **not** redirect anonymous visitors on marketing routes (`/`, `/pricing`, `/login`). It also **does not call `getClaims()`** unless the request already has `sb-*` cookies. Protected app routes (`/dashboard`, `/invoices`) redirect to `/login`. See [`docs/auth.md`](./auth.md) and [`docs/performance.md`](./performance.md).
 
 ## How to connect (cloud project)
 
@@ -81,6 +81,7 @@ Manual: `npm run dev`, open `/` and `/pricing`. Both must load without a login r
 
 ## Changelog
 
+- [2026-09-03] – Changed: `proxy.ts` skips `getClaims()` when there is no Supabase cookie.
 - [2026-08-28] – Added: `@supabase/ssr` browser/server clients and Next.js 16 `proxy.ts` session refresh.
 - [2026-08-28] – Changed: `trySupabasePublicEnv()` so marketing works without keys; `/dashboard` and `/invoices` require a session.
 - [2026-08-28] – Added: `supabase init` (`config.toml`), pinned CLI, cloud Auth health check; documented remaining DB URLs.
